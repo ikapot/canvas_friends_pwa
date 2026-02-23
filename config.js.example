@@ -1,0 +1,19 @@
+// Canvas Friends PWA Configuration Template
+// このファイルを config.js にリネームして、自分のAPIキーを記入してください。
+// config.js は index.html から自動的に読み込まれます。
+
+const CONFIG = {
+    GEMINI_API_KEY: "YOUR_GEMINI_API_KEY_HERE",
+    GROQ_API_KEY: "YOUR_GROQ_API_KEY_HERE",
+    HF_API_KEY: "YOUR_HUGGINGFACE_API_KEY_HERE" // Optional
+};
+
+if (typeof window !== 'undefined') {
+    // ブラウザ環境であれば、localStorageに反映させる（任意）
+    if (CONFIG.GEMINI_API_KEY && CONFIG.GEMINI_API_KEY !== "YOUR_GEMINI_API_KEY_HERE") {
+        localStorage.setItem('gemini_api_key', CONFIG.GEMINI_API_KEY);
+    }
+    if (CONFIG.GROQ_API_KEY && CONFIG.GROQ_API_KEY !== "YOUR_GROQ_API_KEY_HERE") {
+        localStorage.setItem('groq_api_key', CONFIG.GROQ_API_KEY);
+    }
+}

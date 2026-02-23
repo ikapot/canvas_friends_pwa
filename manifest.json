@@ -1,0 +1,17 @@
+{
+    "name": "Canvas Friends",
+    "short_name": "Canvas",
+    "description": "A collaborative abyss of literary chaos.",
+    "start_url": "index.html",
+    "display": "standalone",
+    "background_color": "#FAFAFA",
+    "theme_color": "#FAFAFA",
+    "icons": [
+        {
+            "src": "icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

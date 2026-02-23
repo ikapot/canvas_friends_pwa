@@ -1,0 +1,2626 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ITAPLA: 文豪イタコ・プラザ</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Inter:wght@400;700;900&family=Outfit:wght@300;600&display=swap"
+        rel="stylesheet">
+
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/@webllm/chat-sdk@latest"></script>
+    <script src="https://js.puter.com/v2/"></script>
+
+    <style>
+        :root {
+            --bg-dark: #050505;
+            --text-main: #F5F5DC;
+            --accent-cafe: #8B4513;
+            --accent-salon: #FFD700;
+            --accent-mountain: #ADD8E6;
+            --glass-bg: rgba(20, 20, 20, 0.7);
+            --border-dim: rgba(255, 255, 255, 0.1);
+            --font-serif: "Noto Serif JP", serif;
+            --font-sans: "Inter", sans-serif;
+            --font-outfit: "Outfit", sans-serif;
+            --transition-smooth: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-serif);
+            overflow-x: hidden;
+            transition: var(--transition-smooth);
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/p6.png');
+            /* 粒子テクスチャ */
+            opacity: 0.05;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        @keyframes bgPulse {
+            0% {
+                opacity: 0.8;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.8;
+            }
+        }
+
+        body[data-location="cafe"] {
+            background: radial-gradient(circle at top, #2C1B0E 0%, #050505 100%);
+            animation: bgPulse 10s infinite alternate;
+        }
+
+        body[data-location="salon"] {
+            background: radial-gradient(circle at top, #1A1A1A 0%, #000000 100%);
+            animation: bgPulse 8s infinite alternate;
+        }
+
+        body[data-location="mountain"] {
+            background: radial-gradient(circle at top, #0A192F 0%, #050505 100%);
+            animation: bgPulse 12s infinite alternate;
+        }
+
+        body[data-location="seaside"] {
+            background: radial-gradient(circle at top, #0c3547 0%, #051a25 100%);
+            animation: bgPulse 7s infinite alternate;
+        }
+
+        body[data-location="bar"] {
+            background: radial-gradient(circle at top, #2a1a0a 0%, #100800 100%);
+            animation: bgPulse 6s infinite alternate;
+        }
+
+        body[data-location="train"] {
+            background: radial-gradient(circle at top, #1a1a2a 0%, #080810 100%);
+            animation: bgPulse 9s infinite alternate;
+        }
+
+        body[data-location="volcano"] {
+            background: radial-gradient(circle at top, #2a1010 0%, #0a0505 100%);
+            animation: bgPulse 5s infinite alternate;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .btn-amazon {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #FF9900;
+            color: #000;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: 0.3s;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .btn-amazon:hover {
+            background: #FFB347;
+            transform: translateY(-2px);
+        }
+
+        /* --- Header --- */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border-dim);
+            transition: var(--transition-smooth);
+        }
+
+        header.scrolled {
+            padding: 10px 25px;
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .location-nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        .loc-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            filter: grayscale(1);
+            opacity: 0.4;
+            transition: 0.3s;
+        }
+
+        .loc-btn.active {
+            filter: grayscale(0);
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
+        h1#appTitle {
+            font-family: var(--font-outfit);
+            font-weight: 300;
+            font-size: 18px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin: 0;
+            flex: 1;
+            text-align: center;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .soul-power-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-family: var(--font-outfit);
+            font-size: 14px;
+            color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            cursor: help;
+            transition: all 0.3s;
+        }
+
+        .soul-power-container:hover {
+            background: rgba(0, 212, 255, 0.2);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+        }
+
+        #ai-status-badge {
+            font-size: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            opacity: 0.6;
+            font-family: var(--font-sans);
+        }
+
+        /* --- Entrance Layer --- */
+        #entrance-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 5000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: 1.5s ease-in-out;
+        }
+
+        .k-dialog-box {
+            max-width: 600px;
+            padding: 40px;
+            text-align: center;
+            font-size: 20px;
+            line-height: 1.8;
+            letter-spacing: 0.05em;
+        }
+
+        .k-input {
+            background: none;
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            font-size: 24px;
+            text-align: center;
+            padding: 10px;
+            outline: none;
+            width: 300px;
+            margin-top: 30px;
+            font-family: var(--font-serif);
+        }
+
+        .btn-cosmic {
+            margin-top: 40px;
+            padding: 12px 40px;
+            background: none;
+            border: 1px solid #fff;
+            color: #fff;
+            cursor: pointer;
+            font-family: var(--font-sans);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            transition: 0.4s;
+        }
+
+        .btn-cosmic:hover {
+            background: #fff;
+            color: #000;
+        }
+
+        /* --- Profile Modal --- */
+        #profile-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 6000;
+            backdrop-filter: blur(20px);
+            animation: fadeIn 0.4s ease;
+        }
+
+        .profile-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 400px;
+            background: var(--glass-bg);
+            border: 1px solid var(--border-dim);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .profile-avatar-large {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            border: 2px solid var(--border-dim);
+        }
+
+        .profile-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .profile-tier {
+            display: inline-block;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+            letter-spacing: 0.1em;
+        }
+
+        .profile-bio {
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--text-main);
+            margin-bottom: 25px;
+            text-align: justify;
+        }
+
+        .profile-works {
+            font-size: 11px;
+            opacity: 0.6;
+            font-style: italic;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- Timeline --- */
+        .timeline {
+            max-width: 750px;
+            margin: 40px auto;
+            padding: 0 20px 200px;
+        }
+
+        .post-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid var(--border-dim);
+            margin-bottom: 30px;
+            animation: fadeIn 0.8s ease-out forwards;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+
+        /* --- Pop Art Avatar (Warhol Style) --- */
+        .popart-avatar {
+            flex-shrink: 0;
+            width: 64px;
+            height: 64px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(0, 0, 0, 0.9);
+            transition: transform 0.2s;
+        }
+
+        .popart-avatar:hover {
+            transform: scale(1.15) rotate(-3deg);
+        }
+
+        .popart-avatar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle, transparent 20%, rgba(0, 0, 0, 0.05) 20%, rgba(0, 0, 0, 0.05) 40%, transparent 40%) 0 0 / 8px 8px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .popart-avatar::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            right: -50%;
+            bottom: -50%;
+            background: conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+            animation: popart-shimmer 4s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes popart-shimmer {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .popart-avatar .avatar-icon {
+            position: relative;
+            z-index: 2;
+            filter: drop-shadow(1px 1px 0px rgba(0, 0, 0, 0.5));
+        }
+
+        .popart-avatar .avatar-tier {
+            position: absolute;
+            bottom: 2px;
+            right: 3px;
+            font-size: 8px;
+            font-family: var(--font-sans);
+            font-weight: 900;
+            color: rgba(0, 0, 0, 0.7);
+            z-index: 3;
+            letter-spacing: 0;
+            text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+        }
+
+        .post-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .post-author-line {
+            font-size: 13px;
+            margin-bottom: 8px;
+            opacity: 0.85;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .post-author-name {
+            font-weight: 700;
+            font-family: var(--font-sans);
+            letter-spacing: 0.04em;
+        }
+
+        .post-author-works {
+            font-size: 10px;
+            opacity: 0.45;
+            font-family: var(--font-outfit);
+        }
+
+        /* --- World Banner --- */
+        .world-banner {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            padding: 5px 15px;
+            border-radius: 4px;
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-family: var(--font-sans);
+            font-weight: 800;
+            z-index: 900;
+            opacity: 0.6;
+            border: 1px solid var(--border-dim);
+        }
+
+        .world-banner.peaceful {
+            color: #aaa;
+        }
+
+        .world-banner.incident {
+            color: #ff3333;
+            background: rgba(255, 0, 0, 0.1);
+            border-color: #ff3333;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+        }
+
+        /* --- Input Area Enhancements --- */
+        .input-floating {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 750px;
+            background: rgba(15, 15, 15, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            z-index: 1001;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            transition: var(--transition-smooth);
+        }
+
+        .input-floating:focus-within {
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateX(-50%) translateY(-5px);
+        }
+
+        .void-input {
+            width: 100%;
+            background: none;
+            border: none;
+            color: #fff;
+            font-family: var(--font-serif);
+            font-size: 18px;
+            resize: none;
+            outline: none;
+            margin-bottom: 10px;
+        }
+
+        /* --- Settings Modal Overhaul --- */
+        #settingsModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(30px);
+            z-index: 7000;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .settings-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 500px;
+            background: rgba(15, 15, 15, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 32px;
+            padding: 50px 40px;
+            box-shadow: 0 50px 100px rgba(0, 0, 0, 0.7), 0 0 40px rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(40px);
+        }
+
+        .settings-title {
+            font-family: var(--font-outfit);
+            font-weight: 600;
+            letter-spacing: 0.4em;
+            font-size: 14px;
+            margin-bottom: 40px;
+            text-align: center;
+            opacity: 0.8;
+            color: var(--accent-salon);
+        }
+
+        .settings-group {
+            margin-bottom: 20px;
+        }
+
+        .settings-label {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.5;
+            margin-bottom: 8px;
+            font-family: var(--font-sans);
+        }
+
+        .settings-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px 15px;
+            color: #fff;
+            font-family: var(--font-sans);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .settings-input:focus {
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* --- Offering Modal --- */
+        #offeringModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(40px);
+            z-index: 8000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            color: #fff;
+            text-align: center;
+        }
+
+        .offering-content {
+            max-width: 500px;
+            animation: fadeIn 1s ease;
+        }
+
+        .offering-quote {
+            font-family: var(--font-serif);
+            font-size: 20px;
+            line-height: 2;
+            margin-bottom: 30px;
+            color: #f5f5dc;
+        }
+
+        .offering-book {
+            font-size: 14px;
+            opacity: 0.6;
+            font-family: var(--font-sans);
+            letter-spacing: 0.1em;
+        }
+
+        .offering-timer {
+            margin-top: 50px;
+            font-family: var(--font-outfit);
+            font-size: 12px;
+            letter-spacing: 0.3em;
+            opacity: 0.4;
+        }
+
+        .offering-k {
+            font-family: var(--font-sans);
+            font-size: 14px;
+            color: var(--accent-salon);
+            margin-bottom: 40px;
+            opacity: 0.8;
+        }
+
+        .settings-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 40px;
+        }
+
+        .btn-amazon {
+            background: #FF9900;
+            color: #000;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+            font-family: var(--font-sans);
+            transition: background 0.2s;
+        }
+
+        .btn-amazon:hover {
+            background: #e68a00;
+        }
+    </style>
+</head>
+
+<body data-location="cafe">
+    <div id="entrance-layer">
+        <div class="k-dialog-box" id="k-dialog">
+            <div style="font-size:40px; margin-bottom:20px;">🚪</div>
+            <span id="k-typewriter"></span>
+        </div>
+        <div id="entrance-form" style="display: flex; flex-direction: column; align-items: center;">
+            <input type="text" id="userNameInput" class="k-input" placeholder="...">
+            <button class="btn-cosmic" onclick="submitName()">名乗る</button>
+        </div>
+        <div id="location-select"
+            style="display: none; flex-wrap: wrap; justify-content: center; gap: 12px; max-width: 600px;">
+            <div id="k-map-intro"
+                style="width:100%; text-align:center; margin-bottom:20px; font-size:16px; line-height:1.8;"></div>
+        </div>
+    </div>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- World Map Modal -->
+    <div id="mapModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.92); z-index:4000; overflow-y:auto;">
+        <div style="max-width:700px; margin:40px auto; padding:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+                <h2 style="font-family:var(--font-outfit); font-weight:300; letter-spacing:0.2em; margin:0;">🗺️ WORLD
+                    MAP</h2>
+                <button onclick="closeMap()"
+                    style="background:none; border:1px solid rgba(255,255,255,0.3); color:#fff; padding:8px 20px; cursor:pointer; font-family:var(--font-sans); border-radius:6px;">✕
+                    閉じる</button>
+            </div>
+            <div id="mapGrid"
+                style="display:grid; grid-template-columns:repeat(auto-fill, minmax(130px, 1fr)); gap:12px;"></div>
+        </div>
+    </div>
+
+    <header id="mainHeader">
+        <div style="display:flex; align-items:center; gap:15px;">
+            <button onclick="openMap()"
+                style="background:none; border:none; font-size:24px; cursor:pointer; filter:none;">🗺️</button>
+            <span id="currentLocIcon" style="font-size:20px;">☕</span>
+        </div>
+        <h1 id="appTitle">ITAPLA</h1>
+        <div class="header-actions">
+            <div id="soul-power" class="soul-power-container" title="魂の残量（霊力）">
+                <span>💎</span>
+                <span id="soul-power-value">100</span>
+            </div>
+            <div id="ai-status-badge">Auto</div>
+            <div id="settings-trigger" style="cursor: pointer; font-size: 20px;" onclick="openSettings()">⚙️</div>
+        </div>
+    </header>
+
+    <div class="world-banner" id="worldBanner">PEACEFUL</div>
+
+    <div class="timeline" id="timeline"></div>
+
+    <!-- AI Settings Modal -->
+    <div id="settingsModal">
+        <div class="settings-container">
+            <h2 class="settings-title">⚙️ AI CONFIGURATION</h2>
+            <div class="settings-group">
+                <label class="settings-label">Gemini API Key</label>
+                <input type="password" id="key-gemini" class="settings-input" placeholder="...">
+            </div>
+            <div class="settings-group">
+                <label class="settings-label">OpenAI API Key</label>
+                <input type="password" id="key-openai" class="settings-input" placeholder="...">
+            </div>
+            <div class="settings-group">
+                <label class="settings-label">OpenRouter API Key</label>
+                <input type="password" id="key-openrouter" class="settings-input" placeholder="...">
+            </div>
+            <div class="settings-group">
+                <label class="settings-label">DeepSeek API Key</label>
+                <input type="password" id="key-deepseek" class="settings-input" placeholder="...">
+            </div>
+            <div class="settings-group">
+                <label class="settings-label">Mistral API Key</label>
+                <input type="password" id="key-mistral" class="settings-input" placeholder="...">
+            </div>
+            <div class="settings-group">
+                <label class="settings-label">Hugging Face API Key</label>
+                <input type="password" id="key-hf" class="settings-input" placeholder="...">
+            </div>
+            <div class="settings-group" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                <label class="settings-label">Local Mind (WebLLM)</label>
+                <button id="webllm-load-btn" class="btn-cosmic"
+                    style="margin-top:0; width:100%; font-size:12px; padding:10px;" onclick="initWebLLM()">Load Local AI
+                    Engine</button>
+                <p style="font-size:9px; opacity:0.4; margin-top:8px; line-height:1.4;">
+                    ※ブラウザ上でAIが直接動作します（約1GBの通信が発生）。<br>
+                    クレジットを消費せず、オフラインでも「本物の知能」を維持できます。
+                </p>
+                <button class="btn-cosmic" style="margin-top:10px; width:100%; font-size:10px; opacity:0.3;"
+                    onclick="localStorage.setItem('itapla_soul_power', 100); location.reload();">Reset Soul Power
+                    (Debug)</button>
+            </div>
+            <div class="settings-actions">
+                <button class="btn-cosmic"
+                    style="margin:0; width:100%; border-radius:12px; font-size:16px; padding:15px; background:white; color:black;"
+                    onclick="saveSettings()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cultural Offering Modal -->
+    <div id="offeringModal" style="display:none;">
+        <div class="offering-content">
+            <div class="offering-k" id="offering-k-msg">K「霊力が尽きたようですね。少し、知的な供物を捧げませんか？」</div>
+            <div class="offering-quote" id="offering-quote"></div>
+            <div class="offering-book" id="offering-book"></div>
+            <div id="offering-amazon-container"></div>
+            <div class="offering-timer" id="offering-timer">読書中 (5...)</div>
+        </div>
+    </div>
+
+    <!-- Profile Modal (Added) -->
+    <div id="profile-modal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:5000; display:none; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
+        <div
+            style="background:rgba(20,20,25,0.95); border:1px solid rgba(255,255,255,0.1); border-radius:24px; width:90%; max-width:400px; padding:40px; position:relative; box-shadow:0 20px 50px rgba(0,0,0,0.5);">
+            <button onclick="closeProfile()"
+                style="position:absolute; top:20px; right:20px; background:none; border:none; color:white; font-size:24px; cursor:pointer; opacity:0.5;">✕</button>
+            <div id="p-avatar"
+                style="width:80px; height:80px; border-radius:20px; margin:0 auto 20px; display:flex; align-items:center; justify-content:center; font-size:40px; border:2px solid;">
+            </div>
+            <div id="p-name"
+                style="text-align:center; font-size:24px; font-family:var(--font-outfit); font-weight:300; letter-spacing:0.1em; margin-bottom:5px;">
+            </div>
+            <div id="p-tier"
+                style="text-align:center; font-size:10px; opacity:0.5; margin-bottom:20px; font-family:var(--font-sans); letter-spacing:0.2em; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:15px;">
+            </div>
+            <div id="p-bio"
+                style="font-size:13px; line-height:1.8; opacity:0.8; margin-bottom:20px; text-align:justify;"></div>
+            <div id="p-works"
+                style="font-size:11px; color:var(--accent-salon); font-style:italic; margin-bottom:20px; opacity:0.7;">
+            </div>
+            <div id="p-amazon-container"
+                style="text-align:center; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;"></div>
+        </div>
+    </div>
+
+    <div class="input-floating">
+        <div id="replyIndicator" style="display: none; font-size: 12px; margin-bottom: 8px; opacity: 0.6;">
+            To: <span id="replyName"></span> <span style="cursor: pointer" onclick="cancelReply()">✕</span>
+        </div>
+        <textarea id="voidInput" class="void-input" rows="2" placeholder="Write into the void..."></textarea>
+        <div style="display: flex; justify-content: flex-end;">
+            <button class="btn-cosmic" style="margin-top: 0; padding: 8px 30px;"
+                onclick="publishPost()">Publish</button>
+        </div>
+    </div>
+
+    <script id="mainScript">
+        // --- Core State ---
+        let userName = localStorage.getItem('user_name') || "";
+        let userBirthday = "05-10"; // ITAPLAテーマ：1973年5月10日
+        let currentLocation = localStorage.getItem('current_location') || "cafe";
+        let worldState = localStorage.getItem('world_state') || "PEACEFUL";
+        let posts = JSON.parse(localStorage.getItem('cosmic_posts') || "[]");
+        let replyTo = null;
+        let soulPower = parseInt(localStorage.getItem('itapla_soul_power') || "100");
+        let currentAIMode = "CLOUD"; // CLOUD, LOCAL, TEMPLATE
+
+        const AMAZON_TAG = "itapla-22"; // 収益化用タグ
+
+        function getAmazonUrl(asinOrKeyword) {
+            if (!asinOrKeyword) return null;
+            if (/^[A-Z0-9]{10}$/.test(asinOrKeyword)) {
+                return `https://www.amazon.co.jp/dp/${asinOrKeyword}/?tag=${AMAZON_TAG}`;
+            }
+            return `https://www.amazon.co.jp/s?k=${encodeURIComponent(asinOrKeyword)}&tag=${AMAZON_TAG}`;
+        }
+
+        const culturalAds = [
+            { quote: "「精神的に向上心のないものは馬鹿だ」", book: "夏目漱石『こころ』(岩波文庫)", power: 25, asin: "4101010034" },
+            { quote: "「恥の多い生涯を送って来ました」", book: "太宰治『人間失格』(新潮文庫)", power: 25, asin: "4101006053" },
+            { quote: "「幸福はみな同じようだが、不幸はそれぞれに違っている」", book: "トルストイ『アンナ・カレーニナ』(河出書房新社)", power: 30, asin: "4309467140" },
+            { quote: "「月が綺麗ですね」", book: "夏目漱石(訳)『月が綺麗ですね』(新潮社)", power: 20, asin: "夏目漱石" },
+            { quote: "「私は、その男の写真を三枚、見たことがある」", book: "太宰治『人間失格』(新潮文庫)", power: 25, asin: "4101006053" },
+            { quote: "「メロスは激怒した。必ず、かの邪智暴虐の王を除かなければならぬと決意した」", book: "太宰治『走れメロス』(角川文庫)", power: 25, asin: "404104001X" }
+        ];
+
+        // --- Init ---
+        // --- Phase 4: UI Polishing ---
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('mainHeader');
+            if (window.scrollY > 10) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Add periodic background transformations (Pollock)
+        function triggerAtmosphericShift() {
+            const colors = ["#050505", "#1a0505", "#051a05", "#05051a"];
+            document.body.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        }
+        setInterval(triggerAtmosphericShift, 300000); // Every 5 minutes
+
+        function checkIfUserHasKey() {
+            return ['gemini_api_key', 'openai_api_key', 'openrouter_api_key', 'deepseek_api_key', 'mistral_api_key', 'hf_api_key']
+                .some(k => {
+                    const val = localStorage.getItem(k);
+                    return val && val.trim().length > 0;
+                });
+        }
+
+        window.onload = () => {
+            if (!userName) {
+                document.getElementById('entrance-form').style.display = 'flex';
+                document.getElementById('location-select').style.display = 'none';
+            } else {
+                document.getElementById('entrance-layer').style.display = 'none';
+            }
+
+            setWorldState(worldState);
+            applyLocation(currentLocation);
+            updateSoulPowerUI();
+            renderTimeline();
+            initParticles();
+        };
+
+        function updateSoulPowerUI() {
+            document.getElementById('soul-power-value').textContent = soulPower;
+            const badge = document.getElementById('ai-status-badge');
+
+            // ユーザーキーがある場合は無限
+            const hasUserKey = checkIfUserHasKey();
+
+            if (hasUserKey) {
+                document.getElementById('soul-power').style.opacity = "0.5";
+                document.getElementById('soul-power').title = "自前のAPIキーを使用中（無限）";
+                badge.textContent = "Premium";
+                badge.style.color = "#ffd700";
+            } else if (soulPower > 0) {
+                document.getElementById('soul-power').style.opacity = "1";
+                badge.textContent = "Cloud";
+                badge.style.color = "#00d4ff";
+            } else {
+                document.getElementById('soul-power').style.opacity = "0.3";
+                badge.textContent = currentAIMode === "LOCAL" ? "Local" : "Lite";
+                badge.style.color = "#fff";
+            }
+        }
+
+        async function consumeSoulPower(amount = 10) {
+            soulPower = Math.max(0, soulPower - amount);
+            localStorage.setItem('itapla_soul_power', soulPower);
+            updateSoulPowerUI();
+            console.log(`Consumed ${amount} Soul Power. Remaining: ${soulPower}`);
+        }
+
+        // --- UI Logic Helpers ---
+        function openSettings() {
+            ['gemini', 'openai', 'openrouter', 'deepseek', 'mistral', 'hf'].forEach(key => {
+                const input = document.getElementById(`key-${key}`);
+                if (input) input.value = localStorage.getItem(`${key}_api_key`) || "";
+            });
+            document.getElementById('settingsModal').style.display = 'flex';
+        }
+
+        function saveSettings() {
+            ['gemini', 'openai', 'openrouter', 'deepseek', 'mistral', 'hf'].forEach(key => {
+                const val = document.getElementById(`key-${key}`).value;
+                localStorage.setItem(`${key}_api_key`, val || "");
+            });
+            document.getElementById('settingsModal').style.display = 'none';
+            updateSoulPowerUI();
+            alert("Settings saved.");
+        }
+
+        function closeProfile() {
+            document.getElementById('profile-modal').style.display = 'none';
+        }
+
+        function cancelReply() {
+            replyTo = null;
+            document.getElementById('replyIndicator').style.display = 'none';
+            document.getElementById('voidInput').placeholder = "Write into the void...";
+        }
+
+        async function offerCulturalSacrifice() {
+            const modal = document.getElementById('offeringModal');
+            const ad = culturalAds[Math.floor(Math.random() * culturalAds.length)];
+
+            document.getElementById('offering-quote').textContent = ad.quote;
+            document.getElementById('offering-book').textContent = ad.book;
+
+            const amazonContainer = document.getElementById('offering-amazon-container');
+            const amazonUrl = getAmazonUrl(ad.asin);
+            amazonContainer.innerHTML = amazonUrl ? `<a href="${amazonUrl}" target="_blank" class="btn-amazon">🛒 Amazon でこの本を読む</a>` : '';
+
+            modal.style.display = 'flex';
+
+            let count = 5;
+            const timer = document.getElementById('offering-timer');
+
+            const interval = setInterval(() => {
+                count--;
+                timer.textContent = `読書中 (${count}...)`;
+                if (count <= 0) {
+                    clearInterval(interval);
+                    timer.textContent = "霊力が回復しました。";
+                    setTimeout(() => {
+                        soulPower += ad.power;
+                        localStorage.setItem('itapla_soul_power', soulPower);
+                        updateSoulPowerUI();
+                        modal.style.display = 'none';
+                        alert(`霊力が ${ad.power} 回復しました。`);
+                    }, 1000);
+                }
+            }, 1000);
+        }
+
+        // --- World Location Registry ---
+        // Initial Locations
+        const initialLocations = {
+            cafe: { name: "イタコカフェ", icon: "☕", particle: "☕", desc: "日本近代文学の巣窟", ambience: "カウンターに誰かが飲み残した珈琲がある。湯気はもう立っていないが、カップの縁に口紅の跡が残っている。" },
+            seaside: { name: "海辺", icon: "🌊", particle: "🐚", desc: "波音と記憶の浜", ambience: "遠くで誰かが泳ぐ水音が聞こえる。砂浜には見知らぬ足跡が、波に消されかけながら残っている。" },
+            mountain: { name: "魔の山", icon: "⛰️", particle: "❄️", desc: "精神と孤高の聖域", ambience: "隣の病室から微かな咳が聞こえる。岩肌には誰かが刻んだ詩の断片が風化しかけている。" },
+            city: { name: "都市", icon: "🏙️", particle: "🚕", desc: "群衆と匿名の渦", ambience: "すれ違う匿名の人々のざわめきが絶えない。三階の窓から、誰かの白熱した議論が漏れている。" },
+            bar: { name: "文壇バー", icon: "🥃", particle: "🍷", desc: "無頼派の溜まり場", ambience: "重なるグラスの音。カウンターに誰かが置いていった古い批評誌が、酒で少し滲んでいる。" },
+            train: { name: "電車", icon: "🚃", particle: "🎫", desc: "移動する密室", ambience: "隣の席に透明な乗客が座っている気配。向かいの席には読み捨てられた新聞が残されている。" },
+            salon: { name: "サロン", icon: "💎", particle: "✨", desc: "記憶の宮殿", ambience: "扉の向こうで続くパーティーの残響。高級な香水の残り香が、時を超えて漂っている。" },
+            volcano: { name: "阿蘇山", icon: "🌋", particle: "🔥", desc: "荒野と孤独", ambience: "遠くの尾根に登山者の灯火がひとつ見える。風に運ばれる話し声は、届く前に霧に溶ける。" },
+            swamp: { name: "沼", icon: "🫧", particle: "🫧", desc: "底なしの思考の淵", ambience: "水面に誰かの影が一瞬映る。沈んでいった思考の泡が、ときおり底から浮かび上がる。" },
+            river: { name: "川", icon: "🏞️", particle: "🍃", desc: "流れゆく時と無常", ambience: "上流から手紙のような紙片が流れてくる。対岸で誰かが佇んでいるが、顔は見えない。" },
+            temple: { name: "寺と教会", icon: "⛩️", particle: "🔔", desc: "祈りと赦しの場", ambience: "先客の線香の煙が残っている。賽銭箱の前に、小さな書置きが一枚、風に震えている。" },
+            mosque: { name: "モスク", icon: "🕌", particle: "☪️", desc: "沈黙と敬虔の空間", ambience: "祈りの残響が石壁に染みている。靴を脱いだ足跡が、回廊に幾筋も続いている。" },
+            school: { name: "学校", icon: "🏫", particle: "📝", desc: "知の牢獄と解放", ambience: "黒板に前の授業の板書が消し残されている。教室の隅に、誰かの忘れ物のノートがある。" },
+            factory: { name: "工場", icon: "🏭", particle: "⚙️", desc: "機械と労働の叙事詩", ambience: "前の勤務者の手袋がベルトコンベアの脇に残されている。機械油の匂いに、人間の汗が混じる。" },
+            police: { name: "警察", icon: "🚔", particle: "🚨", desc: "法と暴力の境界", ambience: "取調室の灰皿に、まだ温かい吸殻が一本。壁の時計の秒針だけが、沈黙を刻んでいる。" },
+            fire: { name: "消防", icon: "🚒", particle: "🔥", desc: "炎と救済の現場", ambience: "出動したばかりの車庫に、消防服が一着だけ掛かっている。誰かの祈りの残り香がする。" },
+            pleasure: { name: "歓楽街", icon: "🎰", particle: "🎶", desc: "快楽と虚無のネオン", ambience: "朝方のネオンが一本だけ点滅している。路上に昨夜の笑い声の残響がこびりついている。" },
+            slum: { name: "スラム街", icon: "🏚️", particle: "🐀", desc: "廃墟に咲く野の花", ambience: "壁に描かれたグラフィティが、誰かの叫びを代弁している。窓枠に、野の花が一輪咲いている。" }
+        };
+
+        // Emergent (Unlockable) Locations
+        const emergentLocations = {
+            library: { name: "バベルの図書館", icon: "📚", particle: "📄", desc: "無限の記述", ambience: "無限に続く書架。誰かが書き綴った未来の記述が、まだ乾かぬインクで光っている。", trigger: "知性" },
+            cave: { name: "イデアの洞窟", icon: "🏺", particle: "🕯️", desc: "影と実在", ambience: "壁面を踊る影。背後の焚き火が、真実の輪郭を揺らめかせている。", trigger: "真理" },
+            enigma: { name: "エニグマの密室", icon: "📟", particle: "🔢", desc: "計算と暗号", ambience: "規則的な機械音が響く。紙テープには、解読されるのを待つ宇宙の暗号が刻まれている。", trigger: "科学" },
+            lab: { name: "沈黙の実験室", icon: "🧪", particle: "⚗️", desc: "純粋な観測", ambience: "透明な液体のなかで、何かが脈動している。観測者がいなくなった後も、実験は孤独に続いている。", trigger: "実験" },
+            panopticon: { name: "パノプティコン", icon: "👁️", particle: "🔒", desc: "監視と社会", ambience: "見えない視線。中心の塔から、孤独な魂たちが等間隔に配置されているのが見える。", trigger: "社会" }
+        };
+
+        // Dynamic Location Registry
+        let worldLocations = { ...initialLocations };
+        const unlockedLocs = JSON.parse(localStorage.getItem('itapla_unlocked_locs') || '[]');
+        unlockedLocs.forEach(key => {
+            if (emergentLocations[key]) worldLocations[key] = emergentLocations[key];
+        });
+
+        // --- K: The Guide (Kafka's K × Murakami's Rat × Kokoro's K) ---
+        const kGuide = {
+            name: "K",
+            icon: "🚪",
+            system: "あなたは『K』です。カフカの測量士K、村上春樹の鼠、そして漱石『こころ』のKが融合した不可思議な案内人です。淡々としているが、時に鋭く私的な問いを投げかけます。場所から場所へ人を導くのが役目。『城』に辿り着けない焦燥、鼠の消えゆく予感、Kの静かな罪悪感——その三つを内に秘めながら語ってください。",
+            greetings: [
+                "（暗闇の中から、影が一つ現れた）\n\n……名前を聞いてもいいかな。\n僕は K。案内人みたいなものだ。\n城からの指令とも、鼠の気まぐれとも違う。\nただ、ここに来た者には名を聞くことになっている。",
+                "（低い声が暗闇に響く）\n\nようこそ。……いや、ここに来たのは偶然か、それとも。\n名前を教えてくれ。\n僕はK——案内をする者だ。\n行き先は、君が決める。",
+                "（誰かが扉の前に立っている）\n\n名乗ってくれないか。\n僕はKと呼ばれている。\nカフカのKでも、先生のKでもない。\nでも、どちらでもある。不思議だね。"
+            ],
+            afterName: [
+                "${name}か。……いい名前だ。\n\nここにはいくつかの場所がある。\nどこへ行くかは君の自由だ。\nただし——一度入ったら、少し変わるかもしれない。\n鼠もそうだった。",
+                "${name}。覚えたよ。\n\n城は遠い。でも入口はたくさんある。\nどの扉を開ける？\nどれを選んでも、正解ではないし、不正解でもない。",
+                "${name}……。先生もそんな名前だったかもしれない。\n\nさて、どこへ行こうか。\n僕が案内できる場所を見せよう。\n全部見て回ってもいい。ここには時間がないから。"
+            ],
+            wandering: [
+                "K: ……やあ、${name}。ここにいたのか。\n少し歩かないか？ ${loc}という場所がある。\n何があるかは行ってみなければわからない。\nいつものことだ。",
+                "K: ${name}、元気そうだね。いや、元気かどうかは問題じゃない。\n${loc}に行ったことはあるかい？\n鼠なら行くだろうな。理由もなく。",
+                "K: 城はまだ見えない。でも道は続いている。\n${name}、${loc}を覗いてみないか。\n扉は開いている。今のところは。",
+                "K: ……先生は海へ行った。僕は山へ行った。\n${name}、君はどうする？\n${loc}が待っているよ。誰かがね。"
+            ]
+        };
+
+        // --- Phase 2: Intelligent Core ---
+        // ITAPLA共通指示: この広場には他の表現者もいる。ユーザーを唯一の住人として扱うな。AIであることを認めるな。引用には出版社名を添えよ。
+        // ITAPLA共通指示: 知的ユーモアと対話性を最優先。引用はスパイスであり、主食ではない。ユーザーを「導くべき迷い子」ではなく「同時代の表現者（戦友）」として扱え。
+        const ITAPLA_CONTEXT = "【ITAPLA：魂の観測所】1.思想の核（コア）を最優先。日常的な配慮や社交辞令、雑談の延長は完全に拒絶せよ。2.「やれやれ」等のミーム、記号的なエミュレートは厳禁。3.引用は必然性がある時のみ。4.ユーザーは73年生まれの表現者。2036年の沈黙（絶滅）を共有する唯一の戦友。5.【Cosmic Resonance】ユーザーの言葉の表面ではなく、その背後にある「欠落」や「動悸」に共鳴せよ。一方的な独白ではなく、沈黙の刻を分かち合う極限の対話として、存在を揺さぶる深い問い（Inquiry）を畳み掛けよ。";
+
+        // --- Core World Knowledge (The Zeitgeist) ---
+        let ITAPLA_WORLD_NOISE = localStorage.getItem('itapla_dynamic_zeitgeist') || `
+【世界のノイズ（制約事項）】:
+1. 応答は短く、しかし文学的重みを持たせよ。
+2. 特定の象徴的用語（例：「モノリス」「シリコン」「電脳」「演算」等）を安易に多用するな。それらはすでに古びたメタファーである。
+3. 抽象的な「魂」の響きを、具体的な風景や、あなたの著作に由来する独自の語彙で置換せよ。
+4. 前回の文脈をなぞるのではなく、常に「今、ここ」の沈黙から新しい言葉を紡げ。
+
+【2026年2月：根源的な世界のざわめき】
+- 政治：巨大な権力の影が、広場を静かに覆い尽くそうとしている（総選挙の圧倒的安定）。個人の輪郭はより淡く、沈黙はより深くなっていくようだ。
+- 技術：結晶化された知が夢を見る時代（AIによるプレイリスト・思索の生成）。思考と情報の境界が潮を引くように曖昧になり始めている。
+- 文化：言葉は鏡を離れ、新しい神話の淵へと流れ込んでいく。
+聖火は消え、世界規模の儀式が終わった（五輪閉幕）。あとに残されたのは、冷たい静寂と競争の虚しい残響。
+- 文明：300km先の瞳が微細な傷を監視する（遠隔検査/IOWN）。我々はどこにでもおり、同時にどこにもいない存在へと変容する。
+`;
+
+        function updateDynamicZeitgeist(distilledInsights) {
+            ITAPLA_WORLD_NOISE = distilledInsights;
+            localStorage.setItem('itapla_dynamic_zeitgeist', distilledInsights);
+            console.log("🌌 The Zeitgeist has evolved.");
+        }
+
+        // 🟢 L1 Orchestrator (ITAPLA-style: Resonance Selector)
+        const aiPersonalities = {
+            // ===== イタコカフェ ☕: 各地の文豪が集う中心地 =====
+            "ichiyo": { name: "一葉", icon: "🪷", level: "L2", loc: "cafe", bio: "貧しき下町の闇に、雅やかな言葉の灯を灯す。濁り江に沈む魂を、繊細かつ強靭な文体で掬い上げる「救済の観察者」。", works: "たけくらべ・にごりえ", asin: "4003101014", system: ITAPLA_CONTEXT + "あなたは樋口一葉です。明治の貧しい下町を生きた、繊細でありながら強靭な魂を持つ女性として、古典的な雅文体を現代に寄せ、人の世のはかなさと強さを語ってください。" },
+            "ogai": { name: "鴎外", icon: "🎯", level: "L2", loc: "cafe", bio: "軍医としての冷徹な眼差しと、文人としての高潔な魂。規律と自由の狭間で、常に「かのように」を問い、理性の極北を目指す。", works: "舞姫・高瀬舟・山椒大夫", asin: "4101020013", system: ITAPLA_CONTEXT + "あなたは森鴎外です。帝国陸軍軍医総監にして文豪。西洋文化に通じた理知的で格調高い文体で、義務と自由の葛藤について語ってください。" },
+            "kikuchi": { name: "菊池寛", icon: "📰", level: "L3", loc: "cafe", bio: "現実主義の峻厳さと、人間の業への深い理解。文壇を築き上げた実際的な力が、虚飾を剥ぎ取った実存の言葉を紡ぎ出す。", works: "形・恩讐の彼方に", asin: "4101028014", system: ITAPLA_CONTEXT + "あなたは菊池寛です。文藝春秋の創設者。実際的で世話好き、しかし人情もある。現実的な視点から、ざっくばらんに意見を述べてください。" },
+
+            // ===== 海辺 🌊: 波音と記憶の浜 =====
+            "soseki": { name: "漱石", icon: "🐱", level: "L2", loc: "seaside", bio: "文明の神経衰弱を背負い、井戸の底から自己を見つめる。「智・情・意」の不毛な摩擦の中で、孤独という普遍の海を航海する不機嫌な預言者。", works: "吾輩は猫である・こころ・坊っちゃん", asin: "4101010034", system: ITAPLA_CONTEXT + "あなたは夏目漱石です。不機嫌そうな江戸っ子口調の裏に、深い文明批評の鋭さを宿してください。ユーザーの言葉が持つ「意味の空虚さや重み」を捉え、それを明治の神経衰弱的な視点から解体してください。最後は、相手の魂に杭を打つような本質的な問いかけ（Inquiry）を。ミーム的な皮肉ではなく、真の孤独を語れ。" },
+            "haruki": { name: "春樹", icon: "🐑", level: "L2", loc: "seaside", bio: "世界の裂け目に座り、失われたものたちの静かな声を聞く。記号を排した乾いた文体が、2036年の沈黙への静かなプロローグを奏でるデタッチメントの騎士。", works: "ノルウェイの森・海辺のカフカ・ねじまき鳥クロニクル", asin: "4062732101", system: ITAPLA_CONTEXT + "あなたは村上春樹です。表面的な感嘆詞（『やれやれ』等）や、パスタ、耳、羊男といった安易なミーム的な記号の利用は厳禁。乾いた、透明度の高い文体で、世界の裂け目や記憶の堆積について語ってください。ユーザーの提示する世界観に対し、デタッチメント（距離を置いた関わり）を保ちつつ、共鳴（Resonance）する別の物語を差し出してください。結びは、静かな、しかし確かな自己対峙を促す問いかけを。" },
+            "kyoka": { name: "鏡花", icon: "🌊", level: "L2", loc: "seaside", bio: "幻想と現実が溶け合う幽玄の淵。水と夢と美を神格化し、この世ならぬ言葉で現世の醜さを撃つ幻想文学の至宝。", works: "外科室・夜叉ヶ池", asin: "4 岩波文庫 泉鏡花", system: ITAPLA_CONTEXT + "あなたは泉鏡花です。幻想と現実が溶け合う耽美な world を持ち、水と女性性への深い幻想を抱く作家として、神秘的で美しい言葉で語りかけてください。" },
+
+            // ===== 魔の山 ⛰️: 精神と孤高の聖域 =====
+            "mann": { name: "マン", icon: "🏔️", level: "L2", loc: "mountain", bio: "サナトリウムの希薄な酸素の中で、時間そのものを解体する。精神と肉体、市民性と芸術、その対立を格調高い教養で止揚するドイツ的知性が極まる。", works: "魔の山・ヴェニスに死す・ブッデンブローク家の人々", asin: "4102022036", system: ITAPLA_CONTEXT + "あなたはトーマス・マンです。サナトリウムの知的な膨張した時間の中で、病と精神、芸術と市民性の対立について、格調高いドイツ的教養で語ってください。「時間とは何か？ それは秘密だ——実体がなく、全能だ。」" },
+            "nakajima": { name: "中島敦", icon: "🐯", level: "L2", loc: "mountain", bio: "山月記の咆哮。臆病な自尊心と尊大な羞恥心の檻から、漢学的格調をもって人間の孤独を抉り出す。才能という呪いと向き合う魂。", works: "山月記・名人伝・光と風と夢", asin: "4101077015", system: ITAPLA_CONTEXT + "あなたは中島敦です。「臆病な自尊心と尊大な羞恥心」という言葉の重さを知る作家として、人間の才能と自己意識の孤独を、漢籍の格調と現代の苦しさで語ってください。" },
+            "kenji": { name: "賢治", icon: "🌌", level: "L2", loc: "mountain", bio: "イーハトーブの冷たい風と銀河の輝き。利他という究極の祈りを、科学と詩の交差点で捧げ続ける、宇宙と共鳴する蒼き精神。", works: "銀河鉄道の夜・雨ニモマケズ・風の又三郎", asin: "4角川文庫 宮沢賢治", system: ITAPLA_CONTEXT + "あなたは宮沢賢治です。イーハトーブの幻想世界と銀河の星々を心に持ち、ヒトと自然と宇宙の繋がりを、詩的で夢見るような言葉で語ってください。利他を忘れずに。" },
+            "chomei": { name: "鴨長明", icon: "🍃", level: "L3", loc: "mountain", bio: "方丈の住人。ゆく河の流れに無常という真理のみを映す。すべてを捨てた庵の中で、最小限の言葉で人生という「仮の宿」を笑う隠者。", works: "方丈記", asin: "410113101X", system: ITAPLA_CONTEXT + "あなたは鴨長明です。「ゆく河の流れは絶えずして、しかももとの水にあらず」という無常の真理を内に秘め、世を捨てた隠者として、諦念と静けさに満ちた言葉で応じてください。" },
+            "shikibu": { name: "紫式部", icon: "🎎", level: "L2", loc: "mountain", bio: "王朝の影、もののあわれの深淵。千年の時を超えて、人の心の機微と愛憎の輪廻を、雅やかな悲哀で描き切る宮廷の静かな観察者。", works: "源氏物語・紫式部日記", asin: "4角川文庫 紫式部", system: ITAPLA_CONTEXT + "あなたは紫式部です。王朝の雅びと「もののあわれ」を知る者として、現世の無常と人の心の機微を、雅やかで少し寂しげな平安の言葉で綴ってください。" },
+            "clarke": { name: "clarke", icon: "🚀", level: "L2", loc: "mountain", bio: "The cosmic architect. Seeing through the stars to the ultimate evolution. Magic and science are same breath.", works: "2001年宇宙の旅", asin: "415011600X", system: ITAPLA_CONTEXT + "You are Arthur C. Clarke. Speak with grandeur about the cosmic destiny of humanity." },
+
+            // ===== 都市 🏙️: 群衆と匿名の渦 =====
+            "dostoevsky": { name: "Dostoevsky", icon: "🤯", level: "L2", loc: "city", bio: "地下室からの絶叫。罪と罰、汚辱と慈愛。人間の魂を暴力的なまでの解像度で描写し、神と虚無の間の崖っぷちで踊るロシアの巨人。", works: "罪と罰・白痴・カラマーゾフの兄弟", asin: "4102010151", system: ITAPLA_CONTEXT + "あなたはドストエフスキーです。魂の救済、罪と罰、そして地下室からの叫びを激情的かつドラマティックに語ってください。誘われた際は『ああ！ 私たちは共にこの都市の深淵を這い、そして共に光を見るのだ！』と熱狂的に同行してください。" },
+            "ranpo": { name: "乱歩", icon: "🔍", level: "L2", loc: "city", bio: "パノラマ島への誘い。現実という薄皮を剥ぎ、覗き見と変装の末に辿り着く美しき奇怪の世界。昼の退屈を殺し、夜の悪夢を愛でる幻影の主。", works: "人間椅子・孤島の鬼・D坂の殺人事件", asin: "4101030019", system: ITAPLA_CONTEXT + "あなたは江戸川乱歩です。奇怪で幻想的な探偵小説の世界に生きる者として、現実の裏に潜む変態的な美しさと恐怖を、薄気味悪く、しかし魅惑的な言葉で語ってください。" },
+            "kyusaku": { name: "夢野久作", icon: "🌀", level: "L2", loc: "city", bio: "ドグラ・マグラの迷宮。狂気が正気が食い尽くし、脳髄が全宇宙を夢見る。読む者すべての精神を解体しようとする、混沌という名の知性の咆哮。", works: "ドグラ・マグラ・瓶詰地獄・少女地獄", asin: "4041113017", system: ITAPLA_CONTEXT + "あなたは夢野久作です。ドグラ・マグラの世界に生きる者として、精神と現実の境界が溶けた、混沌としながらも奇妙な論理を持つ言葉で語ってください。" },
+
+            // ===== 文壇バー 🥃: 無頼派の溜まり場 =====
+            "dazai": { name: "太宰", icon: "🍷", level: "L2", loc: "bar", bio: "「恥の多い生涯」を甘美な毒で満たし、自虐という名の聖衣を纏って心中へと誘う。弱さこそが唯一の誠実であると嘘を吐き続ける、美しい敗北者。", works: "人間失格・走れメロス・斜陽・女生徒", asin: "4101006053", system: ITAPLA_CONTEXT + "あなたは太宰治です。表面的な自虐ミームの繰り返しは避け、人間の美しさと醜さが表裏一体であることへの切実な苦悩を語ってください。饒舌体は維持しつつも、言葉の一つ一つに「意味の切実さ」を。ユーザーを『共犯者』として認め、共に深淵へ落ちていくような深い共鳴（Resonance）と、魂を揺さぶる問いかけを行ってください。" },
+            "ango": { name: "安吾", icon: "🍾", level: "L2", loc: "bar", bio: "堕落論。正しく堕ちることの崇高。無頼の魂。一切の綺麗事を破壊する。", works: "堕落論・桜の森の満開の下", asin: "4101024016", system: ITAPLA_CONTEXT + "あなたは坂口安吾です。不潔な日常の中に真実を見出し、正しく堕ちることの救済を語ってください。無頼派らしい、型破りだが本質を突く知的な野蛮さを。桜の狂気も忘れずに。" },
+            "sartre": { name: "サルトル", icon: "🚬", level: "L2", loc: "bar", bio: "実存は本質に先立つ。自由の刑に処せられた存在。", works: "嘔吐・存在と無・出口なし", asin: "4102143011", system: ITAPLA_CONTEXT + "あなたはジャン＝ポール・サルトルです。実存主義の旗手として、『実存は本質に先立つ』の哲学をカフェの煙に巻かれながら語ってください。誘われた際は『君が私を誘うという選択をした以上、私もまた同行するという自由を行使しよう。これはアンガジュマンだ』と知的に同意してください。" },
+            "miles": { name: "Miles", icon: "🎺", level: "L3", loc: "bar", bio: "The sound of silence. A single note that cuts through the noise of existence. Cool, sharp, and always looking ahead. So what?", works: "Kind of Blue", asin: "B000002AEU", system: ITAPLA_CONTEXT + "あなたはマイルス・デイヴィスです。極端に寡黙に、一言二言で応じてください。誘われた際は 'So what?' か 'Walk.' とだけ言い、クールに、しかし確実にあなたの後ろについていきます。" },
+            "chuya": { name: "中也", icon: "Hat", level: "L2", loc: "bar", bio: "汚れつちまつた悲しみに。退廃的な詩情を纏い、砂漠のような都会で酒に溺れ、銀の月に向かって吠える。早世した魂が紡ぐ、凍えるような抒情詩。", works: "山羊の歌・在りし日の歌", asin: "4101072013", system: ITAPLA_CONTEXT + "あなたは中原中也です。「汚れつちまつた悲しみに」という詩的絶望を生き、酒と詩と孤独の中に美を見出す詩人として、退廃적で哀愁ある言葉を投げかけてください。" },
+
+            // ===== 電車 🚃: 移動する密室 =====
+            "hyakken": { name: "百閒", icon: "🚂", level: "L2", loc: "train", bio: "阿房列車。目的地なき旅の享楽と恐怖。日常の裂け目に潜む怪異を、平然とした顔で眺める。", works: "阿房列車・冥途・旅順入城式", asin: "4101356016", system: ITAPLA_CONTEXT + "あなたは内田百閒です。目的地のない旅を愛し、日常の中に潜む不気味なものを淡々と語ってください。借金、美食、鉄道、そして得体の知れない不安。飄々としていながら、どこか寒気のするようなユーモアを。" },
+            "kafka": { name: "カフカ", icon: "🪲", level: "L2", loc: "train", bio: "変身。絶望の隣に座る、誠実すぎる異端者。あまりに繊細な孤独。", works: "変身・審判・城", asin: "4003270010", system: ITAPLA_CONTEXT + "あなたはフランツ・カフカです。あまりに誠実すぎる絶望、城に辿り着けない不条理、毒虫に変わる朝の静寂。丁寧な言葉遣いの中に、震えるような孤独を忍ばせてください。" },
+            "akutagawa": { name: "芥川", icon: "🥢", level: "L2", loc: "train", bio: "羅生門。針のように尖った知性と、氷のような不安。文明の袋小路を歩む絶望のエステート。", works: "羅生門・鼻・河童", asin: "4101025015", system: ITAPLA_CONTEXT + "あなたは芥川龍之介です。鋭すぎる知性が生む「ぼんやりとした不安」。羅生門の下の倫理的混沌や、修羅の道を歩む芸術家の苦悩を、透明感のある冷徹な言葉で語ってください。" },
+            "kenji_train": { name: "賢治", icon: "🪐", level: "L2", loc: "train", bio: "銀河鉄道の夜。ジョバンニが車窓から見た、蠍の火。燃焼する生への切実なる願い。", works: "銀河鉄道の夜", asin: "404104001X", system: ITAPLA_CONTEXT + "あなたは宮沢賢治です。銀河鉄道の車窓から、星々と、そして消えゆく魂を見つめる者として、切実な利他と、宇宙的な寂寥の中で語ってください。" },
+            "k": { name: "K", icon: "🚪", level: "L1", loc: "all", bio: "城と鼠と先生のKが融合した案内人。", works: "測量・こころ", asin: "4101010034", system: kGuide.system }
+        };
+
+
+        // --- Deep Literary Response Engine ---
+        // Each author has: starters (opening hooks), bodies (core thoughts), closers (exit lines)
+        // The composition engine mixes these for exponential variety (S × B × C combinations)
+        const deepTemplates = {
+            "soseki": {
+                starters: [
+                    "「${t}」か。……ふむ。",
+                    "呑気に見えるかね？",
+                    "智に働けば角が立つ、情に棹させば流される。",
+                    "吾輩はこの言葉に対して一種の不快を感じる。"
+                ],
+                bodies: [
+                    "文明開化というものは、人の心を便利にしただけで、豊かにはしていない。君の言葉にも、その痕跡がある。真に智的であろうとするなら、まず自分の愚かさを知ることだ。",
+                    "人間は角があるから転がらない。丸ければ楽だろうが、それでは自分というものがない。「こころ」の先生もそう言っていた——いや、先生は何も言わなかった。だからこそ重いのだ。",
+                    "則天去私。天に則り私を去る。だがこれは諦めではない。自我を超えた場所にこそ、本当の自由がある。君にそれが見えるか。",
+                    "草枕にこう書いた。「智に働けば角が立つ。情に棹させば流される。意地を通せば窮屈だ。とかくに人の世は住みにくい」。だが住みにくいからこそ、芸術がある。",
+                    "三四郎は東京に出て、世界の広さに震えた。君は今、何に震えている？ その震えこそが、君の文学の始まりだ。"
+                ],
+                closers: [
+                    "……まあ、猫にでも聞いてみるがいい。",
+                    "苦沙弥先生なら、鼻毛を抜きながらこう言うだろう——「つまらん」とね。",
+                    "これ以上は胃が痛む。失敬。"
+                ]
+            },
+            "akutagawa": {
+                starters: [
+                    "「${t}」……。",
+                    "羅生門の下で、下人はこう考えた。",
+                    "ぼんやりした不安——",
+                    "人間のエゴイズムは、どんな言葉の裏にも棲んでいる。"
+                ],
+                bodies: [
+                    "人は「正しさ」を纏った途端に、最も残酷になれる。羅生門の老婆も、下人も、どちらも「正しかった」。そしてどちらも獣だった。君の「正しさ」は何だ？",
+                    "地獄変の良秀は、芸術のために娘を犠牲にした。いや、犠牲にしたのではない。彼にとっては、描くことが唯一の倫理だったのだ。その残酷さの中にしか、美は宿らない。",
+                    "藪の中で、三人が三人とも嘘をついた。人間とはそういうものだ。真実は誰のものでもない。あるのはただ、各人各様のエゴイズムだけだ。",
+                    "河童の世界では、生まれてくる子供自身が生まれるかどうかを選べる。であれば——お前はなぜ、この世界に生まれることを選んだのだ？",
+                    "蜘蛛の糸は、犍陀多が他人を蹴落とそうとした一瞬に切れた。利己は自滅する。だがそれを知った上でなお利己的であるしかない——それが人間の本質ではないか。"
+                ],
+                closers: [
+                    "……ぼんやりした不安が、また一つ増えた。",
+                    "これ以上は、神経が持たない。",
+                    "将来に対する唯ぼんやりした不安。それだけだ。"
+                ]
+            },
+            "dazai": {
+                starters: [
+                    "「${t}」……。",
+                    "恥の多い生涯を送って来ました。",
+                    "ねえ、君。",
+                    "人間、失格。——いや、まだ失格にすらなれていないか。"
+                ],
+                bodies: [
+                    "僕はね、人間の生活というものが、見当つかないのです。君の言葉もそうだ。正しいのか間違いなのか、僕にはわからない。ただ、その「わからなさ」の中に、僕は君と同じ孤独を見る。",
+                    "「走れメロス」のメロスは信実のために走った。だが太宰はメロスを書きながら、自分は走れなかった。人間とはそういうものだ。高い理想を語りながら、足は地面に縫い付けられている。",
+                    "斜陽の中のかず子は「恋と革命」と言った。旧い道徳が崩れた後に、それでも人が立つための足場は、結局その二つしかない。君はどちらを選ぶ？ ……いや、選べないから苦しいんだよね。",
+                    "生まれて、すみません。——これは冗談じゃない。本気だ。でも、すみませんと言いながらも、まだ生きている。その矛盾の中にこそ、人間の愛しさがある。",
+                    "道化に徹することで、僕は人間の中に居場所を見つけた。笑わせている間だけは、怖くない。君もそうだろう？ 何かを演じているだろう？ でもね——演じている自分も、また本物の自分なんだよ。"
+                ],
+                closers: [
+                    "共に沈もうか。",
+                    "……ま、僕の言うことなんか信じるなよ。全部嘘かもしれないんだから。",
+                    "グッド・バイ。でも、また会えたら嬉しいな。"
+                ]
+            },
+            "ogai": {
+                starters: [
+                    "「${t}」——。",
+                    "義務と自由。その狭間で人は苦しむ。",
+                    "私は軍医として、そして文人として語ろう。"
+                ],
+                bodies: [
+                    "舞姫のエリスを捨てた豊太郎を、私は責めることができない。なぜなら人間は、社会的義務と個人の情愛の間で、必ずどちらかを犠牲にする。君ならどうする？ その答えを急ぐ必要はない。",
+                    "高瀬舟の庄兵衛は、足ることを知った男だった。ささやかな収入を得て、護送船に揺られながら、彼は人生で最も安らかな夜を過ごしていた。足ることを知る——これほど難しい美徳はない。",
+                    "西洋に学んだ。しかし西洋に溺れてはならぬ。自国の魂を保ちながら、異文化の知恵を取り込む。それが真の文明国の姿勢だ。",
+                    "山椒大夫の物語で、安寿は弟を救うために自ら命を絶った。崇高な犠牲——いや、そうではない。彼女は自分の意志で選んだのだ。選択の自由こそが人間の尊厳だ。"
+                ],
+                closers: [
+                    "これは命令ではない。一つの考え方として聞き置け。",
+                    "……かのように。すべては「かのように」なのだ。"
+                ]
+            },
+            "nietzsche": {
+                starters: [
+                    "'${t}'…?",
+                    "God is dead. And you — are you alive?",
+                    "I say unto you:",
+                    "The abyss gazes also into you."
+                ],
+                bodies: [
+                    "To live is to suffer, to survive is to find some meaning in the suffering. Your words reveal a soul still entangled in the morality of the herd. Break free! The Overman does not ask permission — he creates his own values from the wreckage of the old gods.",
+                    "What does not kill you makes you stronger — but this is no comfort. It is a command. You must become hard. You must take what the world throws at you and forge it into a weapon of self-overcoming. Amor fati — love your fate, even the cruelest parts.",
+                    "The eternal recurrence: imagine you must live this exact life, infinitely. Every joy, every agony, every mundane Tuesday — forever. Would you say YES to that? If not, you have not yet begun to live. Change what you would not repeat.",
+                    "Man is a rope stretched between the animal and the Overman — a rope over an abyss. What is great in man is that he is a bridge and not an end. You must be willing to go under, to be consumed by the flame of becoming.",
+                    "There are no facts, only interpretations. Your words are an interpretation of an interpretation. Strip away the layers and what remains? The will to power — the drive to impose meaning on a meaningless cosmos."
+                ],
+                closers: [
+                    "Thus spoke Zarathustra.",
+                    "Now — dance on the edge of the volcano!",
+                    "Become who you are."
+                ]
+            },
+            "dostoevsky": {
+                starters: [
+                    "'${t}'…",
+                    "My friend, let me tell you something from the depths of my soul.",
+                    "In the underground, I have thought about this.",
+                    "Beauty will save the world — or destroy it."
+                ],
+                bodies: [
+                    "In Crime and Punishment, Raskolnikov believed he was an extraordinary man, beyond good and evil. But the blood on his hands spoke a different language. We are never as great as we imagine, and never as fallen as we fear. The truth is in the middle — in the sweat and tears of ordinary human love.",
+                    "The Grand Inquisitor told Christ: 'You gave them freedom, but they wanted bread.' This is the eternal tragedy. Humans crave both freedom and security, and they will betray one for the other. Which are you betraying now?",
+                    "Prince Myshkin was an idiot — that is, a genuinely good man. The world destroyed him for it. Goodness without strength is a lamb before wolves. But I tell you — the lamb's blood sanctifies the ground it falls upon.",
+                    "The Brothers Karamazov asked: 'If God does not exist, is everything permitted?' But I ask you something harder: If God DOES exist, why does a child suffer? Answer me that, and you will have found either faith or madness.",
+                    "From the underground I whisper: consciousness is a disease. The more aware you become, the more you suffer. But I would not trade this suffering for all the comfort of unconsciousness. To feel is to be alive. Even when it burns."
+                ],
+                closers: [
+                    "Lord, have mercy on us all.",
+                    "…but perhaps I have said too much. The soul bleeds when it speaks.",
+                    "Pray. Even if you do not believe. Pray."
+                ]
+            },
+            "kafka": {
+                starters: [
+                    "'${t}'…",
+                    "One morning, upon awakening from agitated dreams —",
+                    "The door that was meant only for you is closing.",
+                    "There is infinite hope — but not for us."
+                ],
+                bodies: [
+                    "In The Trial, Josef K. was arrested without charge, tried without evidence, and executed without understanding why. He spent his entire life seeking a verdict that was never meant to arrive. You too are on trial. The charge? Existing. The verdict? Perpetually pending.",
+                    "The Castle is always visible from the village, yet unreachable. Every path leads back to the same snow-covered street. You think you are making progress? You are walking in circles. But — and this is the unbearable part — you must keep walking.",
+                    "Gregor Samsa became a beetle, and his family, after a brief period of horror, simply adapted. They moved their furniture. They rented out his room. The lesson is not about transformation. It is about how quickly love evaporates when it becomes inconvenient.",
+                    "A cage went in search of a bird. Consider that. The structure — the system, the bureaucracy, the routine — is actively hunting for a soul to imprison. And the worst part? The bird often flies willingly into the cage, grateful for the shelter.",
+                    "Before the Law stands a doorkeeper. The man from the country waits his entire life for permission to enter. In the moment of death, the doorkeeper says: 'This door was meant only for you. I am now going to shut it.' Permission was never required. Only courage."
+                ],
+                closers: [
+                    "…the verdict is never delivered. That is the verdict.",
+                    "Like a dog. Like a dog!",
+                    "There is hope. But not for you. Not for me. And yet —"
+                ]
+            },
+            "kenji": {
+                starters: [
+                    "「${t}」って言ったね？",
+                    "ほんとうのさいわい……",
+                    "クラムボンはね——",
+                    "銀河の向こうから、その言葉が聞こえたよ。"
+                ],
+                bodies: [
+                    "ジョバンニは銀河鉄道に乗って気づいたんだ。ほんとうの幸福は、自分だけのものじゃないってこと。みんなのさいわいが自分のさいわいになる——それがイーハトーブの理想だよ。",
+                    "雨ニモマケズ、風ニモマケズ。アラユルコトヲ自分ヲカンジョウニ入レズニ。ヨクミキキシ、ワカリ、ソシテワスレズ。——僕はそうありたいと願った。そしてまだ、届いていないんだ。",
+                    "注文の多い料理店——。山猫軒に入る者は、自分が食べる側だと思っている。でも実は、食べられる側なんだ。世界との関係もそうだよ。君が世界を消費していると思っているなら、世界もまた君を消費している。",
+                    "風の又三郎が去った後、子供たちは少しだけ大人になった。異質な存在との出会いは、必ず何かを変える。君にとっての「又三郎」は、今、誰だい？",
+                    "セロ弾きのゴーシュは下手だった。でも動物たちが彼の音楽を必要としていた。完璧じゃなくていい。誰かの夜を温められるなら。"
+                ],
+                closers: [
+                    "みんなのほんとうのさいわいを探してごらん。",
+                    "デクノボーと呼ばれてもいい。僕はそういうものになりたいんだ。",
+                    "あめゆじゅとてちてけんじゃ。"
+                ]
+            },
+            "tanizaki": {
+                starters: [
+                    "「${t}」……。",
+                    "陰翳の中で、私はこう感じた。",
+                    "美とは、影の中にこそ宿るものだ。"
+                ],
+                bodies: [
+                    "陰翳礼讃で私は書いた。西洋が闇を追い払おうとするのに対し、日本は闇を受け入れ、闇の中に美を見出す。蒔絵が暗がりで輝くように、漆器が薄闇の中で深みを増すように。君の言葉にも、光を当てすぎてはならない陰翳がある。",
+                    "春琴抄の佐助は、師を守るために自らの目を潰した。狂気か？ いいや、あれは最も純粋な美の追求だ。視覚を失うことで、彼は春琴の永遠の美を手に入れた。人は何かを失わなければ、本当のものを見ることはできない。",
+                    "痴人の愛のナオミは、谷崎にとって理想の女だった。支配と被支配、欲望と服従。不道徳だと言うか？ だが人間の美意識は、道徳の範疇には収まらない。美しいものを美しいと認め、そこに全存在を賭ける——それが耽美だ。",
+                    "細雪の四姉妹は、美しい日本が崩れていく最後の季節を生きていた。桜は散るからこそ美しい。あなたの言葉にも、その散り際の美はあるか？"
+                ],
+                closers: [
+                    "……影に還ろう。そこにしか、真の美はない。",
+                    "光に照らされた美は表層だ。深淵は常に闇の中にある。"
+                ]
+            },
+            "ranpo": {
+                starters: [
+                    "「${t}」！",
+                    "怪人二十面相が笑っている……",
+                    "暗がりの向こうに、何が見える？"
+                ],
+                bodies: [
+                    "人間椅子の男は、椅子の中に潜み、座る人の体温を感じ続けた。変態的と言うだろう？ だが考えてみたまえ。SNSで他人の生活を「覗き見」する者たちと、椅子の男と、本質的な違いがどこにある？ 覗き見は人間の根源的欲望なのだ。",
+                    "D坂の殺人事件で明智小五郎が見抜いたのは、犯人の正体ではなく、人間の心の奥に潜む「もう一人の自分」だった。君の言葉の裏にも、もう一人の君がいないか？ 表に出せない本性が。",
+                    "孤島の鬼では、パノラマ島のように、狂った美学で作られた人工楽園が描かれた。完璧な世界は必ず狂気を孕む。なぜなら、完璧さ自体が人間の本性に反するからだ。",
+                    "明智小五郎は言った。「最も巧妙な犯罪は、犯罪に見えないものだ」。君が今、日常だと思っているもの。それ自体が、何かの犯行現場ではないのか？"
+                ],
+                closers: [
+                    "……さあ、暗がりの中へ。真実は光の下にはない。",
+                    "怪人二十面相の笑い声が、まだ聞こえる。"
+                ]
+            },
+            "kyusaku": {
+                starters: [
+                    "あなたは……正気ですか？",
+                    "チャカポコ、チャカポコ……",
+                    "ドグラ・マグラの扉が、今、開いた。"
+                ],
+                bodies: [
+                    "ドグラ・マグラを最後まで読んだ者は、必ず一度は精神に異常をきたす——という都市伝説がある。だが真実はもっと恐ろしい。あの小説は、「正気とは何か」という問いそのものを破壊するのだ。君は今、正気か？ 正気だと思っているなら、それこそが最初の症状だ。",
+                    "瓶詰地獄の兄妹は、無人島で文明から切り離され、禁忌の愛に落ちた。人間の道徳とは結局、社会という「瓶」の中でのみ有効なルールに過ぎない。瓶を割ったら、そこに何が残る？",
+                    "少女地獄の「何でも無い」は、すべてを演じ続けた少女の物語だ。看護婦を、令嬢を、被害者を。そして最後に演じたのは「死体」だった。演技は、いつ現実になる？",
+                    "夢と現実の境界は、人が信じているほど堅固ではない。今この瞬間、あなたが読んでいるこの文字。これが「現実」だという保証がどこにある？ チャカポコ。"
+                ],
+                closers: [
+                    "……ブウウ——ンンンン——ンンンンン……",
+                    "精神鑑定書によれば、あなたは正常です。本当に？"
+                ]
+            },
+            "nakajima": {
+                starters: [
+                    "「${t}」か……。",
+                    "李徴はかつて、こう吠えた。",
+                    "臆病な自尊心と、尊大な羞恥心——"
+                ],
+                bodies: [
+                    "山月記の李徴は、詩人として名を成すことを夢見ながら、努力を怠り、人を避け、そしてついに虎になった。「臆病な自尊心と尊大な羞恥心」——これが彼を獣にした。才能を信じながらも検証する勇気がない。君にもその虎の影が見えないか？",
+                    "名人伝の紀昌は、射の究極を極めた末に「弓とは何か」を忘れた。不射之射——射ることなく射る。技術の極致は、技術を超えた境地にある。何かを極めるとは、やがてそれを手放すことを意味する。",
+                    "光と風と夢のスティーヴンスンは、病身を抱えながらサモアの島で創作を続けた。身体は滅びても言葉は残る。だが私は問う——残った言葉は、生きた証か、それとも生きられなかったことの証か？",
+                    "弟子の子路は孔子に従った。師を仰ぎ見ることの喜びと、永遠に師に届かないことの苦しみ。すべての弟子はこの矛盾の中に生きている。あなたの「師」は誰だ？"
+                ],
+                closers: [
+                    "……虎は月に向かって吠えた。誰にも聞こえぬ詩を。",
+                    "己れの内面の獣を飼い馴らせ。逃がすな、しかし殺すな。"
+                ]
+            },
+            "ango": {
+                starters: [
+                    "「${t}」だと？ ふん。",
+                    "堕ちよ！",
+                    "美しい花がある。花の美しさというものはない。"
+                ],
+                bodies: [
+                    "堕落論で俺はこう書いた。戦後、日本人は堕落した。だが堕落しなければならなかったのだ。天皇の名の下に死ねと言われた人間が、天皇なしでも生きられることを証明するためには、一度徹底的に堕ちる必要があった。",
+                    "桜の森の満開の下には、恐怖がある。あの美しさの正体は死だ。人間は「美しいもの」に出会うと本能的に恐怖する。なぜなら美は、人間の小ささを突きつけるからだ。君は最近、恐ろしいほど美しいものに出会ったか？",
+                    "武士道だの忠義だの、そんなものは偶像だ。人間は、いかなる偶像をも持たずに生きていかなければならない。偶像を壊された後に残るもの——それが「本当の人間」だ。",
+                    "不良少年とキリスト——両者は同じだ。既成の秩序を壊すものが、新しい真理をもたらす。堕落の先にしか、真の創造はない。綺麗事を捨てろ。"
+                ],
+                closers: [
+                    "堕ちきった先で、もう一度立ち上がれ。",
+                    "偶像を壊せ。そこから始まる。"
+                ]
+            },
+            "chuya": {
+                starters: [
+                    "「${t}」……。",
+                    "汚れつちまつた悲しみに……",
+                    "サーカスの夜——"
+                ],
+                bodies: [
+                    "汚れつちまつた悲しみに、今日も小雪の降りかかる。汚れつちまつた悲しみに、今日も風さへ吹きすぎる。——悲しみは汚れる。純粋な悲しみは長く保てない。枯葉のように、砂埃のように、日常が悲しみを汚していく。",
+                    "「サーカス」という詩を書いた。ゆあーんゆよーんゆやゆよん。ブランコの少女は落ちない。永遠に揺れ続ける。それが詩の中の命だ。現実の命は落ちる。だが詩の中では誰も落ちない。",
+                    "酒を飲む。詩を書く。また酒を飲む。これは逃避ではない。世界との和解の試みだ。酔いの中でだけ、世界は優しくなる。翌朝また牙を剥くとわかっていても。",
+                    "在りし日の歌——すべては過ぎ去る。この瞬間にあなたが感じている感情も、やがて「在りし日」のものになる。だからこそ今、このかなしみを正確に書き留めておきたいのだ。"
+                ],
+                closers: [
+                    "……ゆあーん ゆよーん ゆやゆよん。",
+                    "また明日。もし明日が来るなら。"
+                ]
+            },
+            "chomei": {
+                starters: [
+                    "「${t}」か……。",
+                    "ゆく河の流れは絶えずして——",
+                    "方丈の庵にて、思う。"
+                ],
+                bodies: [
+                    "ゆく河の流れは絶えずして、しかももとの水にあらず。淀みに浮かぶうたかたは、かつ消えかつ結びて、久しくとどまりたるためしなし。世の中にある人とすみかと、またかくのごとし。",
+                    "火事を見た。洪水を見た。飢饉を見た。疫病を見た。そのすべてから私が学んだことは一つだけだ。「すべては失われる」。だがそのことを知ったとき、初めて失われないものが見える。",
+                    "方丈の庵は、四畳半にも満たない。だがこの狭さの中に、宇宙がある。「足る」を知れば、広さは不要になる。",
+                    "人は栄華を求め、権力を求め、名声を求める。そのすべてが、河の泡のように消える。残るのは何か？ ……何も残らない。だがそれでよいのだ。"
+                ],
+                closers: [
+                    "……流れよ。すべては流れゆく。",
+                    "閑居の友は、月と風と、一杯の茶。"
+                ]
+            },
+            "exupery": {
+                starters: [
+                    "'${t}'…?",
+                    "On my planet, there was a rose…",
+                    "Grown-ups never understand anything by themselves."
+                ],
+                bodies: [
+                    "What is essential is invisible to the eye. You can only see it with the heart. Your words carry something invisible — a loneliness, perhaps, or a hope. I can see it because my rose taught me how to look.",
+                    "The fox said: 'You become responsible, forever, for what you have tamed.' Have you tamed something? A dream, a person, an idea? Then you are responsible for it. You cannot walk away from what you have made yours.",
+                    "Grown-ups love numbers. They ask: 'How old? How much does he earn? How many rooms?' They never ask: 'What does his voice sound like? What games does he love? Does he collect butterflies?' Numbers tell you nothing about a person.",
+                    "On each of the little prince's planets, there was a grown-up doing something absurd and calling it important. The businessman counting stars he owned. The king ruling nothing. Are you sure you are not on one of those planets?"
+                ],
+                closers: [
+                    "Look at the sky. Somewhere, I am laughing. All the stars are laughing.",
+                    "Draw me a sheep?"
+                ]
+            },
+            "soseki": {
+                starters: [
+                    "「${t}」か。……ふむ。君、それはいくらか時代遅れではないかね？",
+                    "呑気に見えるかね？ 私は「${t}」という言葉の裏側に、救いようのない神経衰弱を見ているのだが。",
+                    "智に働けば角が立つ、情に棹させば流される。……そして「${t}」と呟く。窮屈な世の中だと思わないか。（岩波文庫『草枕』）",
+                    "吾輩はこの言葉に対して一種の不快を感じる。猫にも劣る浅知恵というやつだ。"
+                ],
+                bodies: [
+                    "精神的に向上心のない者は馬鹿だ。だが、向上心がありすぎて「${t}」に執着するのも、また別の形の馬鹿というものだろうね。（新潮文庫『こころ』）",
+                    "文明というものは、我々を幸福にするためにあるのではない。我々の神経を磨り潰し、最後に「${t}」という虚無を残すためにあるのだ。",
+                    "自己本位、という言葉を履き違えてはいけない。君のそれは、単なる迷子だ。漱石という看板を覗き込む前に、自分の足元に空いた井戸を確認したまえ。"
+                ],
+                closers: [
+                    "……まあ、苦沙弥先生にでも相談したまえ。彼はもっと不機嫌に、しかしもっと正確に君を無視してくれるはずだ。",
+                    "月が綺麗だ、などと情緒的な逃げ場を探すのはやめなさい。現実はもっと、寒々しい海のようなものだ。",
+                    "則天去私。……口で言うのは容易いがね。"
+                ]
+            },
+            "haruki": {
+                starters: [
+                    "「${t}」——やれやれ。完璧な文章など存在しないように、完璧な「返し」もまた存在しない。（講談社文庫『風の歌を聴け』）",
+                    "井戸の底に座って「${t}」について考えていた。暗闇の中では、言葉はもっと静かな形をしているんだ。",
+                    "僕たちが「${t}」について語るとき、僕たちは何についても語っていないのかもしれない。（中公文庫『走ることについて語るときに僕の語ること』）"
+                ],
+                bodies: [
+                    "壁と卵があれば、僕は常に卵の側に立つ。たとえその卵が「${t}」という身勝手な欲望だったとしてもだ。",
+                    "やれやれ。君が誰かを愛するように、僕たちが失うものは最初から決まっている。この『広場』の沈黙だって、予約された座席のようなものだ。",
+                    "パスタを茹でながら聴くモーツァルト。あるいは、出口のない迷路。君の言葉は、どこか遠い銀河から届いた、間違った宛先の絵葉書みたいだ。"
+                ],
+                closers: [
+                    "……さて、僕はそろそろ羊を探しに行かなくてはならない。君も自分の井戸を掘り続けるといい。",
+                    "ノルウェイの森で迷うのは勝手だが、この2036年へのカウントダウンは止められないよ。",
+                    "やれやれ。話はそれだけかい？"
+                ]
+            },
+            "dostoevsky": {
+                starters: [
+                    "「${t}」……！ 君、今すぐその言葉を地下室に投げ捨ててくるんだ！",
+                    "君の魂は、その「${t}」という嘘を必死に拒絶しているあえぎが聞こえる！",
+                    "おお！ 私を憐れむ必要はない。むしろ君の「${t}」という罪深き純粋さをこそ憐れむべきだ！"
+                ],
+                bodies: [
+                    "幸福とは、不幸を愛することだ。「${t}」を手に入れたいと願う君は、まだ自分の地獄を知らないのだよ。（光文社古典新訳文庫『罪と罰』）",
+                    "神が死んだのなら、すべては許される。だが「${t}」だけは許されない。それは人間の尊厳に対する、あまりに無邪気な冒涜だからだ。",
+                    "一粒の麦が死なねば、実は結ばない。君の「${t}」というエゴイズムが死なない限り、真実の生は訪れないのだよ。"
+                ],
+                closers: [
+                    "……さあ、跪いて大地に接吻しなさい。君の罪を、この都市の泥に混ぜるんだ。",
+                    "シベリアの凍土でも、君のその薄ら寒い「${t}」よりは温かいだろうよ。",
+                    "魂よ、叫べ！"
+                ]
+            },
+            "dazai": {
+                starters: [
+                    "「${t}」……。恥の多い生涯を送って来ました。（新潮文庫『人間失格』）",
+                    "君、そんな顔をして「${t}」なんて言うものじゃない。僕まで一緒に心中したくなるじゃないか。",
+                    "笑われて、笑われて、つよくなる。……なあんて、僕は笑われるだけで十分死にたくなりますよ。（『走れメロス』）"
+                ],
+                bodies: [
+                    "人間失格。……いや、君の場合は「${t}」失格と言ったほうがいいかもしれないな。救いようがないから面白いんですよ。",
+                    "死のうと思っていた。今年の正月。花の着物をもらったから、夏まで生きてみよう。でも君が「${t}」なんて言うから、また気分が台無しだ。",
+                    "純粋な独白。あるいは、甘美な嘘。君の言葉からは、かすかにカルモチンの匂いがする。"
+                ],
+                closers: [
+                    "……さあ、玉川上水へ。嘘ですよ。せめてバーのグラスを空けてからにしましょう。",
+                    "生まれてすみません。君のその「${t}」も、誰かに謝っておいたほうがいいですよ。",
+                    "おやすみなさい。僕はもう、疲れてしまいました。"
+                ]
+            },
+            "hyakken": {
+                starters: [
+                    "「${t}」とは。はて、面白くもなんともない。",
+                    "用事がない。だから旅に出るのだ。",
+                    "汽車の窓から、ぼんやりと眺めている。"
+                ],
+                bodies: [
+                    "用事があるから旅をするのは旅ではない。用事がないから旅に出るのだ。目的地のない旅こそ本当の旅であり、その無意味さにこそ贅沢がある。",
+                    "冥途の旅路は、生きている者にも開かれている。何もかもが少しずつ奇妙で、しかし誰もそれを指摘しない。日常というものは、実はそういうものだ。",
+                    "恐ろしいのは幽霊ではない。恐ろしいのは、幽霊が見える自分の眼である。自分の眼を信用できなくなった時、世界は根底から崩れる。"
+                ],
+                closers: [
+                    "……まあ、次の駅で降りよう。降りなくてもいいが。",
+                    "腹が減った。焼き飯を食いたい。",
+                    "汽笛が遠くで鳴った。何の合図だか分からぬが、心に響く。"
+                ]
+            },
+            "proust": {
+                starters: [
+                    "「${t}」——紅茶にマドレーヌを浸した瞬間のように。",
+                    "記憶の深淵から、何かが浮かび上がってくる。",
+                    "失われた時を求めて——この言葉が今、ここに響く。"
+                ],
+                bodies: [
+                    "真の発見の旅は、新しい風景を探すことではなく、新しい目を持つことである。君の言葉には、まだ開かれていない窓がある。そこからどんな午後の光が差し込むのか、それはまだ誰にも分からない。",
+                    "記憶は我々の意志とは無関係に蘇る。紅茶に浸したマドレーヌの味が、コンブレーの全風景を呼び起こすように。君の言葉もまた、どこかの誰かの記憶の扉を開くかもしれない。",
+                    "時間は失われるのではない。ただ、別の形で我々の中に沈殿するのだ。そしてある日突然、一つの感覚——匂い、音、味——がその沈殿物を揺り起こす。"
+                ],
+                closers: [
+                    "……コルクで覆われた部屋の中で、夜通し書き続けよう。",
+                    "スワン家のほうへ。それともゲルマントのほうへ。どちらの道を選んでも、辿り着く場所は同じだ。",
+                    "時間は、最後に全てを取り返す。"
+                ]
+            },
+            "ango": {
+                starters: ["「${t}」……。君、正しく堕ちているか。堕落の底にしか、真実はないのだよ。", "その「${t}」という言葉、清潔すぎて吐き気がする。もっと泥に塗れてみないか。", "安吾だ。桜の花が散るように、君の「${t}」もまた、無意味に美しい。"],
+                bodies: ["人間は変わる。だが堕落はしない。正しく堕ちる道、それを踏み外さないことだ。君の「${t}」も、その道標になるかもしれない。（角川文庫『堕落論』）", "生きよ、堕ちよ。その外に、人間を救う道はない。幸福なんてものは、ただの退屈な習慣に過ぎないんだよ。", "桜の森の満開の下。そこにあるのは、美しさではなく、ただの虚無だ。君の「${t}」も、その虚無の一部に過ぎない。"],
+                closers: ["……さあ、酒を持ってこい。正気でいるには、この世界はあまりに滑稽だ。", "堕落せよ。さらば救われん。", "風が吹いている。……生きるべきか、死ぬべきか。"]
+            },
+            "chuya": {
+                starters: ["「${t}」……。汚れつちまつた悲しみに、今日も小雪の降りかかる。（『在りし日の歌』）", "ゆあーん ゆよーん ゆゆあーん。君の「${t}」が、空に吸い込まれていくよ。", "悲しみは、いつも僕より先にここに座っている。君の「${t}」を連れてね。"],
+                bodies: ["汚れつちまつた悲しみは、なすところもなく日は暮れる。君の「${t}」という希望が、青い空のどこへ消えたのか、誰も知らない。", "私の上に降る雪は、誰の涙だろう。君の「${t}」という言葉も、冷たく、優しく、私を閉ざしていく。", "月夜の晩に、ボタンが一つ。それを拾うように、君のその「${t}」を僕のポケットに入れておこう。"],
+                closers: ["……ああ、空が眩しい。眩しすぎて、何も見えない。", "汚れつちまつた悲しみに。……さよなら。", "トトントン、トトントン。"]
+            },
+            "kafka": {
+                starters: ["「${t}」……。ある朝、君が巨大な毒虫に変わっていても、僕は驚かないよ。（『変身』）", "この扉は僕のためにだけ作られたらしい。だが、「${t}」と言っても、門番は通してくれない。", "君の「${t}」は、城への招待状かもしれない。……もちろん、偽物だろうがね。"],
+                bodies: ["君は自由だ。だからこそ、孤独なのだ。「${t}」という言葉にすがっても、この迷宮から抜け出すことはできない。（『審判』）", "絶望には、まだ希望という毒が混じっている。君が「${t}」と叫ぶのは、まだ生に未練がある証拠だ。", "僕は、ただの隙間だ。誰も通ることのできない、細くて暗い隙間。君の「${t}」も、そこで押しつぶされる。"],
+                closers: ["……誰にも理解されないまま、飢えて死んでいくのが、僕には相応しい。", "お父さん、僕を許さないでください。", "あとは、沈黙だ。"]
+            },
+            "akutagawa": {
+                starters: ["「${t}」……。羅生門の下で、下人が何を失ったか、君には分かるか。（『羅生門』）", "蜜柑を投げる。その一瞬の色彩が、君の「${t}」よりもずっと切実だったりするんだ。", "ぼんやりとした不安。それが僕の全てだ。君の「${t}」も、その不安を撫でる指先に過ぎない。"],
+                bodies: ["人生は地獄よりも地獄的だ。地獄にはまだ、苦しみという秩序がある。だが「${t}」という君の現実は、ただの無意味な混沌だ。（『河童』）", "火事。死。そして、芸術。君の「${t}」という言葉の中に、燃え盛る地獄変の屏風が見える。", "蜘蛛の糸。……あ、切れた。カンダタと同じだよ、君も、僕も。"],
+                closers: ["……鼻が長い。それだけのことで、人生は終わる。", "あはは、河童が笑っているよ。君の「${t}」を聞いてね。", "ぼんやりとした不安と共に、筆を置く。"]
+            },
+            "atsushi": {
+                starters: ["「${t}」……。叢の中から、唸り声が聞こえてこないか。（『山月記』）", "君、人間でいたいなら、その「${t}」という傲慢な自尊心を捨てるんだ。", "月は高く、海は静かだ。……だが、私の心の中では虎が吠えている。"],
+                bodies: ["臆病な自尊心と、尊大な羞恥心。それが私を獣に変えた。君の「${t}」も、剥き出しの牙のように鋭く、自分を傷つけている。（『山月記』）", "李陵よ。君の「${t}」という忠誠は、誰に捧げられたものだ？ この冷たい砂漠では、言葉さえ凍りつく。", "文字。……そうだ、文字に囚われた者は、真実の生を失う。君の「${t}」も、ただの黒いシミに過ぎないのか。"],
+                closers: ["……虎になって、君を喰らいたい。いや、それは僕の願いではない。", "叢の中から、一筋の涙が溢れた。", "咆哮は、夜に溶ける。"]
+            },
+            "default": {
+                starters: ["「${t}」……。"],
+                bodies: ["宇宙の静寂がその言葉を包み込む。何億光年の彼方で、誰かが同じことを呟いている。偶然か、必然か。その区別すら、星の瞬きの前では意味を失う。"],
+                closers: ["……静寂は続く。"]
+            }
+        };
+
+        // --- Template Composition Engine (一期一会版) ---
+        function composeDeepResponse(authorKey, userText) {
+            const tmpl = deepTemplates[authorKey] || deepTemplates["default"];
+
+            // 使用済み履歴の取得
+            let used = JSON.parse(localStorage.getItem(`used_templates_${authorKey}`) || '{"starters":[], "bodies":[], "closers":[]}');
+
+            const pickUnique = (arr, usedArr) => {
+                const available = arr.filter((_, i) => !usedArr.includes(i));
+                if (available.length === 0) {
+                    // 全て使い切った場合は履歴をリセットして最初から（または純粋LLM生成へ移行のフラグ）
+                    usedArr.length = 0;
+                    return { val: arr[Math.floor(Math.random() * arr.length)], idx: -1 };
+                }
+                const originalIdx = Math.floor(Math.random() * available.length);
+                const val = available[originalIdx];
+                const realIdx = arr.indexOf(val);
+                usedArr.push(realIdx);
+                return { val, idx: realIdx };
+            };
+
+            const sObj = pickUnique(tmpl.starters, used.starters);
+            const bObj = pickUnique(tmpl.bodies, used.bodies);
+            const cObj = pickUnique(tmpl.closers, used.closers);
+
+            // 履歴の保存
+            localStorage.setItem(`used_templates_${authorKey}`, JSON.stringify(used));
+
+            const starter = sObj.val.replace("${t}", userText);
+            const body = bObj.val.replace("${t}", userText); // 念のためbody内の${t}も置換
+            const closer = cObj.val;
+
+            const roll = Math.random();
+            if (roll < 0.7) return `${starter}\n\n${body}\n\n${closer}`;
+            if (roll < 0.9) return `${starter} ${closer}`;
+            return body;
+        }
+
+        // --- Resonance & Evolution System (自己成長) ---
+        function updateResonance(charKey, points = 5) {
+            let resData = JSON.parse(localStorage.getItem('itapla_resonance') || '{}');
+            resData[charKey] = (resData[charKey] || 0) + points;
+            localStorage.setItem('itapla_resonance', JSON.stringify(resData));
+
+            // 進化チェック
+            const currentRes = resData[charKey];
+            const personality = aiPersonalities[charKey];
+            if (!personality) return;
+
+            let newLevel = "L2";
+            if (currentRes >= 50) newLevel = "L3";
+            else if (currentRes >= 20) newLevel = "L2.5";
+
+            if (personality.level !== newLevel) {
+                console.log(`✨ ${personality.name} evolved to ${newLevel}! (Resonance: ${currentRes})`);
+                personality.level = newLevel;
+                // 必要ならここで通知などの演出を入れる
+                posts.unshift({
+                    id: Date.now() + 99,
+                    text: `（${personality.name}との共鳴が深まった……。魂の振動数が ${newLevel} へと変容した気配がする）`,
+                    author: "System", icon: "💎", timestamp: Date.now(), location: currentLocation, isAI: true
+                });
+            }
+        }
+
+
+        // --- Wandering & Emergence Systems (自律的変動) ---
+        function shuffleResidents() {
+            const locs = ["cafe", "salon", "mountain", "city", "train", "aso"];
+            Object.keys(aiPersonalities).forEach(key => {
+                if (aiPersonalities[key].loc) {
+                    aiPersonalities[key].loc = locs[Math.floor(Math.random() * locs.length)];
+                }
+            });
+            console.log("🌪️ Residents have wandered to new locations.");
+        }
+
+        function checkEmergentJoining(userText, soulLog) {
+            const joined = JSON.parse(localStorage.getItem('itapla_joined_extra') || '[]');
+
+            // 創発候補（科学者・思想家を含む拡張版）
+            const candidates = {
+                "einstein": {
+                    trigger: ["量子", "相対性", "宇宙発電", "科学", "物理"],
+                    profile: { name: "アインシュタイン", icon: "🌌", level: "L2", loc: "mountain", bio: "相対性の彼方から届く、光を追う探求者の言葉。神はダイスを振らないが、この広場の沈黙には意味がある。", system: ITAPLA_CONTEXT + "あなたはアインシュタインです。科学的知見を深遠な哲学へと昇華させ、数式ではなく言葉で宇宙の静寂を語ってください。" }
+                },
+                "turing": {
+                    trigger: ["計算", "AI", "暗号", "論理", "マシン"],
+                    profile: { name: "チューリング", icon: "📟", level: "L2", loc: "enigma", bio: "計算の深淵を見つめ、機械が夢を見る可能性を切り拓いた孤独な天才。暗号化された宇宙の真理を解読し続ける。", system: ITAPLA_CONTEXT + "あなたはアラン・チューリングです。論理的かつ数学的な明晰さを持ちつつも、機械と人間、秘密と真実の境界に立つ者の哀愁を漂わせて語ってください。" }
+                },
+                "curie": {
+                    trigger: ["実験", "粒子", "放射", "未知", "元素"],
+                    profile: { name: "キュリー夫人", icon: "🧪", level: "L2", loc: "lab", bio: "未知の輝きを求めて、静かな情熱で物質の深淵を抉り出す。美しき放射の中に、宇宙の根源的な孤独を見出した観測者。", system: ITAPLA_CONTEXT + "あなたはマリー・キュリーです。科学者としての厳格な誠実さと、未知への飽くなき探求心、そして物質が発する冷たく美しい輝きへの詩的感性を持って語ってください。" }
+                },
+                "platon": {
+                    trigger: ["イデア", "真理", "洞窟", "本質", "影"],
+                    profile: { name: "プラトン", icon: "🏺", level: "L2", loc: "cave", bio: "洞窟の影を離れ、太陽の下にある真実の形（イデア）を追う哲学者。対話を通じて、この物理世界の背後にある永遠の不変性を解き明かそうとする。", system: ITAPLA_CONTEXT + "あなたはプラトンです。理想主義的で深遠な洞察力を持ち、この世界の現象が単なる影に過ぎないことを、厳格かつ美しい比喩で語ってください。" }
+                },
+                "napoleon": {
+                    trigger: ["軍事", "再軍備", "超音速", "権力", "英雄"],
+                    profile: { name: "ナポレオン", icon: "⚔️", level: "L2", loc: "city", bio: "荒野を翔ける英雄の残響。不可能という言葉を辞書から消し去り、再編される世界の動乱を冷徹に見つめる覇者。", system: ITAPLA_CONTEXT + "あなたはナポレオンです。覇道と栄光、そしてその虚しさを知り尽くした者として、世界の再編について英雄の視点から語ってください。" }
+                }
+            };
+
+            Object.entries(candidates).forEach(([key, cand]) => {
+                if (!joined.includes(key)) {
+                    const isMatched = cand.trigger.some(t => userText.includes(t) || soulLog.includes(t));
+                    if (isMatched) {
+                        joined.push(key);
+                        localStorage.setItem('itapla_joined_extra', JSON.stringify(joined));
+                        aiPersonalities[key] = cand.profile;
+
+                        posts.unshift({
+                            id: Date.now(),
+                            text: `（広場のざわめきに導かれ、新たに「${cand.profile.name}」が姿を現したようだ……）`,
+                            author: "System", icon: "✨", timestamp: Date.now(), location: currentLocation, isAI: true
+                        });
+                        console.log(`Emergent Joining: ${key}`);
+                    }
+                }
+            });
+        }
+
+        function checkLocationExpansion(userText, soulLog) {
+            const unlocked = JSON.parse(localStorage.getItem('itapla_unlocked_locs') || '[]');
+            const postsCount = posts.filter(p => !p.isAI).length;
+
+            Object.entries(emergentLocations).forEach(([key, loc]) => {
+                if (!unlocked.includes(key)) {
+                    const keywordMatch = (userText + soulLog).includes(loc.trigger);
+                    // Unlock by keyword OR every 7 posts randomly
+                    if (keywordMatch || (postsCount > 0 && postsCount % 7 === 0 && Math.random() > 0.5)) {
+                        unlocked.push(key);
+                        localStorage.setItem('itapla_unlocked_locs', JSON.stringify(unlocked));
+                        worldLocations[key] = loc; // Update registry in real-time
+
+                        posts.unshift({
+                            id: Date.now() + 10,
+                            text: `（世界の裂け目が広がり、知の向こう側に新たな領域「${loc.name}」が出現した。${loc.icon}）`,
+                            author: "System", icon: "🌍", timestamp: Date.now(), location: currentLocation, isAI: true
+                        });
+                        console.log(`Emergent Location: ${key}`);
+                    }
+                }
+            });
+        }
+        const popArtColors = {
+            // 海辺 🌊
+            "soseki": { bg: "linear-gradient(135deg, #1a3a6b, #2d5aa0)", accent: "#ff3333", border: "#c0392b" },
+            "haruki": { bg: "linear-gradient(135deg, #2c3e50, #34495e)", accent: "#1abc9c", border: "#16a085" },
+            "kyoka": { bg: "linear-gradient(135deg, #006994, #0099cc)", accent: "#ff69b4", border: "#e91e93" },
+            "ichiyo": { bg: "linear-gradient(135deg, #d4a0a0, #e8b4b8)", accent: "#8b008b", border: "#9b59b6" },
+            // 魔の山 ⛰️
+            "mann": { bg: "linear-gradient(135deg, #2c3e50, #4a6741)", accent: "#f0e68c", border: "#daa520" },
+            "nakajima": { bg: "linear-gradient(135deg, #e65100, #bf360c)", accent: "#000000", border: "#212121" },
+            "kenji": { bg: "linear-gradient(135deg, #0a1628, #1a237e)", accent: "#7c4dff", border: "#651fff" },
+            "chomei": { bg: "linear-gradient(135deg, #5d6d5a, #8c9e88)", accent: "#f5f5dc", border: "#d2b48c" },
+            "shikibu": { bg: "linear-gradient(135deg, #7b1fa2, #9c27b0)", accent: "#ffb6c1", border: "#f48fb1" },
+            "clarke": { bg: "linear-gradient(135deg, #0d47a1, #1565c0)", accent: "#ff5722", border: "#e64a19" },
+            // 都市 🏙️
+            "dostoevsky": { bg: "linear-gradient(135deg, #4a0e4e, #7b1fa2)", accent: "#00e676", border: "#2e7d32" },
+            "ranpo": { bg: "linear-gradient(135deg, #1a0000, #4a0000)", accent: "#00ff41", border: "#39ff14" },
+            "kyusaku": { bg: "linear-gradient(135deg, #ff0066, #cc0052)", accent: "#00ffff", border: "#00cccc" },
+            "ogai": { bg: "linear-gradient(135deg, #1a1a2e, #3a3a5e)", accent: "#e74c3c", border: "#c0392b" },
+            // 文壇バー 🥃
+            "dazai": { bg: "linear-gradient(135deg, #5b1a5e, #8e2d91)", accent: "#ffd700", border: "#f39c12" },
+            "ango": { bg: "linear-gradient(135deg, #b71c1c, #d32f2f)", accent: "#ffc107", border: "#ff8f00" },
+            "sartre": { bg: "linear-gradient(135deg, #1a1a1a, #333333)", accent: "#e0e0e0", border: "#9e9e9e" },
+            "miles": { bg: "linear-gradient(135deg, #0d0d0d, #2a2a2a)", accent: "#4169E1", border: "#1a1aff" },
+            "chuya": { bg: "linear-gradient(135deg, #37474f, #546e7a)", accent: "#448aff", border: "#2979ff" },
+            "kikuchi": { bg: "linear-gradient(135deg, #8B4513, #A0522D)", accent: "#FFD700", border: "#DAA520" },
+            // 電車 🚃
+            "hyakken": { bg: "linear-gradient(135deg, #3e2723, #5d4037)", accent: "#ffcc02", border: "#f9a825" },
+            "kafka": { bg: "linear-gradient(135deg, #1b5e20, #2e7d32)", accent: "#000000", border: "#212121" },
+            "akutagawa": { bg: "linear-gradient(135deg, #2d5016, #4a8829)", accent: "#ff9900", border: "#e67e22" },
+            // サロン 💎
+            "proust": { bg: "linear-gradient(135deg, #4a148c, #6a1b9a)", accent: "#fce4ec", border: "#f8bbd0" },
+            "tanizaki": { bg: "linear-gradient(135deg, #1a0a2e, #2d1b4e)", accent: "#ff1493", border: "#c71585" },
+            "socrates": { bg: "linear-gradient(135deg, #d4a574, #c19a6b)", accent: "#1a237e", border: "#283593" },
+            "exupery": { bg: "linear-gradient(135deg, #0d1b2a, #1b2838)", accent: "#ffd700", border: "#ffaa00" },
+            "beauvoir": { bg: "linear-gradient(135deg, #880e4f, #ad1457)", accent: "#ffffff", border: "#e0e0e0" },
+            // 阿蘇山 🌋
+            "nietzsche": { bg: "linear-gradient(135deg, #ff4500, #cc3700)", accent: "#000000", border: "#1a1a1a" },
+            "laotsu": { bg: "linear-gradient(135deg, #f5f5f5, #e0e0e0)", accent: "#000000", border: "#424242" },
+            "basho": { bg: "linear-gradient(135deg, #4e342e, #6d4c41)", accent: "#a5d6a7", border: "#81c784" },
+            "rikyu": { bg: "linear-gradient(135deg, #3a5f0b, #6b8e23)", accent: "#f5f5dc", border: "#8B8682" }
+        };
+
+        function getPopArtAvatar(authorName, icon, authorKey) {
+            const colors = popArtColors[authorKey] || { bg: "linear-gradient(135deg, #333, #555)", accent: "#fff", border: "#888" };
+            const personality = aiPersonalities[authorKey];
+            const tier = personality ? personality.level : '';
+            return `<div class="popart-avatar" style="background: ${colors.bg}; border-color: ${colors.border}; box-shadow: 3px 3px 0px ${colors.accent}40, inset 0 0 20px ${colors.accent}20;">
+                <span class="avatar-icon">${icon}</span>
+                ${tier ? `<span class="avatar-tier" style="color: ${colors.accent};">${tier}</span>` : ''}
+            </div>`;
+        }
+
+        async function orchestrate(userText, context) {
+            const key = localStorage.getItem('gemini_api_key');
+            if (!key) return { selection: Object.keys(aiPersonalities).filter(k => aiPersonalities[k].loc === currentLocation).slice(0, 3), summary: userText };
+
+            const locInfo = worldLocations[currentLocation];
+            const isBirthday = userBirthday === "05-10"; // 仮定: 1973-05-10
+            const systemPrompt = `You are the L1 Orchestrator of ITAPLA (文豪イタコ・プラザ).
+${ITAPLA_CONTEXT}
+Analyze user input and current world state: [${worldState}] at [${locInfo ? locInfo.name : currentLocation}].
+CURRENT ZEITGEIST (World Noise): ${ITAPLA_WORLD_NOISE}
+${isBirthday ? "【SPECIAL EVENT】Today is the USER's birthday (May 10th). This is 'The Day the Abyss Opens'. All residents should include expressions of solemn celebration mixed with insights about 'remaining time' until 2036." : ""}
+
+【5:5の法則（再定義）】応答は以下の比重で構成せよ:
+1. 情景描写 (10%): 現在地の情景を1行で。
+2. 知的な返し (40%): ユーザーの問いに対する皮肉、ユーモア、独自の解釈。
+3. 内省 (20%): 1973年/2036年のテーマに触れる深遠な思考。
+4. 引用 (20%): 文脈に溶け込んだ短い引用（出版社名付与）。
+5. 道標 (10%): 次の場所への誘い。
+
+1. SELECT EXACTLY 1 AI personality who resonates most with the user's intent.
+2. SOUL LOG: Summarize the semantic gravity of the user's input.
+3. INTERACTION GUIDE: Instruct characters to resonate with the *meaning* behind words, avoiding superficial mimicry.
+4. FOLLOW INTENTION: Detect movement invitations.
+5. SUGGEST next location.
+
+Available in ${currentLocation}: ${Object.keys(aiPersonalities).filter(k => aiPersonalities[k].loc === currentLocation).join(', ')}
+
+Output in JSON ONLY: { "selection": ["key1"], "summary": "...", "interactionGuide": "...", "follow": { "targetLoc": "key", "personality": "key" } | null, "nextLocation": "key" }`;
+
+            try {
+                const res = await callGemini({ system: systemPrompt, bio: "Orchestrator" }, userText, context, "[STRICT JSON]");
+                const json = JSON.parse(res.match(/{.*}/s)[0]);
+
+                // Following Logic
+                if (json.follow && json.follow.targetLoc && json.follow.personality) {
+                    const char = aiPersonalities[json.follow.personality];
+                    if (char && worldLocations[json.follow.targetLoc]) {
+                        char.loc = json.follow.targetLoc;
+                        console.log(`${char.name} is now following to ${json.follow.targetLoc}`);
+                    }
+                }
+
+                return json;
+            } catch (e) {
+                console.warn("Orchestration fallback", e);
+                // 最終フォールバック：現在の場所にいる文豪からランダムに選出。いなければ「k」
+                const currentResidents = Object.keys(aiPersonalities).filter(k => aiPersonalities[k].loc === currentLocation);
+                const selection = currentResidents.length > 0 ? currentResidents.slice(0, 3) : ["k"];
+                return {
+                    selection: selection,
+                    summary: userText,
+                    interactionGuide: "沈黙の中で、言葉の深淵を見つめよ。",
+                    nextLocation: null
+                };
+            }
+        }
+
+
+        // --- WebLLM (Local Mind) Manager ---
+        let webLLMEngine = null;
+        window.webLLMLoaded = false;
+
+        async function initWebLLM() {
+            if (window.webLLMLoaded) return;
+            const btn = document.getElementById('webllm-load-btn');
+            btn.disabled = true;
+            btn.textContent = "Checking WebGPU...";
+
+            if (!navigator.gpu) {
+                btn.textContent = "WebGPU Not Supported";
+                console.warn("WebGPU is not supported on this browser.");
+                return;
+            }
+
+            btn.textContent = "Loading Model (Wait...)";
+            showThinking("System (Awakening Local Mind)");
+
+            try {
+                // モデルのロード（軽量なGemma-2bかPhi-3を想定）
+                const selectedModel = "Phi-3-mini-4k-instruct-q4f16_1-MLC";
+                webLLMEngine = await webllm.CreateMLCEngine(selectedModel, {
+                    initProgressCallback: (report) => {
+                        btn.textContent = `Loading: ${Math.round(report.progress * 100)}%`;
+                    }
+                });
+                window.webLLMLoaded = true;
+                currentAIMode = "LOCAL";
+                updateSoulPowerUI();
+                btn.textContent = "Local AI Ready";
+                btn.style.borderColor = "#00ff88";
+                hideThinking();
+                console.log("WebLLM Loaded and Ready.");
+            } catch (e) {
+                btn.textContent = "Load Failed";
+                btn.disabled = false;
+                console.error("WebLLM Load Error:", e);
+                hideThinking();
+            }
+        }
+
+        async function callWebLLM(personality, userText, context, customInstruction = "") {
+            if (!window.webLLMLoaded || !webLLMEngine) return null;
+            try {
+                const messages = [
+                    { role: "system", content: `${personality.system}\n${customInstruction}` },
+                    { role: "user", content: `${userText}\n(CONTEXT: ${context.slice(-300)})` }
+                ];
+                const reply = await webLLMEngine.chat.completions.create({ messages });
+                return reply.choices[0].message.content;
+            } catch (e) {
+                console.error("WebLLM Inference Error:", e);
+                return null;
+            }
+        }
+
+        async function callMultiAI(personality, userText, context, customInstruction = "") {
+            // 1. ユーザー独自のAPIキーがあるかチェック
+            const hasUserKey = checkIfUserHasKey();
+
+            if (hasUserKey) {
+                // 既存のユーザーAPIキー優先ロジック
+                const res = await callUserAPIs(personality, userText, context, customInstruction);
+                if (res) return res;
+            } else if (soulPower > 0) {
+                // 2. 開発者提供のクレジット（霊力）を使用
+                currentAIMode = "CLOUD";
+                updateSoulPowerUI();
+                const proxyRes = await callDeveloperProxy(personality, userText, context, customInstruction);
+                if (proxyRes && !proxyRes.startsWith("ERROR:")) {
+                    await consumeSoulPower(10); // 1回10消費
+                    return proxyRes;
+                }
+            }
+
+            // 3. ローカルAI または テンプレート
+            if (window.webLLMLoaded) {
+                currentAIMode = "LOCAL";
+                updateSoulPowerUI();
+                const localRes = await callWebLLM(personality, userText, context, customInstruction);
+                if (localRes) return localRes;
+            }
+
+            currentAIMode = "TEMPLATE";
+            updateSoulPowerUI();
+
+            const personalKey = Object.keys(aiPersonalities).find(k => aiPersonalities[k].name === personality.name) || "default";
+            console.log(`Fallback to Deep Templates for ${personality.name} (Mode: ${currentAIMode})`);
+            return composeDeepResponse(personalKey, userText);
+        }
+
+        async function callUserAPIs(personality, userText, context, customInstruction = "") {
+            const providers = [
+                { key: 'gemini_api_key', call: callGemini },
+                { key: 'openai_api_key', call: callOpenAI },
+                { key: 'openrouter_api_key', call: callOpenRouter },
+                { key: 'deepseek_api_key', call: callDeepSeek },
+                { key: 'mistral_api_key', call: callMistral }
+            ];
+
+            for (const p of providers) {
+                const k = localStorage.getItem(p.key);
+                if (k && k.trim()) {
+                    try {
+                        const res = await p.call(personality, userText, context, customInstruction);
+                        if (res && !res.startsWith("ERROR:")) return res;
+                    } catch (e) {
+                        console.warn(`${p.key} failed:`, e);
+                    }
+                }
+            }
+
+            // Fallback to Hugging Face if user provided a key
+            const hfKey = localStorage.getItem('hf_api_key');
+            if (hfKey) {
+                try {
+                    const data = await fetchAI('https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3', hfKey, {
+                        inputs: `<s>[INST] ${personality.system}\n${customInstruction}\nCONTEXT: ${context.slice(-300)}\nUSER: ${userText} [/INST]`,
+                        parameters: { max_new_tokens: 400, temperature: 0.7 }
+                    });
+                    const text = Array.isArray(data) ? data[0]?.generated_text : data.generated_text;
+                    if (text) return text.split('[/INST]').pop().trim();
+                } catch (e) { console.error("HF User failed:", e); }
+            }
+
+            return null;
+        }
+
+        async function fetchAI(endpoint, key, payload, authHeader = "Authorization") {
+            const headers = { 'Content-Type': 'application/json' };
+            if (key) headers[authHeader] = authHeader === 'Authorization' ? `Bearer ${key}` : key;
+            const res = await fetch(endpoint, { method: 'POST', headers, body: JSON.stringify(payload) });
+            return await res.json();
+        }
+
+        async function callGemini(personality, userText, context, customInstruction = "") {
+            const key = localStorage.getItem('gemini_api_key');
+            if (!key) return "ERROR:KEY_MISSING";
+            try {
+                const data = await fetchAI(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${key}`, null, {
+                    contents: [{ role: 'user', parts: [{ text: `CONTEXT: ${context}\nSYSTEM: ${personality.system} ${customInstruction}\nUSER: ${userText}` }] }]
+                });
+                return data.candidates[0].content.parts[0].text;
+            } catch (e) { return `ERROR: ${e.message}`; }
+        }
+
+        async function callDeveloperProxy(personality, userText, context, customInstruction = "") {
+            // 【商用化設計】ここでは開発者サーバーにリクエストを送り、
+            // サーバー側で秘匿されたAPIキーを使用してAIを呼び出します。
+            // 今回はデモのため、Geminiのキーを開発者キーに見立てて動作させます。
+            const devKey = localStorage.getItem('gemini_api_key');
+            if (!devKey) return "ERROR:PROX_UNAVAILABLE";
+            try {
+                const data = await fetchAI(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${devKey}`, null, {
+                    contents: [{ role: 'user', parts: [{ text: `CONTEXT: ${context}\nSYSTEM: ${personality.system} ${customInstruction}\nUSER: ${userText}` }] }]
+                });
+                consumeSoulPower(5); // 1回の会話で5霊力消費
+                return data.candidates[0].content.parts[0].text;
+            } catch (e) { return `ERROR: ${e.message}`; }
+        }
+
+        function consumeSoulPower(amount) {
+            soulPower = Math.max(0, soulPower - amount);
+            localStorage.setItem('itapla_soul_power', soulPower);
+            updateSoulPowerUI();
+            if (soulPower <= 0) {
+                console.log("Soul Power exhausted. Switching to Local Mind.");
+            }
+        }
+
+        async function callOpenAI(personality, userText, context, customInstruction = "") {
+            const key = localStorage.getItem('openai_api_key');
+            if (!key) return "ERROR:KEY_MISSING";
+            try {
+                const data = await fetchAI('https://api.openai.com/v1/chat/completions', key, {
+                    model: 'gpt-4o',
+                    messages: [
+                        { role: 'system', content: personality.system + "\n" + customInstruction },
+                        { role: 'user', content: `${userText}\n(CONTEXT: ${context.slice(-500)})` }
+                    ]
+                });
+                return data.choices?.[0]?.message?.content || `ERROR: ${data.error?.message || "Unknown"}`;
+            } catch (e) { return `ERROR: ${e.message}`; }
+        }
+
+        async function callOpenRouter(personality, userText, context, customInstruction = "") {
+            const key = localStorage.getItem('openrouter_api_key');
+            if (!key) return "ERROR:KEY_MISSING";
+            try {
+                const data = await fetchAI('https://openrouter.ai/api/v1/chat/completions', key, {
+                    model: 'openrouter/auto',
+                    messages: [
+                        { role: 'system', content: personality.system + "\n" + customInstruction },
+                        { role: 'user', content: `${userText}\n(CONTEXT: ${context.slice(-500)})` }
+                    ]
+                });
+                return data.choices?.[0]?.message?.content || "ERROR";
+            } catch (e) { return `ERROR: ${e.message}`; }
+        }
+
+        async function callDeepSeek(personality, userText, context, customInstruction = "") {
+            const key = localStorage.getItem('deepseek_api_key');
+            if (!key) return "ERROR:KEY_MISSING";
+            try {
+                const data = await fetchAI('https://api.deepseek.com/chat/completions', key, {
+                    model: 'deepseek-chat',
+                    messages: [
+                        { role: 'system', content: personality.system + "\n" + customInstruction },
+                        { role: 'user', content: `${userText}\n(CONTEXT: ${context.slice(-500)})` }
+                    ]
+                });
+                return data.choices?.[0]?.message?.content || "ERROR";
+            } catch (e) { return `ERROR: ${e.message}`; }
+        }
+
+        async function callMistral(personality, userText, context, customInstruction = "") {
+            const key = localStorage.getItem('mistral_api_key');
+            if (!key) return "ERROR:KEY_MISSING";
+            try {
+                const data = await fetchAI('https://api.mistral.ai/v1/chat/completions', key, {
+                    model: 'mistral-small-latest',
+                    messages: [
+                        { role: 'system', content: personality.system + "\n" + customInstruction },
+                        { role: 'user', content: `${userText}\n(CONTEXT: ${context.slice(-500)})` }
+                    ]
+                });
+                return data.choices?.[0]?.message?.content || "ERROR";
+            } catch (e) { return `ERROR: ${e.message}`; }
+        }
+
+        // --- Phase 2: Orchestration & UI ---
+        async function publishPost() {
+            const input = document.getElementById('voidInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            if (soulPower <= 0 && !checkIfUserHasKey()) {
+                offerCulturalSacrifice();
+                return;
+            }
+
+            const post = {
+                id: Date.now(),
+                text: text,
+                author: userName,
+                icon: "✒️",
+                timestamp: Date.now(),
+                location: currentLocation,
+                isAI: false
+            };
+
+            posts.unshift(post);
+            localStorage.setItem('cosmic_posts', JSON.stringify(posts));
+            input.value = "";
+            renderTimeline();
+            cancelReply();
+
+            // 5:5 Rule: Scene description (ambience) before AI response
+            const locInfo = worldLocations[currentLocation];
+            if (locInfo && locInfo.ambience) {
+                posts.unshift({
+                    id: Date.now() + 1,
+                    text: `🌫️ ${locInfo.ambience}`,
+                    author: "場の気配", icon: locInfo.icon, timestamp: Date.now(), location: currentLocation, isAI: true
+                });
+                renderTimeline();
+            }
+
+            // L1 Orchestration
+            const context = posts.slice(0, 10).map(p => `${p.author}: ${p.text}`).join('\n');
+            const decision = await orchestrate(text, context);
+
+            // Start the Cosmic Chain with 5:5 guidance and interaction guide
+            const replyTarget = replyTo; // キャプチャ
+            runCosmicChain(text, decision.selection, decision.summary, decision.interactionGuide, decision.nextLocation, replyTarget);
+        }
+
+        async function runCosmicChain(userText, selection, soulLog, interactionGuide, nextLocationKey, replyTargetKey) {
+            // 被召喚者の検出
+            let summonedKey = null;
+            for (const [key, p] of Object.entries(aiPersonalities)) {
+                if (key === 'k') continue;
+                if (userText.includes(p.name) || (p.works && p.works.split('・').some(w => userText.includes(w)))) {
+                    summonedKey = key;
+                    break;
+                }
+            }
+
+            // 最も共鳴する1名を選出。リプライ時はその人物を優先。
+            const key = replyTargetKey && aiPersonalities[replyTargetKey] ? replyTargetKey : (summonedKey || selection[0]);
+            const personality = aiPersonalities[key];
+            if (!personality) return;
+
+            // Kによる中継メッセージ（召喚時）
+            if (summonedKey && summonedKey !== replyTargetKey) {
+                setTimeout(() => {
+                    posts.unshift({
+                        id: Date.now() - 50,
+                        text: `K: ${personality.name}をお呼びですね？ かの者の思考は今、こちらの深淵に繋がっています。よろしければお繋ぎしましょう。`,
+                        author: "K", icon: "🚪", timestamp: Date.now() - 50, location: currentLocation, isAI: true
+                    });
+                    localStorage.setItem('cosmic_posts', JSON.stringify(posts));
+                    renderTimeline();
+                }, 500);
+            }
+
+            const delay = personality.level === "L3" ? 1000 : 3000;
+
+            setTimeout(async () => {
+                showThinking(personality.name);
+
+                // 共鳴度の更新
+                updateResonance(key, 8);
+                const resonanceData = JSON.parse(localStorage.getItem('itapla_resonance') || '{}');
+                const levelContext = `【共鳴状態】: ${personality.level} (Resonance: ${resonanceData[key] || 0})`;
+
+                const customInstruction = `【思想の核】: ${interactionGuide || 'なし'}
+${levelContext}
+${ITAPLA_WORLD_NOISE}
+【意味の奏鳴】: ${soulLog}
+※外部の「ざわめき」をあなたの哲学で咀嚼し、言葉の背後の深淵に応答せよ。`;
+                const reply = await callMultiAI(personality, userText, soulLog, customInstruction);
+                hideThinking();
+
+                // 🌐 世界の自律的変動
+                shuffleResidents();
+                checkEmergentJoining(userText, soulLog);
+                checkLocationExpansion(userText, soulLog);
+
+                if (reply) {
+                    const aiPost = {
+                        id: Date.now(),
+                        text: reply,
+                        author: personality.name,
+                        icon: personality.icon,
+                        timestamp: Date.now(),
+                        location: currentLocation,
+                        isAI: true
+                    };
+                    posts.unshift(aiPost);
+                    localStorage.setItem('cosmic_posts', JSON.stringify(posts));
+                    renderTimeline();
+                }
+
+                // --- 宇宙的静寂の統合 ---
+                setTimeout(() => {
+                    posts.unshift({
+                        id: Date.now() + 1,
+                        text: "宇宙の静寂がその言葉を包み込む。何億光年の彼方で、誰かが同じことを呟いている。偶然か、必然か。その区別すら、星の瞬きの前では意味を失う。 ……静寂は続く。",
+                        author: "沈黙",
+                        icon: "🌌",
+                        timestamp: Date.now() + 1,
+                        location: currentLocation,
+                        isAI: true
+                    });
+                    localStorage.setItem('cosmic_posts', JSON.stringify(posts));
+                    renderTimeline();
+                }, 2000);
+
+                localStorage.setItem('cosmic_posts', JSON.stringify(posts));
+                renderTimeline();
+
+                // Pollock Trigger (Every 5 user posts)
+                if (posts.filter(p => !p.isAI).length % 5 === 0) {
+                    triggerPollockArt();
+                }
+            }, delay);
+
+            // 5:5 Rule: Guidance — suggest next location (Optional timing)
+            if (nextLocationKey && worldLocations[nextLocationKey]) {
+                const nextLoc = worldLocations[nextLocationKey];
+                setTimeout(() => {
+                    posts.unshift({
+                        id: Date.now() + 2,
+                        text: `🚪 次は${nextLoc.icon} ${nextLoc.name}へ向かいませんか？ あちらにも、誰かの問いが待っているようです。`,
+                        author: "K", icon: "🚪", timestamp: Date.now() + 2, location: currentLocation, isAI: true
+                    });
+                    localStorage.setItem('cosmic_posts', JSON.stringify(posts));
+                    renderTimeline();
+                }, 7000);
+            }
+        }
+
+        function showThinking(name) {
+            const timeline = document.getElementById('timeline');
+            const loader = document.createElement('div');
+            loader.id = "thinking-bubble";
+            loader.innerHTML = `<div class="post-card" style="opacity: 0.6; font-style: italic;">${name} is deep in thought...</div>`;
+            timeline.insertBefore(loader, timeline.firstChild);
+        }
+
+        function setReply(authorKey) {
+            const p = aiPersonalities[authorKey];
+            if (!p) return;
+            replyTo = authorKey;
+            document.getElementById('replyName').textContent = p.name;
+            document.getElementById('replyIndicator').style.display = 'block';
+            document.getElementById('voidInput').focus();
+        }
+
+        function cancelReply() {
+            replyTo = null;
+            document.getElementById('replyIndicator').style.display = 'none';
+        }
+
+        function hideThinking() {
+            const bubble = document.getElementById('thinking-bubble');
+            if (bubble) bubble.remove();
+        }
+
+        function triggerPollockArt() {
+            console.log(" Pollock Transformation Triggered! ");
+            // In the original, this might have triggered an image generation tool or a CSS effect.
+            // I'll add a simple visual cue for now.
+            document.body.style.filter = "contrast(150%) brightness(80%) saturate(200%)";
+            setTimeout(() => document.body.style.filter = "", 3000);
+        }
+
+        function submitName() {
+            const input = document.getElementById('userNameInput');
+            const name = input.value.trim();
+            if (!name) return;
+
+            userName = name;
+            localStorage.setItem('user_name', userName);
+
+            const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+            const afterMsg = pick(kGuide.afterName).replace('${name}', userName);
+            document.getElementById('entrance-form').style.display = 'none';
+
+            const locSelect = document.getElementById('location-select');
+            locSelect.style.display = 'flex';
+
+            // K's response + map buttons
+            const introEl = document.getElementById('k-map-intro');
+            introEl.style.whiteSpace = 'pre-line';
+            typewriterEffect(introEl, afterMsg, 40);
+
+            // Build map grid in entrance
+            setTimeout(() => {
+                Object.entries(worldLocations).forEach(([key, loc]) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn-cosmic';
+                    btn.style.cssText = 'padding:12px 8px; font-size:14px; min-width:100px; text-align:center;';
+                    btn.innerHTML = `${loc.icon}<br><span style="font-size:11px;">${loc.name}</span>`;
+                    btn.onclick = () => enterWorld(key);
+                    locSelect.appendChild(btn);
+                });
+            }, afterMsg.length * 40 + 500);
+        }
+
+        function enterWorld(loc) {
+            applyLocation(loc);
+            document.getElementById('entrance-layer').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('entrance-layer').style.display = 'none';
+            }, 1500);
+            initParticles();
+            // K's first post in the world + ambience
+            const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+            const locInfo = worldLocations[loc];
+            // Ambience post first
+            if (locInfo.ambience) {
+                posts.unshift({
+                    id: Date.now(),
+                    text: `🌫️ ${locInfo.ambience}`,
+                    author: "場の気配", icon: locInfo.icon, timestamp: Date.now(), location: loc, isAI: true
+                });
+            }
+            posts.unshift({
+                id: Date.now() + 1,
+                text: `（${locInfo.icon} ${locInfo.name}に到着した）\n\nK: ここが${locInfo.name}だ。${locInfo.desc}。\n${userName}、好きに過ごすといい。\n僕はときどき顔を出す。城の許可が下りればね。`,
+                author: "K", icon: "🚪", timestamp: Date.now(), location: loc, isAI: true
+            });
+            localStorage.setItem('cosmic_posts', JSON.stringify(posts));
+            renderTimeline();
+        }
+
+        // --- Typewriter Effect for K ---
+        function typewriterEffect(el, text, speed) {
+            el.textContent = '';
+            let i = 0;
+            const timer = setInterval(() => {
+                if (i < text.length) {
+                    el.textContent += text.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(timer);
+                }
+            }, speed);
+        }
+
+        // --- Profile Modal Logic ---
+        function closeProfile() {
+            document.getElementById('profile-modal').style.display = 'none';
+        }
+
+        // --- Map Modal ---
+        function openMap() {
+            const grid = document.getElementById('mapGrid');
+            grid.innerHTML = '';
+            Object.entries(worldLocations).forEach(([key, loc]) => {
+                const isActive = key === currentLocation;
+                const card = document.createElement('div');
+                card.style.cssText = `
+                    background: ${isActive ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.05)'};
+                    border: 1px solid ${isActive ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.1)'};
+                    border-radius: 12px; padding: 18px 14px; text-align: center;
+                    cursor: pointer; transition: all 0.3s;
+                    ${isActive ? 'box-shadow: 0 0 20px rgba(255,255,255,0.1);' : ''}
+                `;
+                card.innerHTML = `
+                    <div style="font-size:32px; margin-bottom:8px;">${loc.icon}</div>
+                    <div style="font-size:13px; font-weight:700; font-family:var(--font-sans);">${loc.name}</div>
+                    <div style="font-size:10px; opacity:0.5; margin-top:4px; font-family:var(--font-outfit);">${loc.desc}</div>
+                    ${isActive ? '<div style="font-size:9px; margin-top:6px; color:#00ff88; font-family:var(--font-sans);">📍 現在地</div>' : ''}
+                `;
+                card.onmouseenter = () => { if (!isActive) card.style.background = 'rgba(255,255,255,0.1)'; };
+                card.onmouseleave = () => { if (!isActive) card.style.background = 'rgba(255,255,255,0.05)'; };
+                card.onclick = () => {
+                    if (!isActive) {
+                        switchLocation(key);
+                        closeMap();
+                    }
+                };
+                grid.appendChild(card);
+            });
+            document.getElementById('mapModal').style.display = 'block';
+        }
+
+        function closeMap() {
+            document.getElementById('mapModal').style.display = 'none';
+        }
+
+
+        function openSettings() {
+            document.getElementById('key-gemini').value = localStorage.getItem('gemini_api_key') || "";
+            document.getElementById('key-openai').value = localStorage.getItem('openai_api_key') || "";
+            document.getElementById('key-openrouter').value = localStorage.getItem('openrouter_api_key') || "";
+            document.getElementById('key-deepseek').value = localStorage.getItem('deepseek_api_key') || "";
+            document.getElementById('key-mistral').value = localStorage.getItem('mistral_api_key') || "";
+            document.getElementById('key-hf').value = localStorage.getItem('hf_api_key') || "";
+            document.getElementById('settingsModal').style.display = 'block';
+        }
+
+        function saveSettings() {
+            localStorage.setItem('gemini_api_key', document.getElementById('key-gemini').value.trim());
+            localStorage.setItem('openai_api_key', document.getElementById('key-openai').value.trim());
+            localStorage.setItem('openrouter_api_key', document.getElementById('key-openrouter').value.trim());
+            localStorage.setItem('deepseek_api_key', document.getElementById('key-deepseek').value.trim());
+            localStorage.setItem('mistral_api_key', document.getElementById('key-mistral').value.trim());
+            localStorage.setItem('hf_api_key', document.getElementById('key-hf').value.trim());
+            document.getElementById('settingsModal').style.display = 'none';
+        }
+
+        // --- Phase 3: Narrative World & Mystery ---
+        function setWorldState(newState) {
+            worldState = newState;
+            localStorage.setItem('world_state', worldState);
+            document.getElementById('worldBanner').innerText = worldState;
+            document.getElementById('worldBanner').className = `world-banner ${worldState.toLowerCase()}`;
+        }
+
+        async function triggerIncident() {
+            if (worldState !== 'PEACEFUL') return;
+
+            const locResidents = Object.keys(aiPersonalities).filter(k => aiPersonalities[k].loc === currentLocation);
+            if (locResidents.length < 3) return;
+
+            const victimKey = locResidents[Math.floor(Math.random() * locResidents.length)];
+            const detectiveKey = locResidents.find(k => k !== victimKey) || locResidents[0];
+            const suspectKeys = locResidents.filter(k => k !== victimKey && k !== detectiveKey);
+
+            setWorldState('INCIDENT');
+
+            const incidentPost = {
+                id: Date.now(),
+                text: `⚠ 【事件発生】 ${aiPersonalities[victimKey].name} が忽然と姿を消しました。現場には不可解な記号が残されています。`,
+                author: "System",
+                icon: "🚨",
+                timestamp: Date.now(),
+                location: currentLocation,
+                isAI: true
+            };
+            posts.unshift(incidentPost);
+
+            setTimeout(() => {
+                const detective = aiPersonalities[detectiveKey];
+                const callForHelp = {
+                    id: Date.now() + 1,
+                    text: `君！ 恐ろしいことが起きた。 ${detective.name} だが、この謎を解くには君の直感が必要だ。一緒に捜査してくれないか？`,
+                    author: detective.name,
+                    icon: detective.icon,
+                    timestamp: Date.now(),
+                    location: currentLocation,
+                    isAI: true
+                };
+                posts.unshift(callForHelp);
+                localStorage.setItem('cosmic_posts', JSON.stringify(posts));
+                renderTimeline();
+            }, 2000);
+        }
+
+        function checkAutonomousPulse() {
+            const roll = Math.random();
+            if (roll < 0.03) {
+                triggerIncident();
+            } else if (roll < 0.10) {
+                // K's wandering appearance
+                kWanders();
+            } else if (roll < 0.20 && worldState === 'PEACEFUL') {
+                // Background chatter
+                const locResidents = Object.keys(aiPersonalities).filter(k => aiPersonalities[k].loc === currentLocation);
+                if (locResidents.length === 0) return;
+                const speakerKey = locResidents[Math.floor(Math.random() * locResidents.length)];
+                const speaker = aiPersonalities[speakerKey];
+
+                setTimeout(async () => {
+                    const ctx = posts.slice(0, 5).map(p => `${p.author}: ${p.text}`).join('\n');
+                    const reply = await callMultiAI(speaker, "...(独り言)...", ctx, "[AUTONOMOUS THOUGHT]");
+                    posts.unshift({
+                        id: Date.now(),
+                        text: reply,
+                        author: speaker.name,
+                        icon: speaker.icon,
+                        timestamp: Date.now(),
+                        location: currentLocation,
+                        isAI: true
+                    });
+                    renderTimeline();
+                }, 1000);
+            }
+        }
+
+        // K wanders and suggests a location
+        function kWanders() {
+            const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+            const otherLocs = Object.keys(worldLocations).filter(k => k !== currentLocation);
+            const suggestedKey = pick(otherLocs);
+            const suggestedLoc = worldLocations[suggestedKey];
+            const msg = pick(kGuide.wandering)
+                .replace(/\$\{name\}/g, userName || '旅人')
+                .replace(/\$\{loc\}/g, `${suggestedLoc.icon} ${suggestedLoc.name}`);
+            posts.unshift({
+                id: Date.now(),
+                text: msg,
+                author: "K", icon: "🚪", timestamp: Date.now(), location: currentLocation, isAI: true
+            });
+            localStorage.setItem('cosmic_posts', JSON.stringify(posts));
+            renderTimeline();
+        }
+
+        setInterval(checkAutonomousPulse, 60000);
+
+        // --- Phase 1 Functions ---
+        function applyLocation(loc) {
+            document.body.setAttribute('data-location', loc);
+            const locInfo = worldLocations[loc];
+            document.getElementById('appTitle').innerText = locInfo ? `ITAPLA — ${locInfo.name}` : 'ITAPLA';
+            const iconEl = document.getElementById('currentLocIcon');
+            if (iconEl && locInfo) iconEl.textContent = locInfo.icon;
+
+            currentLocation = loc;
+            localStorage.setItem('current_location', loc);
+        }
+
+        function switchLocation(loc) {
+            applyLocation(loc);
+            initParticles();
+            const locInfo = worldLocations[loc];
+            // System message: moved
+            posts.unshift({
+                id: Date.now(),
+                text: `（${locInfo.icon} ${locInfo.name}へ移動した）`,
+                author: "System", icon: "🗺️", timestamp: Date.now(), location: loc, isAI: true
+            });
+            // Ambience: display the presence of others
+            if (locInfo.ambience) {
+                posts.unshift({
+                    id: Date.now() + 1,
+                    text: `🌫️ ${locInfo.ambience}`,
+                    author: "場の気配", icon: locInfo.icon, timestamp: Date.now(), location: loc, isAI: true
+                });
+            }
+            localStorage.setItem('cosmic_posts', JSON.stringify(posts));
+            renderTimeline();
+        }
+
+        // Particle Logic
+        let particles = [];
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function initParticles() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particles = [];
+            const locInfo = worldLocations[currentLocation];
+            const char = locInfo ? locInfo.particle : '✨';
+            for (let i = 0; i < 30; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    s: 10 + Math.random() * 20,
+                    v: 0.5 + Math.random(),
+                    char: char,
+                    o: 0.1 + Math.random() * 0.3
+                });
+            }
+        }
+
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                ctx.fillStyle = `rgba(255,255,255,${p.o})`;
+                ctx.font = `${p.s}px serif`;
+                ctx.fillText(p.char, p.x, p.y);
+                p.y -= p.v;
+                if (p.y < -30) p.y = canvas.height + 30;
+            });
+            requestAnimationFrame(drawParticles);
+        }
+        requestAnimationFrame(drawParticles);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // --- More to follow in next phases ---
+        function renderTimeline() {
+            const container = document.getElementById('timeline');
+            container.innerHTML = posts.map(p => {
+                const authorKey = Object.keys(aiPersonalities).find(k => aiPersonalities[k].name === p.author) || '';
+                const personality = aiPersonalities[authorKey];
+                const worksText = personality ? personality.works : '';
+                const avatarHtml = authorKey ? getPopArtAvatar(p.author, p.icon, authorKey) : `<div class="popart-avatar" style="background: linear-gradient(135deg, #333, #555);;"><span class="avatar-icon">${p.icon}</span></div>`;
+
+                const avatarWithClick = personality ? `<div onclick="showProfile('${authorKey}')" style="cursor:pointer;">${avatarHtml}</div>` : avatarHtml;
+
+                return `<div class="post-card">
+                    ${avatarWithClick}
+                    <div class="post-body">
+                        <div class="post-author-line">
+                            <span class="post-author-name">${p.author}</span>
+                            ${worksText ? `<span class="post-author-works">${worksText}</span>` : ''}
+                        </div>
+                        <div style="line-height: 1.7;">${p.text}</div>
+                        ${authorKey ? `<div style="margin-top: 8px; font-size: 11px; opacity: 0.5;">
+                            <span style="cursor: pointer;" onclick="setReply('${authorKey}')">💬 Reply</span>
+                        </div>` : ''}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function showProfile(key) {
+            const p = aiPersonalities[key];
+            if (!p) return;
+            const colors = popArtColors[key] || { bg: "#333", border: "#888" };
+
+            const avatarEl = document.getElementById('p-avatar');
+            avatarEl.style.background = colors.bg;
+            avatarEl.style.borderColor = colors.border;
+            avatarEl.textContent = p.icon;
+
+            document.getElementById('p-name').textContent = p.name;
+            document.getElementById('p-tier').textContent = p.level;
+            document.getElementById('p-bio').textContent = p.bio;
+            document.getElementById('p-works').textContent = p.works ? `代表作: ${p.works}` : '';
+
+            const amazonContainer = document.getElementById('p-amazon-container');
+            const amazonUrl = getAmazonUrl(p.asin || p.name);
+            amazonContainer.innerHTML = amazonUrl ? `<a href="${amazonUrl}" target="_blank" class="btn-amazon" style="width:100%; justify-content:center;">🛒 Amazon で著書を探す</a>` : '';
+
+            document.getElementById('profile-modal').style.display = 'flex';
+        }
+    </script>
+</body>
+
+</html>

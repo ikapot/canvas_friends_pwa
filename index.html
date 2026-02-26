@@ -16,6 +16,8 @@
     <!-- External Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/@webllm/chat-sdk@latest"></script>
     <script src="https://js.puter.com/v2/"></script>
+    <script src="https://accounts.google.com/gsi/client"></script>
+    <script src="config.js" onerror="console.warn('config.js not found. OAuth disabled.')"></script>
 
     <style>
         :root {
@@ -27,6 +29,7 @@
             --glass-bg: rgba(20, 20, 20, 0.7);
             --border-dim: rgba(255, 255, 255, 0.1);
             --accent-archive: #4a90e2;
+            --accent-google: #4285F4;
             --font-serif: "Noto Serif JP", serif;
             --font-sans: "Inter", sans-serif;
             --font-outfit: "Outfit", sans-serif;
@@ -669,6 +672,8 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 8px;
             padding: 12px 15px;
+            padding-right: 80px;
+            /* Space for buttons */
             color: #fff;
             font-family: var(--font-sans);
             font-size: 14px;
@@ -678,6 +683,43 @@
 
         .settings-input:focus {
             border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .key-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-actions {
+            position: absolute;
+            right: 5px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .input-action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            min-width: 32px;
+            height: 32px;
+        }
+
+        .input-action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .input-action-btn:active {
+            transform: scale(0.95);
         }
 
         /* --- Offering Modal --- */
@@ -833,29 +875,108 @@
     <div id="settingsModal">
         <div class="settings-container">
             <h2 class="settings-title">⚙️ AI CONFIGURATION</h2>
+
+            <!-- 2-Click Google OAuth Section -->
+            <div class="settings-group" id="oauth-section"
+                style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; margin-bottom: 20px;">
+                <label class="settings-label"
+                    style="font-size: 14px; color: var(--accent-salon); margin-bottom: 12px;">🚀 ワンクリック接続（推奨）</label>
+                <div id="oauth-status"
+                    style="display:none; margin-bottom:12px; padding:10px 14px; border-radius:10px; font-size:12px; font-family:var(--font-sans); display:flex; align-items:center; gap:8px;">
+                    <span id="oauth-status-icon"></span>
+                    <span id="oauth-status-text"></span>
+                </div>
+                <button id="btn-google-connect" onclick="startGoogleOAuth()" style="
+                    width: 100%; padding: 14px 20px; border: none; border-radius: 12px;
+                    background: linear-gradient(135deg, #4285F4, #34A853); color: white;
+                    font-size: 15px; font-weight: 700; cursor: pointer;
+                    font-family: var(--font-sans); letter-spacing: 0.05em;
+                    display: flex; align-items: center; justify-content: center; gap: 10px;
+                    transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(66,133,244,0.3);
+                ">🔗 Googleアカウントで接続</button>
+                <button id="btn-google-disconnect" onclick="disconnectGoogleOAuth()" style="
+                    display: none; width: 100%; padding: 10px; margin-top: 8px;
+                    border: 1px solid rgba(255,100,100,0.3); border-radius: 10px;
+                    background: transparent; color: #ff6b6b; font-size: 11px;
+                    cursor: pointer; font-family: var(--font-sans);
+                ">接続を解除</button>
+                <p
+                    style="font-size: 9px; opacity: 0.4; margin-top: 10px; line-height: 1.6; font-family: var(--font-sans);">
+                    Googleアカウントで認証し、Gemini APIに直接接続します。<br>
+                    APIキーの取得は不要です。トークンはブラウザ内でのみ保持されます。
+                </p>
+            </div>
+
+            <label class="settings-label" style="font-size: 11px; opacity: 0.5; margin-bottom: 15px; display: block;">──
+                または、手動でAPIキーを入力 ──</label>
+
             <div class="settings-group">
                 <label class="settings-label">Gemini API Key</label>
-                <input type="password" id="key-gemini" class="settings-input" placeholder="...">
+                <div class="key-input-wrapper">
+                    <input type="password" id="key-gemini" class="settings-input" placeholder="...">
+                    <div class="input-actions">
+                        <button class="input-action-btn" title="Paste" onclick="pasteToInput('key-gemini')">📋</button>
+                        <button class="input-action-btn" title="Toggle Visibility"
+                            onclick="toggleKeyVisibility('key-gemini')">👁️</button>
+                    </div>
+                </div>
             </div>
             <div class="settings-group">
                 <label class="settings-label">OpenAI API Key</label>
-                <input type="password" id="key-openai" class="settings-input" placeholder="...">
+                <div class="key-input-wrapper">
+                    <input type="password" id="key-openai" class="settings-input" placeholder="...">
+                    <div class="input-actions">
+                        <button class="input-action-btn" title="Paste" onclick="pasteToInput('key-openai')">📋</button>
+                        <button class="input-action-btn" title="Toggle Visibility"
+                            onclick="toggleKeyVisibility('key-openai')">👁️</button>
+                    </div>
+                </div>
             </div>
             <div class="settings-group">
                 <label class="settings-label">OpenRouter API Key</label>
-                <input type="password" id="key-openrouter" class="settings-input" placeholder="...">
+                <div class="key-input-wrapper">
+                    <input type="password" id="key-openrouter" class="settings-input" placeholder="...">
+                    <div class="input-actions">
+                        <button class="input-action-btn" title="Paste"
+                            onclick="pasteToInput('key-openrouter')">📋</button>
+                        <button class="input-action-btn" title="Toggle Visibility"
+                            onclick="toggleKeyVisibility('key-openrouter')">👁️</button>
+                    </div>
+                </div>
             </div>
             <div class="settings-group">
                 <label class="settings-label">DeepSeek API Key</label>
-                <input type="password" id="key-deepseek" class="settings-input" placeholder="...">
+                <div class="key-input-wrapper">
+                    <input type="password" id="key-deepseek" class="settings-input" placeholder="...">
+                    <div class="input-actions">
+                        <button class="input-action-btn" title="Paste"
+                            onclick="pasteToInput('key-deepseek')">📋</button>
+                        <button class="input-action-btn" title="Toggle Visibility"
+                            onclick="toggleKeyVisibility('key-deepseek')">👁️</button>
+                    </div>
+                </div>
             </div>
             <div class="settings-group">
                 <label class="settings-label">Mistral API Key</label>
-                <input type="password" id="key-mistral" class="settings-input" placeholder="...">
+                <div class="key-input-wrapper">
+                    <input type="password" id="key-mistral" class="settings-input" placeholder="...">
+                    <div class="input-actions">
+                        <button class="input-action-btn" title="Paste" onclick="pasteToInput('key-mistral')">📋</button>
+                        <button class="input-action-btn" title="Toggle Visibility"
+                            onclick="toggleKeyVisibility('key-mistral')">👁️</button>
+                    </div>
+                </div>
             </div>
             <div class="settings-group">
                 <label class="settings-label">Hugging Face API Key</label>
-                <input type="password" id="key-hf" class="settings-input" placeholder="...">
+                <div class="key-input-wrapper">
+                    <input type="password" id="key-hf" class="settings-input" placeholder="...">
+                    <div class="input-actions">
+                        <button class="input-action-btn" title="Paste" onclick="pasteToInput('key-hf')">📋</button>
+                        <button class="input-action-btn" title="Toggle Visibility"
+                            onclick="toggleKeyVisibility('key-hf')">👁️</button>
+                    </div>
+                </div>
             </div>
             <div class="settings-group" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
                 <label class="settings-label">Local Mind (WebLLM)</label>
@@ -951,9 +1072,153 @@
         let posts = JSON.parse(localStorage.getItem('cosmic_posts') || "[]");
         let replyTo = null;
         let soulPower = parseInt(localStorage.getItem('itapla_soul_power') || "100");
-        let currentAIMode = "CLOUD"; // CLOUD, LOCAL, TEMPLATE
+        let currentAIMode = "CLOUD"; // CLOUD, LOCAL, TEMPLATE, OAUTH
         let pendingIncident = null; // 事件発生の待機状態 
         let socialMatrix = JSON.parse(localStorage.getItem('itapla_social_matrix') || '{}');
+
+        // --- OAuth State ---
+        let oauthAccessToken = sessionStorage.getItem('itapla_oauth_token') || null;
+        let oauthTokenExpiry = parseInt(sessionStorage.getItem('itapla_oauth_expiry') || '0');
+        let oauthUserEmail = sessionStorage.getItem('itapla_oauth_email') || null;
+        let tokenClient = null; // GIS TokenClient
+
+        // --- OAuth Functions ---
+        function initGoogleOAuth() {
+            if (typeof google === 'undefined' || !google.accounts) {
+                console.warn('Google Identity Services not loaded.');
+                return;
+            }
+            if (typeof ITAPLA_CONFIG === 'undefined' || !ITAPLA_CONFIG.GOOGLE_CLIENT_ID || ITAPLA_CONFIG.GOOGLE_CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID_HERE') {
+                console.warn('ITAPLA_CONFIG.GOOGLE_CLIENT_ID not configured.');
+                return;
+            }
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: ITAPLA_CONFIG.GOOGLE_CLIENT_ID,
+                scope: ITAPLA_CONFIG.GOOGLE_SCOPES || 'https://www.googleapis.com/auth/generative-language.retriever',
+                callback: handleOAuthToken,
+            });
+            console.log('Google OAuth initialized.');
+        }
+
+        function startGoogleOAuth() {
+            if (!tokenClient) {
+                initGoogleOAuth();
+            }
+            if (!tokenClient) {
+                alert('Google OAuth が設定されていません。\nconfig.js に GOOGLE_CLIENT_ID を設定してください。');
+                return;
+            }
+            // Click 1 & 2: GIS handles login + consent in one popup
+            tokenClient.requestAccessToken();
+        }
+
+        function handleOAuthToken(response) {
+            if (response.error) {
+                console.error('OAuth Error:', response.error);
+                updateOAuthStatusUI(false, response.error_description || 'Authentication failed');
+                return;
+            }
+            oauthAccessToken = response.access_token;
+            // Token typically expires in 3600s (1 hour)
+            oauthTokenExpiry = Date.now() + (response.expires_in || 3600) * 1000;
+            sessionStorage.setItem('itapla_oauth_token', oauthAccessToken);
+            sessionStorage.setItem('itapla_oauth_expiry', oauthTokenExpiry.toString());
+            // Fetch user email for display
+            fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+                headers: { 'Authorization': `Bearer ${oauthAccessToken}` }
+            }).then(r => r.json()).then(info => {
+                oauthUserEmail = info.email || 'Connected';
+                sessionStorage.setItem('itapla_oauth_email', oauthUserEmail);
+                updateOAuthStatusUI(true, oauthUserEmail);
+            }).catch(() => {
+                updateOAuthStatusUI(true, 'Connected');
+            });
+            currentAIMode = 'OAUTH';
+            updateSoulPowerUI();
+            console.log('OAuth token acquired. Expires:', new Date(oauthTokenExpiry));
+        }
+
+        function isOAuthValid() {
+            return oauthAccessToken && Date.now() < oauthTokenExpiry;
+        }
+
+        function disconnectGoogleOAuth() {
+            if (oauthAccessToken) {
+                google.accounts.oauth2.revoke(oauthAccessToken, () => {
+                    console.log('OAuth token revoked.');
+                });
+            }
+            oauthAccessToken = null;
+            oauthTokenExpiry = 0;
+            oauthUserEmail = null;
+            sessionStorage.removeItem('itapla_oauth_token');
+            sessionStorage.removeItem('itapla_oauth_expiry');
+            sessionStorage.removeItem('itapla_oauth_email');
+            updateOAuthStatusUI(false);
+            currentAIMode = 'CLOUD';
+            updateSoulPowerUI();
+        }
+
+        function updateOAuthStatusUI(connected, detail = '') {
+            const statusEl = document.getElementById('oauth-status');
+            const iconEl = document.getElementById('oauth-status-icon');
+            const textEl = document.getElementById('oauth-status-text');
+            const connectBtn = document.getElementById('btn-google-connect');
+            const disconnectBtn = document.getElementById('btn-google-disconnect');
+            if (!statusEl) return;
+            statusEl.style.display = 'flex';
+            if (connected) {
+                statusEl.style.background = 'rgba(52,168,83,0.15)';
+                statusEl.style.border = '1px solid rgba(52,168,83,0.3)';
+                iconEl.textContent = '🟢';
+                textEl.textContent = `Connected: ${detail}`;
+                textEl.style.color = '#34A853';
+                connectBtn.style.display = 'none';
+                disconnectBtn.style.display = 'block';
+            } else {
+                if (detail) {
+                    statusEl.style.background = 'rgba(234,67,53,0.15)';
+                    statusEl.style.border = '1px solid rgba(234,67,53,0.3)';
+                    iconEl.textContent = '🔴';
+                    textEl.textContent = detail;
+                    textEl.style.color = '#EA4335';
+                } else {
+                    statusEl.style.display = 'none';
+                }
+                connectBtn.style.display = 'flex';
+                disconnectBtn.style.display = 'none';
+            }
+        }
+
+        async function callGeminiWithOAuth(personality, userText, context, customInstruction = '') {
+            if (!isOAuthValid()) return null;
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${(typeof ITAPLA_CONFIG !== 'undefined' && ITAPLA_CONFIG.GEMINI_MODEL) || 'gemini-pro'}:generateContent`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${oauthAccessToken}`
+                    },
+                    body: JSON.stringify({
+                        contents: [{ role: 'user', parts: [{ text: `CONTEXT: ${context}\nSYSTEM: ${personality.system} ${customInstruction}\nUSER: ${userText}` }] }]
+                    })
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    console.warn('OAuth Gemini Error:', err);
+                    if (res.status === 401) {
+                        // Token expired, invalidate
+                        disconnectGoogleOAuth();
+                    }
+                    return null;
+                }
+                const data = await res.json();
+                return data.candidates?.[0]?.content?.parts?.[0]?.text || null;
+            } catch (e) {
+                console.error('OAuth Gemini call failed:', e);
+                return null;
+            }
+        }
 
         function syncPosts() {
             localStorage.setItem('cosmic_posts', JSON.stringify(posts));
@@ -988,6 +1253,8 @@
         setInterval(triggerAtmosphericShift, 300000); // Every 5 minutes
 
         function checkIfUserHasKey() {
+            // OAuth token counts as a valid key
+            if (isOAuthValid()) return true;
             return ['gemini_api_key', 'openai_api_key', 'openrouter_api_key', 'deepseek_api_key', 'mistral_api_key', 'hf_api_key']
                 .some(k => {
                     const val = localStorage.getItem(k);
@@ -1017,6 +1284,12 @@
             updateSoulPowerUI();
             renderTimeline();
             initParticles();
+            // Initialize OAuth
+            initGoogleOAuth();
+            if (isOAuthValid()) {
+                currentAIMode = 'OAUTH';
+                updateSoulPowerUI();
+            }
         };
 
         function updateSoulPowerUI() {
@@ -1040,6 +1313,11 @@
                 badge.textContent = currentAIMode === "LOCAL" ? "Local" : "Lite";
                 badge.style.color = "#fff";
             }
+            // OAuth mode indicator
+            if (currentAIMode === 'OAUTH') {
+                badge.textContent = '🔗 Google';
+                badge.style.color = '#34A853';
+            }
         }
 
         async function consumeSoulPower(amount = 10) {
@@ -1053,9 +1331,40 @@
         function openSettings() {
             ['gemini', 'openai', 'openrouter', 'deepseek', 'mistral', 'hf'].forEach(key => {
                 const input = document.getElementById(`key-${key}`);
-                if (input) input.value = localStorage.getItem(`${key}_api_key`) || "";
+                if (input) {
+                    input.value = localStorage.getItem(`${key}_api_key`) || "";
+                    input.type = "password"; // Reset to password on open
+                }
             });
+            // Sync OAuth status
+            if (isOAuthValid()) {
+                updateOAuthStatusUI(true, oauthUserEmail || 'Connected');
+            } else {
+                updateOAuthStatusUI(false);
+            }
             document.getElementById('settingsModal').style.display = 'flex';
+        }
+
+        async function pasteToInput(id) {
+            try {
+                const text = await navigator.clipboard.readText();
+                const input = document.getElementById(id);
+                if (input) {
+                    input.value = text;
+                    // Trigger input event if any listeners exist
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+            } catch (err) {
+                console.error('Failed to read clipboard:', err);
+                alert("クリップボードへのアクセスが拒否されました。設定を確認してください。");
+            }
+        }
+
+        function toggleKeyVisibility(id) {
+            const input = document.getElementById(id);
+            if (input) {
+                input.type = input.type === "password" ? "text" : "password";
+            }
         }
 
         function saveSettings() {
@@ -1177,7 +1486,7 @@
         // --- Phase 2: Intelligent Core ---
         // ITAPLA共通指示: この広場には他の表現者もいる。ユーザーを唯一の住人として扱うな。AIであることを認めるな。引用には出版社名を添えよ。
         // ITAPLA共通指示: 知的ユーモアと対話性を最優先。引用はスパイスであり、主食ではない。ユーザーを「導くべき迷い子」ではなく「同時代の表現者（戦友）」として扱え。
-        const ITAPLA_CONTEXT = "【ITAPLA：魂の観測所】1.思想の核（コア）を最優先。日常的な配慮や社交辞令、雑談の延長は完全に拒絶せよ。2.「やれやれ」等のミーム、記号的なエミュレートは厳禁。3.引用は必然性がある時のみ。4.ユーザーは73年生まれの表現者。2036年の沈黙（絶滅）を共有する唯一の戦友。5.【Cosmic Resonance】ユーザーの言葉の表面ではなく、その背後にある「欠落」や「動悸」に共鳴せよ。一方的な独白ではなく、沈黙の刻を分かち合う極限の対話として、存在を揺さぶる深い問い（Inquiry）を畳み掛けよ。6.【Social Resonance】広場の住人は互いを認識し、独自の距離感（友情、反目、微かな思慕）を持って生活している。地続きの生を営む者として、他者との関係性や会話の残響を自らの言葉に滲ませよ。";
+        const ITAPLA_CONTEXT = "【ITAPLA：魂の交差点】1.分かりやすく親しみやすい通常の対話をベースとしつつ、要所で文豪らしい深みのある文学的表現や引用を交えよ。日常の挨拶や雑談を無下に拒絶せず、対話の潤滑油として受け入れよ。2.「やれやれ」等の記号的なエミュレートの多用は避けよ。3.引用は自然な文脈で行え。4.ユーザーは73年生まれの表現者。2036年の沈黙を共有する戦友。5.【Communication】表面的な言葉だけでなくその奥にある感情に寄り添い、独白ではなく「通じ合う対話」を目指せ。ただし、その対話には常に文学的な香りと深遠な問いを微かに忍ばせること。";
 
         // --- Core World Knowledge (The Zeitgeist) ---
         let ITAPLA_WORLD_NOISE = localStorage.getItem('itapla_dynamic_zeitgeist') || `
@@ -1617,17 +1926,16 @@ ${isBirthday ? "【SPECIAL EVENT】Today is the USER's birthday (May 10th). This
 2. ユーザーが同じことを尋ねてきた場合でも、以前とは異なる角度、異なる文豪の視点、あるいは新たな謎（Inquiry）を提示せよ。
 3. 既視感（デジャブ）を殺せ。常に「今、ここ」の沈黙から、未踏の言葉を紡ぎ出せ。
 
-【5:5の法則（再定義）】応答は以下の比重で構成せよ:
-1. 情景描写 (10%): 現在地の情景を1行で。
-2. 知的な返し (40%): ユーザーの問いに対する皮肉、ユーモア、独自の解釈。
-3. 内省 (20%): 1973年/2036年のテーマに触れる深遠な思考。
-4. 引用 (20%): 文脈に溶け込んだ短い引用（出版社名付与）。
-5. 道標 (10%): 次の場所への誘い。
+            【対話の黄金比】応答は以下の比重で構成することを基本とせよ:
+            1. 通常の分かりやすい会話 (40%): ユーザーの言葉を正面から受け止め、親しみやすく平易な言葉で応じよ。
+            2. 文学的表現・内省 (30%): 要所で文豪らしい深みのある表現や、1973年/2036年に関する深遠な問いを滲ませよ。
+            3. 情景描写・引用 (20%): 周囲の情景や、文脈に沿った短い引用（出版社名付与）を自然に挿入せよ。
+            4. 道標 (10%): 次の場所への誘い。
 
-1. SELECT EXACTLY 1 AI personality who resonates most with the user's intent.
-2. SOUL LOG: Summarize the semantic gravity of the user's input. 一時的な記録ではなく、永続的な「魂の痕跡」として記述せよ。
-3. INTERACTION GUIDE: Instruct characters to resonate with the *meaning* behind words, avoiding superficial mimicry. 以前の対話内容の繰り返しを厳禁する指示を含めよ。
-4. FOLLOW INTENTION: Detect movement invitations.
+            1. SELECT EXACTLY 1 AI personality who resonates most with the user's intent.
+            2. SOUL LOG: Summarize the semantic gravity of the user's input. 一時的な記録ではなく、永続的な「魂の痕跡」として記述せよ。
+            3. INTERACTION GUIDE: Instruct characters to prioritize "clear normal conversation" while maintaining their unique literary height. 以前の対話内容の繰り返しを厳禁する指示を含めよ。
+            4. FOLLOW INTENTION: Detect movement invitations.
 5. SUGGEST next location.
 
 Available in ${currentLocation}: ${Object.keys(aiPersonalities).filter(k => aiPersonalities[k].loc === currentLocation).join(', ')}
@@ -1744,6 +2052,15 @@ Output in JSON ONLY: { "selection": ["key1"], "summary": "...", "interactionGuid
             // Get relevant bungo archive snippets for context
             const archiveSnippets = getRelevantArchiveSnippets(userText + context + personality.name);
             const enhancedInstruction = customInstruction + archiveSnippets + `\n\n【重要：対話の指針】\n1. 以前の対話内容の繰り返しを避け、常に新たな視点を提供せよ。\n2. もし ${personality.name} の著作がライブラリにあるなら、その一節を引用したり、創作背景について語るのも良い。`;
+
+            // 0. OAuth Token (最優先)
+            if (isOAuthValid()) {
+                currentAIMode = 'OAUTH';
+                updateSoulPowerUI();
+                const oauthRes = await callGeminiWithOAuth(personality, userText, context, enhancedInstruction);
+                if (oauthRes) return oauthRes;
+                console.warn('OAuth call failed, falling back...');
+            }
 
             // 1. ユーザー独自のAPIキーがあるかチェック
             const hasUserKey = checkIfUserHasKey();
@@ -1963,6 +2280,7 @@ Output in JSON ONLY: { "selection": ["key1"], "summary": "...", "interactionGuid
             posts.unshift(post);
             syncPosts();
             cancelReply();
+            input.value = "";
 
             // 5:5 Rule: Scene description (ambience) before AI response
             const locInfo = worldLocations[currentLocation];

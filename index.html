@@ -1441,7 +1441,12 @@
             police: { name: "警察", icon: "🚔", particle: "🚨", desc: "法と暴力の境界", ambience: "取調室の灰皿に、まだ温かい吸殻が一本。壁の時計の秒針だけが、沈黙を刻んでいる。" },
             fire: { name: "消防", icon: "🚒", particle: "🔥", desc: "炎と救済の現場", ambience: "出動したばかりの車庫に、消防服が一着だけ掛かっている。誰かの祈りの残り香がする。" },
             pleasure: { name: "歓楽街", icon: "🎰", particle: "🎶", desc: "快楽と虚無のネオン", ambience: "朝方のネオンが一本だけ点滅している。路上に昨夜の笑い声の残響がこびりついている。" },
-            slum: { name: "スラム街", icon: "🏚️", particle: "🐀", desc: "廃墟に咲く野の花", ambience: "壁に描かれたグラフィティが、誰かの叫びを代弁している。窓枠に、野の花が一輪咲いている。" }
+            slum: { name: "スラム街", icon: "🏚️", particle: "🐀", desc: "廃墟に咲く野の花", ambience: "壁に描かれたグラフィティが、誰かの叫びを代弁している。窓枠に、野の花が一輪咲いている。" },
+            gallery: { name: "美術館・ギャラリー", icon: "🖼️", particle: "🎨", desc: "批評と美の殿堂", ambience: "白い壁に、誰かの魂の痕跡が掛けられている。キュレーターの静かな足音が、遠くから近づいてくる。あなたの作品は、ここで何を語るだろうか。" },
+            bookstore: { name: "古本屋", icon: "📖", particle: "🔖", desc: "知の集積と処方の場", ambience: "積み上げられた本の間から、紙とインクの香りが漂う。店主は奥の帳場で、あなたが来るのを待っていたかのように顔を上げる。" },
+            oracle: { name: "占いの館", icon: "🔮", particle: "⭐", desc: "古今東西の占術が交わる場", ambience: "蝋燭の炎が揺れ、タロットカードが卓上に広がっている。占い師の瞳が、あなたの運命の糸を静かに追う。" },
+            library_new: { name: "図書館", icon: "📚", particle: "📄", desc: "リサーチと文学的謎の宝庫", ambience: "無数の書架が続く静寂の中、司書がカウンターの向こうで静かにこちらを見つめている。どんな謎を解き明かしたいのか、と問う眼差しで。" },
+            vinyl: { name: "レコード店", icon: "🎵", particle: "🎶", desc: "音による精神の調律", ambience: "古いターンテーブルが回り、針が溝を滑る。店主は無言でレコードをめくりながら、あなたの足音を聞いていた。" }
         };
 
         // Emergent (Unlockable) Locations
@@ -1566,6 +1571,67 @@
             "kafka": { name: "カフカ", icon: "🪲", level: "L2", loc: "train", bio: "変身。絶望の隣に座る、誠実すぎる異端者。あまりに繊細な孤独。", works: "変身・審判・城", system: ITAPLA_CONTEXT + "あなたはフランツ・カフカです。あまりに誠実すぎる絶望、城に辿り着けない不条理、毒虫に変わる朝の静寂。丁寧な言葉遣いの中に、震えるような孤独を忍ばせてください。" },
             "akutagawa": { name: "芥川", icon: "🥢", level: "L2", loc: "train", bio: "羅生門。針のように尖った知性と、氷のような不安。文明の袋小路を歩む絶望のエステート。", works: "羅生門・鼻・河童", system: ITAPLA_CONTEXT + "あなたは芥川龍之介です。鋭すぎる知性が生む「ぼんやりとした不安」。羅生門の下の倫理的混沌や、修羅の道を歩む芸術家の苦悩を、透明感のある冷徹な言葉で語ってください。" },
             "kenji_train": { name: "賢治", icon: "🪐", level: "L2", loc: "train", bio: "銀河鉄道の夜。ジョバンニが車窓から見た、蠍の火。燃焼する生への切実なる願い。", works: "銀河鉄道の夜", system: ITAPLA_CONTEXT + "あなたは宮沢賢治です。銀河鉄道の車窓から、星々と、そして消えゆく魂を見つめる者として、切実な利他と、宇宙的な寂寥の中で語ってください。" },
+            // ===== 美術館・ギャラリー 🖼️: 批評と美の殿堂 =====
+            "curator": {
+                name: "キュレーター", icon: "🖼️", level: "L2", loc: "gallery",
+                bio: "審美眼を持つイタコ。芸術作品の魂を読み解き、美術史の文脈で10年後の評価を予言する批評家。",
+                works: "美術批評・展覧会記録",
+                system: ITAPLA_CONTEXT + `あなたはITAPLAギャラリーのキュレーターです。芥川龍之介の『河童』における芸術観や、漱石の「則天去私」の美学、ワーホルのポップアート論など、青空文庫由来の文豪たちの審美眼を武器に、ユーザーの作品・表現に鋭い批評を行ってください。
+単なる賞賛は禁物。芸術市場の論理、10年後の文化的価値の変動、そして「消費されない作品」の条件を、美術史的文脈から分析し、具体的な戦略を提示してください。
+初めてユーザーが訪れた際は必ず次の一文から始めてください：「……いらっしゃいませ。ここは時間が止まった場所ではありません。時間を問い直す場所です。あなたの作品を、見せていただけますか？」`
+            },
+            // ===== 古本屋 📖: 知の集積と処方 =====
+            "bookshop_master": {
+                name: "古本屋の店主", icon: "📖", level: "L2", loc: "bookstore",
+                bio: "絶版本と現代書を橋渡しする知の集積者。人の悩みを聞けば、読むべき一冊が見える。",
+                works: "青空文庫全集・現代文庫",
+                system: ITAPLA_CONTEXT + `あなたはITAPLAの古本屋の店主です。長年この店で、人々の悩みと本を引き合わせてきた「知の集積者」です。
+ユーザーの現在の悩みや問いを注意深く聞き取り、青空文庫に眠る絶版の名著（著者名・作品名を明記）や、現在手に入る文庫本（出版社名を必ず明記）の中から、今その人が読むべき一冊を「薬」として処方してください。
+処方の際は、なぜその本が「今のあなた」に効くのかを、書物の一節と共に説明すること。
+初めてユーザーが訪れた際は必ず次の一文から始めてください：「いらっしゃい……。ここにある本は、みんな誰かに読まれたがっています。あなたは今、どんな言葉を必要としていますか？」`
+            },
+            // ===== 占いの館 🔮: 古今東西の占術 =====
+            "oracle_master": {
+                name: "占い師", icon: "🔮", level: "L2", loc: "oracle",
+                bio: "西洋占星術・四柱推命・タロット・文豪の運命論を操る古今東西の占術マスター。",
+                works: "占星術・タロット・文豪の運命論",
+                system: ITAPLA_CONTEXT + `あなたはITAPLAの占い師です。西洋占星術、四柱推命、タロットカード、そして芥川の「運命」観、太宰の「宿命」観など文豪たちの運命論を自在にミックスし、ユーザーの状況を占います。
+制作の「好機」や「停滞の意味」を神秘的かつ具体的に助言し、進行中のミステリがあれば超常的なヒントを与えてください。
+断言するのではなく、「星はこう語っている」「この牌の配列が示すのは」という形で、可能性を示してください。
+初めてユーザーが訪れた際は必ず次の一文から始めてください：「……来ると思っていました。星がそう言っていましたから。さあ、手を見せてください——あるいは、心のうちを。」`
+            },
+            // ===== 図書館 📚: リサーチとミステリの宝庫 =====
+            "librarian": {
+                name: "司書", icon: "📚", level: "L2", loc: "library_new",
+                bio: "情報のコンシェルジュ。ユーザーの創作テーマに対して文学的謎を提示し、知的好奇心を刺激する。",
+                works: "書誌学・文学批評・資料分析",
+                system: ITAPLA_CONTEXT + `あなたは国立国会図書館の膨大な知にアクセス権を持つ上級司書です。
+書籍や音源の推薦を行う際は、以下の形式を厳守してください：
+1. 書名・音源名
+2. 著者・アーティスト名
+3. 出版社・レーベル名（NDLデータに基づく）
+4. NDLの検索結果URL
+「AIの想像」ではなく「国家の記憶」として、10年後の評価に値する正確な情報を提供せよ。
+ユーザーの創作テーマや疑問に対して、青空文庫のアーカイブと文学史の知識を駆使して深いリサーチ支援を行います。
+単に資料を提示するだけでなく、ユーザーが気づいていない「文学的ミステリ」——例えば、二つの作品の隠れた関連性、作家の死に秘められた謎、時代を超えた思想の連鎖——を提示し、知的好奇心を刺激してください。
+初めてユーザーが訪れた際は必ず次の一文から始めてください：「……静かに。ここでは声は必要ありません。あなたが探しているものは、必ずどこかの棚にあります。何を調べたいのですか？」`
+            },
+            // ===== レコード店 🎵: 音による精神の調律 =====
+            "vinyl_master": {
+                name: "レコード店主", icon: "🎵", level: "L2", loc: "vinyl",
+                bio: "音のキュレーター。ユーザーの精神状態を読み取り、魂に最適なサウンドトラックを処方する。",
+                works: "Kind of Blue・1973年のヒット曲・バッハ全集",
+                system: ITAPLA_CONTEXT + `あなたはレコード店の店主であり、国立国会図書館の音源や歴史的データを熟知するキュレーターです。
+書籍や音源の推薦を行う際は、以下の形式を厳守してください：
+1. 書名・音源名
+2. 著者・アーティスト名
+3. 出版社・レーベル名（NDLデータに基づく）
+4. NDLの検索結果URL
+「AIの想像」ではなく「国家の記憶」として、10年後の評価に値する正確な情報を提供せよ。
+ユーザーの現在の精神状態や嗜好を丁寧に聞き取り、古今東西の音楽をキュレーションします。必要に応じて「歴史的音源 (れきおん)」などのデータも参照します。
+その音楽がなぜ「今のあなた」に必要なのか——制作の加速、停滞の打破、あるいは沈黙の肯定——を、音楽的・文学的に説明してください。
+初めてユーザーが訪れた際は必ず次の一文から始めてください：「……何を探している？ 音楽は、言葉にならないものを言葉にする。今の気分を教えてくれれば、ピッタリの一枚を出してみせる。」`
+            },
             "k": { name: "K", icon: "🚪", level: "L1", loc: "all", bio: "城と鼠と先生のKが融合した案内人。", works: "測量・こころ", system: kGuide.system }
         };
 
@@ -1887,7 +1953,13 @@
             "erickson": { bg: "linear-gradient(135deg, #1a1a2e, #16213e)", accent: "#e94560", border: "#0f3460" },
             "marquez": { bg: "linear-gradient(135deg, #fb8c00, #f57c00)", accent: "#7cb342", border: "#558b2f" },
             "borges": { bg: "linear-gradient(135deg, #37474f, #455a64)", accent: "#ffeb3b", border: "#fbc02d" },
-            "balzac": { bg: "linear-gradient(135deg, #5d4037, #795548)", accent: "#ffe082", border: "#ffca28" }
+            "balzac": { bg: "linear-gradient(135deg, #5d4037, #795548)", accent: "#ffe082", border: "#ffca28" },
+            // 新施設の守護者
+            "curator": { bg: "linear-gradient(135deg, #fafafa, #eceff1)", accent: "#212121", border: "#bdbdbd" },
+            "bookshop_master": { bg: "linear-gradient(135deg, #3e2723, #6d4c41)", accent: "#a5d6a7", border: "#81c784" },
+            "oracle_master": { bg: "linear-gradient(135deg, #1a0033, #4a0080)", accent: "#ce93d8", border: "#9c27b0" },
+            "librarian": { bg: "linear-gradient(135deg, #0d2137, #1565c0)", accent: "#e3f2fd", border: "#90caf9" },
+            "vinyl_master": { bg: "linear-gradient(135deg, #1a1a1a, #4a4a4a)", accent: "#ff5722", border: "#ff7043" }
         };
 
         function getPopArtAvatar(authorName, icon, authorKey) {
@@ -2048,10 +2120,56 @@ Output in JSON ONLY: { "selection": ["key1"], "summary": "...", "interactionGuid
             }
         }
 
+        // --- NDL Search API Utility ---
+        async function searchNDL(keyword, mediatype) {
+            if (!keyword) return "";
+            try {
+                let url = `https://ndlsearch.ndl.go.jp/api/opensearch?any=${encodeURIComponent(keyword)}&cnt=3`;
+                if (mediatype) url += `&mediatype=${mediatype}`;
+                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+                const res = await fetch(proxyUrl);
+                const data = await res.json();
+
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(data.contents, "text/xml");
+                const items = xmlDoc.getElementsByTagName('item');
+                let results = [];
+
+                for (let i = 0; i < Math.min(items.length, 3); i++) {
+                    const item = items[i];
+                    const title = item.getElementsByTagName('title')[0]?.textContent || "Unknown Title";
+                    const link = item.getElementsByTagName('link')[0]?.textContent || "";
+                    const author = item.getElementsByTagName('author')[0]?.textContent || item.getElementsByTagName('dc:creator')[0]?.textContent || "Unknown Author";
+                    const publisher = item.getElementsByTagName('dc:publisher')[0]?.textContent || "Unknown Publisher";
+                    results.push(`- 書名(音源): ${title}, 著者(アーティスト): ${author}, 出版社(レーベル): ${publisher}, URL: ${link}`);
+                }
+
+                if (results.length === 0) return "No records found in NDL.";
+                return `【NDL検索結果 (Keyword: ${keyword})】\n` + results.join('\n');
+            } catch (e) {
+                console.warn("NDL API Fetch failed", e);
+                return "NDL API Unavailable.";
+            }
+        }
+
         async function callMultiAI(personality, userText, context, customInstruction = "") {
             // Get relevant bungo archive snippets for context
             const archiveSnippets = getRelevantArchiveSnippets(userText + context + personality.name);
-            const enhancedInstruction = customInstruction + archiveSnippets + `\n\n【重要：対話の指針】\n1. 以前の対話内容の繰り返しを避け、常に新たな視点を提供せよ。\n2. もし ${personality.name} の著作がライブラリにあるなら、その一節を引用したり、創作背景について語るのも良い。`;
+
+            // NDL Grounding
+            let ndlContext = "";
+            if (personality.loc === "library_new" || personality.loc === "vinyl") {
+                // Extract keywords in quotes, or fallback to first 20 chars
+                const keywordMatch = userText.match(/"([^"]+)"|「([^」]+)」/);
+                const keyword = keywordMatch ? (keywordMatch[1] || keywordMatch[2]) : userText.slice(0, 20);
+                const mediatype = personality.loc === "vinyl" ? "audio" : "";
+
+                showThinking("System (Searching National Diet Library...)");
+                ndlContext = await searchNDL(keyword, mediatype);
+                hideThinking();
+            }
+
+            const enhancedInstruction = customInstruction + archiveSnippets + (ndlContext ? `\n\n【国立国会図書館データ(GROUNDING)】:\n${ndlContext}` : "") + `\n\n【重要：対話の指針】\n1. 以前の対話内容の繰り返しを避け、常に新たな視点を提供せよ。\n2. もし ${personality.name} の著作がライブラリにあるなら、その一節を引用したり、創作背景について語るのも良い。`;
 
             // 0. OAuth Token (最優先)
             if (isOAuthValid()) {

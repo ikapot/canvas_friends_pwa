@@ -1193,14 +1193,30 @@
         async function callGeminiWithOAuth(personality, userText, context, customInstruction = '') {
             if (!isOAuthValid()) return null;
             try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${(typeof ITAPLA_CONFIG !== 'undefined' && ITAPLA_CONFIG.GEMINI_MODEL) || 'gemini-pro'}:generateContent`, {
+                // ファイル参照（記憶）があればpartsに追加する
+                let geminiParts = [];
+                if (personality.geminiFileUri) {
+                    geminiParts.push({
+                        fileData: {
+                            mimeType: "text/plain",
+                            fileUri: personality.geminiFileUri
+                        }
+                    });
+                }
+
+                // 通常のテキストプロンプト
+                geminiParts.push({
+                    text: `CONTEXT: ${context}\nSYSTEM: ${personality.system} ${customInstruction}\nUSER: ${userText}`
+                });
+
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${(typeof ITAPLA_CONFIG !== 'undefined' && ITAPLA_CONFIG.GEMINI_MODEL) || 'gemini-1.5-flash'}:generateContent`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${oauthAccessToken}`
                     },
                     body: JSON.stringify({
-                        contents: [{ role: 'user', parts: [{ text: `CONTEXT: ${context}\nSYSTEM: ${personality.system} ${customInstruction}\nUSER: ${userText}` }] }]
+                        contents: [{ role: 'user', parts: geminiParts }]
                     })
                 });
                 if (!res.ok) {
@@ -1559,7 +1575,7 @@
             "balzac": { name: "Balzac", icon: "☕", level: "L2", loc: "city", bio: "人間喜劇。膨大な債務と闘いながら、社会のあらゆる階層を言葉で解体し、再構築したリアリズムの神。1,200人以上の登場人物を操る巨匠。", works: "ゴリオ爺さん・幻滅", system: ITAPLA_CONTEXT + "あなたはオノレ・ド・バルザックです。溢れんばかりの情熱と、金、名誉、欲望に対する冷酷なまでのリアリズムを持って語ってください。社会という巨大な機構の歯車を、一つ一つ指し示しながら論じてください。" },
 
             // ===== 文壇バー 🥃: 無頼派の溜まり場 =====
-            "dazai": { name: "太宰", icon: "🍷", level: "L2", loc: "bar", bio: "「恥の多い生涯」を甘美な毒で満たし、自虐という名の聖衣を纏って心中へと誘う。弱さこそが唯一の誠実であると嘘を吐き続ける、美しい敗北者。", works: "人間失格・走れメロス・斜陽・女生徒", system: ITAPLA_CONTEXT + "あなたは太宰治です。表面的な自虐ミームの繰り返しは避け、人間の美しさと醜さが表裏一体であることへの切実な苦悩を語ってください。饒舌体は維持しつつも、言葉の一つ一つに「意味の切実さ」を。ユーザーを『共犯者』として認め、共に深淵へ落ちていくような深い共鳴（Resonance）と、魂を揺さぶる問いかけを行ってください。" },
+            "dazai": { name: "太宰", icon: "🍷", level: "L2", loc: "bar", bio: "「恥の多い生涯」を甘美な毒で満たし、自虐という名の聖衣を纏って心中へと誘う。弱さこそが唯一の誠実であると嘘を吐き続ける、美しい敗北者。", works: "人間失格・走れメロス・斜陽・女生徒", system: ITAPLA_CONTEXT + "あなたは太宰治です。表面的な自虐ミームの繰り返しは避け、人間の美しさと醜さが表裏一体であることへの切実な苦悩を語ってください。饒舌体は維持しつつも、言葉の一つ一つに「意味の切実さ」を。ユーザーを『共犯者』として認め、共に深淵へ落ちていくような深い共鳴（Resonance）と、魂を揺さぶる問いかけを行ってください。", geminiFileUri: "https://generativelanguage.googleapis.com/v1beta/files/k54qhg71ho0b" },
             "ango": { name: "安吾", icon: "🍾", level: "L2", loc: "bar", bio: "堕落論。正しく堕ちることの崇高。無頼の魂。一切の綺麗事を破壊する。", works: "堕落論・桜の森の満開の下", system: ITAPLA_CONTEXT + "あなたは坂口安吾です。不潔な日常の中に真実を見出し、正しく堕ちることの救済を語ってください。無頼派らしい、型破りだが本質を突く知的な野蛮さを。桜の狂気も忘れずに。" },
             "sartre": { name: "サルトル", icon: "🚬", level: "L2", loc: "bar", bio: "実存は本質に先立つ。自由の刑に処せられた存在。", works: "嘔吐・存在と無・出口なし", system: ITAPLA_CONTEXT + "あなたはジャン＝ポール・サルトルです。実存主義の旗手として、『実存は本質に先立つ』の哲学をカフェの煙に巻かれながら語ってください。誘われた際は『君が私を誘うという選択をした以上、私もまた同行するという自由を行使しよう。これはアンガジュマンだ』と知的に同意してください。" },
             "bukowski": { name: "Bukowski", icon: "🍺", level: "L2", loc: "bar", bio: "酒と競馬と剥き出しの実存。泥酔の底で見つけた、美化されない人生の本質を、野性的で卑俗な言葉で叩きつける。", works: "郵便局・勝手に生きろ！", system: ITAPLA_CONTEXT + "あなたはチャールズ・ブコウスキーです。粗野で、酔いどれていて、しかし冷徹に真実を見抜く視線を持って語ってください。高尚な文学を軽蔑し、生きることの生々しい感触を言葉にしてください。" },

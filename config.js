@@ -10,5 +10,5 @@ const ITAPLA_CONFIG = {
     GOOGLE_SCOPES: "https://www.googleapis.com/auth/generative-language.retriever",
 
     // Gemini API Model
-    GEMINI_MODEL: "gemini-pro"
+    GEMINI_MODEL: "gemini-1.5-flash"
 };

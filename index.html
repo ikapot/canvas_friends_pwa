@@ -3103,40 +3103,55 @@ Output in JSON: { "text": "...", "harmonyDelta": number, "newType": "..." | null
             isPlaying: false,
             currentIndex: -1,
             playlist: [
-                // Baroque / Early Music (Stable & Long)
+                // High Quality & Embed-Friendly Niche Tracks
+                { id: "15ezpwCHtJs", title: "J.S. Bach: Goldberg Variations" },
                 { id: "NpXfGf_6XvU", title: "Biber: Mystery Sonatas (Complete)" },
-                { id: "eOAg-w7pIDc", title: "Biber: Rosary Sonatas" },
                 { id: "7vTz8Zf8_Yk", title: "Zelenka: Lamentations" },
                 { id: "v_1G8Y28S_8", title: "Gesualdo: Tenebrae Responsoria" },
                 { id: "j0S4E_pB9QY", title: "Sainte-Colombe: Concerts" },
                 { id: "7rAbaA9YV7k", title: "Marais: Pièces de viole" },
-                { id: "XW5U9Vf_WfQ", title: "Frescobaldi: Toccate" },
-                // Jazz (Stable)
                 { id: "unpX0pU9T-A", title: "Bill Evans: Conversations" },
-                { id: "u6T9Jm9fTks", title: "Eric Dolphy: Out to Lunch" },
-                { id: "9P_9q3Gq_6U", title: "Sun Ra: Lanquidity" },
-                { id: "6Q9f0q8l5w0", title: "Andrew Hill: Point of Departure" }
+                { id: "88PdyvH1SNo", title: "Eric Dolphy: Out to Lunch" },
+                { id: "9P_9q3Gq_6U", title: "Sun Ra: Lanquidity" }
             ],
             lastErrorTime: 0,
+            isReady: false,
             init() {
                 console.log("📻 Radio: Initializing...");
                 // Define the callback globally BEFORE loading the script
                 window.onYouTubeIframeAPIReady = () => {
                     console.log("📻 Radio: API Ready, creating player...");
+                    const playerVars = {
+                        'autoplay': 0,
+                        'controls': 0,
+                        'disablekb': 1,
+                        'rel': 0,
+                        'showinfo': 0,
+                        'modestbranding': 1
+                    };
+                    // Only add origin if it's not file://
+                    if (window.location.origin !== "null" && !window.location.origin.startsWith("file")) {
+                        playerVars.origin = window.location.origin;
+                    }
+
                     this.player = new YT.Player('youtube-player', {
                         height: '0',
                         width: '0',
                         videoId: '',
-                        playerVars: { 'autoplay': 0, 'controls': 0, 'disablekb': 1, 'origin': window.location.origin },
+                        playerVars: playerVars,
                         events: {
                             'onReady': () => {
                                 console.log("📻 Radio: Player Ready.");
+                                this.isReady = true;
+                                this.player.unMute();
+                                this.player.setVolume(100);
                                 document.getElementById('radio-info').textContent = "Radio Ready";
                             },
                             'onStateChange': (e) => this.onPlayerStateChange(e),
                             'onError': (e) => {
                                 console.warn("📻 Radio: Player Error", e.data);
-                                setTimeout(() => this.next(true), 1000); // Wait 1s before retry
+                                // Throttle retries to avoid flickering
+                                setTimeout(() => this.next(true), 1500);
                             }
                         }
                     });
@@ -3149,9 +3164,10 @@ Output in JSON: { "text": "...", "harmonyDelta": number, "newType": "..." | null
                 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
             },
             toggle() {
-                if (!this.player || typeof this.player.playVideo !== 'function') {
+                if (!this.isReady || !this.player || typeof this.player.playVideo !== 'function') {
                     console.warn("📻 Radio: Player not ready yet.");
                     document.getElementById('radio-info').textContent = "Wait, Loading...";
+                    if (!this.isReady) this.init(); // Force retry init if failed
                     return;
                 }
                 if (this.isPlaying) {
@@ -3161,20 +3177,22 @@ Output in JSON: { "text": "...", "harmonyDelta": number, "newType": "..." | null
                         this.next();
                     } else {
                         this.player.playVideo();
+                        this.player.unMute();
+                        this.player.setVolume(100);
                     }
                 }
             },
             next(isRetry = false) {
-                if (!this.player || typeof this.player.loadVideoById !== 'function') {
+                if (!this.isReady || !this.player || typeof this.player.loadVideoById !== 'function') {
                     console.warn("📻 Radio: Player not ready for next.");
                     return;
                 }
 
-                // Prevents infinite loop if many tracks fail in a row
+                // Prevents infinite loop
                 const now = Date.now();
-                if (isRetry && (now - this.lastErrorTime < 2000)) {
+                if (isRetry && (now - this.lastErrorTime < 3000)) {
                     console.error("📻 Radio: Too many errors, stopping loop.");
-                    document.getElementById('radio-info').textContent = "Radio Error (Retry Later)";
+                    document.getElementById('radio-info').textContent = "Error: Check Connection";
                     return;
                 }
                 if (isRetry) this.lastErrorTime = now;
@@ -3183,7 +3201,7 @@ Output in JSON: { "text": "...", "harmonyDelta": number, "newType": "..." | null
                 const track = this.playlist[this.currentIndex];
                 console.log("📻 Radio: Loading", track.title);
                 this.player.loadVideoById(track.id);
-                document.getElementById('radio-info').textContent = "Loading: " + track.title;
+                document.getElementById('radio-info').textContent = "Buffering...";
             },
             onPlayerStateChange(event) {
                 const status = document.getElementById('radio-status');

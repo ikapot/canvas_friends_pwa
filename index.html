@@ -856,7 +856,8 @@
     <!-- Radio Controller -->
     <div id="radio-container"
         style="position: fixed; bottom: 85px; right: 20px; z-index: 4500; display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 8px 15px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); font-family: var(--font-outfit); font-size: 11px; color: var(--text-main); transition: all 0.3s;">
-        <div id="youtube-player" style="display: none;"></div>
+        <iframe id="youtube-player" style="display: none; width: 0; height: 0; border: none;"
+            allow="autoplay; encrypted-media" src=""></iframe>
         <div id="radio-status" style="width: 8px; height: 8px; border-radius: 50%; background: #555;"></div>
         <div id="radio-info"
             style="max-width: 150px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; opacity: 0.8;">
@@ -3097,125 +3098,32 @@ Output in JSON: { "text": "...", "harmonyDelta": number, "newType": "..." | null
             }
         };
 
-        // --- ITAPLA Radio Logic ---
+        // --- ITAPLA Radio Logic (Simplified for file:// Protocol) ---
         const ItaplaRadio = {
-            player: null,
             isPlaying: false,
             currentIndex: -1,
             playlist: [
-                // High Quality & Embed-Friendly Niche Tracks
-                { id: "15ezpwCHtJs", title: "J.S. Bach: Goldberg Variations" },
-                { id: "NpXfGf_6XvU", title: "Biber: Mystery Sonatas (Complete)" },
+                { id: "NpXfGf_6XvU", title: "Biber: Mystery Sonatas" },
                 { id: "7vTz8Zf8_Yk", title: "Zelenka: Lamentations" },
-                { id: "v_1G8Y28S_8", title: "Gesualdo: Tenebrae Responsoria" },
+                { id: "v_1G8Y28S_8", title: "Gesualdo: Tenebrae" },
                 { id: "j0S4E_pB9QY", title: "Sainte-Colombe: Concerts" },
                 { id: "7rAbaA9YV7k", title: "Marais: Pièces de viole" },
                 { id: "unpX0pU9T-A", title: "Bill Evans: Conversations" },
                 { id: "88PdyvH1SNo", title: "Eric Dolphy: Out to Lunch" },
-                { id: "9P_9q3Gq_6U", title: "Sun Ra: Lanquidity" }
+                { id: "n_S8S-G-Sko", title: "J.S. Bach: Goldberg (Gould)" }
             ],
-            lastErrorTime: 0,
-            isReady: false,
             init() {
-                console.log("📻 Radio: Initializing...");
-                // Define the callback globally BEFORE loading the script
-                window.onYouTubeIframeAPIReady = () => {
-                    console.log("📻 Radio: API Ready, creating player...");
-                    const playerVars = {
-                        'autoplay': 0,
-                        'controls': 0,
-                        'disablekb': 1,
-                        'rel': 0,
-                        'showinfo': 0,
-                        'modestbranding': 1
-                    };
-                    // Only add origin if it's not file://
-                    if (window.location.origin !== "null" && !window.location.origin.startsWith("file")) {
-                        playerVars.origin = window.location.origin;
-                    }
-
-                    this.player = new YT.Player('youtube-player', {
-                        height: '0',
-                        width: '0',
-                        videoId: '',
-                        playerVars: playerVars,
-                        events: {
-                            'onReady': () => {
-                                console.log("📻 Radio: Player Ready.");
-                                this.isReady = true;
-                                this.player.unMute();
-                                this.player.setVolume(100);
-                                document.getElementById('radio-info').textContent = "Radio Ready";
-                            },
-                            'onStateChange': (e) => this.onPlayerStateChange(e),
-                            'onError': (e) => {
-                                console.warn("📻 Radio: Player Error", e.data);
-                                // Throttle retries to avoid flickering
-                                setTimeout(() => this.next(true), 1500);
-                            }
-                        }
-                    });
-                };
-
-                // Load the script dynamically
-                const tag = document.createElement('script');
-                tag.src = "https://www.youtube.com/iframe_api";
-                const firstScriptTag = document.getElementsByTagName('script')[0];
-                firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+                console.log("📻 Radio: Initialized (Static Mode)");
+                document.getElementById('radio-info').textContent = "Radio Ready";
             },
             toggle() {
-                if (!this.isReady || !this.player || typeof this.player.playVideo !== 'function') {
-                    console.warn("📻 Radio: Player not ready yet.");
-                    document.getElementById('radio-info').textContent = "Wait, Loading...";
-                    if (!this.isReady) this.init(); // Force retry init if failed
-                    return;
-                }
-                if (this.isPlaying) {
-                    this.player.pauseVideo();
-                } else {
-                    if (this.currentIndex === -1) {
-                        this.next();
-                    } else {
-                        this.player.playVideo();
-                        this.player.unMute();
-                        this.player.setVolume(100);
-                    }
-                }
-            },
-            next(isRetry = false) {
-                if (!this.isReady || !this.player || typeof this.player.loadVideoById !== 'function') {
-                    console.warn("📻 Radio: Player not ready for next.");
-                    return;
-                }
-
-                // Prevents infinite loop
-                const now = Date.now();
-                if (isRetry && (now - this.lastErrorTime < 3000)) {
-                    console.error("📻 Radio: Too many errors, stopping loop.");
-                    document.getElementById('radio-info').textContent = "Error: Check Connection";
-                    return;
-                }
-                if (isRetry) this.lastErrorTime = now;
-
-                this.currentIndex = Math.floor(Math.random() * this.playlist.length);
-                const track = this.playlist[this.currentIndex];
-                console.log("📻 Radio: Loading", track.title);
-                this.player.loadVideoById(track.id);
-                document.getElementById('radio-info').textContent = "Buffering...";
-            },
-            onPlayerStateChange(event) {
+                const iframe = document.getElementById('youtube-player');
+                const headerBtn = document.getElementById('radio-header-btn');
                 const status = document.getElementById('radio-status');
                 const btn = document.getElementById('radio-toggle-btn');
-                const headerBtn = document.getElementById('radio-header-btn');
-                if (event.data === YT.PlayerState.PLAYING) {
-                    this.isPlaying = true;
-                    status.style.background = "#00ff88"; // Active Green
-                    btn.textContent = "⏸️";
-                    if (headerBtn) {
-                        headerBtn.style.background = "rgba(0, 255, 136, 0.3)";
-                        headerBtn.style.borderColor = "rgba(0, 255, 136, 0.5)";
-                    }
-                } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+
+                if (this.isPlaying) {
+                    iframe.src = ""; // Stop playback
                     this.isPlaying = false;
                     status.style.background = "#555";
                     btn.textContent = "▶️";
@@ -3223,7 +3131,30 @@ Output in JSON: { "text": "...", "harmonyDelta": number, "newType": "..." | null
                         headerBtn.style.background = "rgba(139, 69, 19, 0.4)";
                         headerBtn.style.borderColor = "rgba(255, 255, 255, 0.2)";
                     }
-                    if (event.data === YT.PlayerState.ENDED) this.next();
+                    document.getElementById('radio-info').textContent = "Radio Off";
+                } else {
+                    if (this.currentIndex === -1) this.currentIndex = Math.floor(Math.random() * this.playlist.length);
+                    const track = this.playlist[this.currentIndex];
+                    // Direct embed URL with autoplay=1
+                    iframe.src = `https://www.youtube.com/embed/${track.id}?autoplay=1&rel=0`;
+                    this.isPlaying = true;
+                    status.style.background = "#00ff88"; // Active Green
+                    btn.textContent = "⏸️";
+                    if (headerBtn) {
+                        headerBtn.style.background = "rgba(0, 255, 136, 0.3)";
+                        headerBtn.style.borderColor = "rgba(0, 255, 136, 0.5)";
+                    }
+                    document.getElementById('radio-info').textContent = track.title;
+                }
+            },
+            next() {
+                this.currentIndex = (this.currentIndex + 1) % this.playlist.length;
+                if (this.isPlaying) {
+                    this.isPlaying = false; // Reset to force reload
+                    this.toggle();
+                } else {
+                    const track = this.playlist[this.currentIndex];
+                    document.getElementById('radio-info').textContent = track.title;
                 }
             }
         };

@@ -471,16 +471,41 @@
         }
 
         .post-card {
-            background: var(--surface-deep);
-            padding: 30px;
-            border-radius: 24px;
-            border: 1px solid var(--border-soft);
-            margin-bottom: 30px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-            animation: fadeIn 0.8s ease-out forwards;
+            background: #D4C3A3;
+            /* Default post-it color */
+            padding: 25px;
+            border-radius: 2px;
+            border: none;
+            margin-bottom: 20px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+            animation: stickyDrop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
             display: flex;
             gap: 20px;
             align-items: flex-start;
+            position: relative;
+            color: #2D1E2F;
+        }
+
+        .post-card::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, transparent 50%, rgba(0, 0, 0, 0.08) 50%);
+        }
+
+        @keyframes stickyDrop {
+            0% {
+                transform: scale(1.1) rotate(5deg);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1) rotate(var(--rotation, 0deg));
+                opacity: 1;
+            }
         }
 
 
@@ -1047,12 +1072,14 @@
     </div>
 
     <div class="input-floating">
-        <div id="replyIndicator" style="display: none; font-size: 12px; margin-bottom: 8px; opacity: 0.6;">
-            To: <span id="replyName"></span> <span style="cursor: pointer" onclick="cancelReply()">✕</span>
+        <div id="replyIndicator" style="display: none; font-size: 11px; margin-bottom: 5px; color: rgba(0,0,0,0.5);">
+            To: <span id="replyName" style="font-weight:bold;"></span> <span style="cursor: pointer"
+                onclick="cancelReply()">✕</span>
         </div>
-        <textarea id="voidInput" class="void-input" rows="2" placeholder="Write into the void..."></textarea>
-        <div style="display: flex; justify-content: flex-end;">
-            <button class="btn-cosmic" style="margin-top: 0; padding: 8px 30px;"
+        <textarea id="voidInput" class="k-input" rows="2" placeholder="Write into the void..."></textarea>
+        <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+            <button class="btn-cosmic"
+                style="margin-top: 0; padding: 5px 20px; background: rgba(0,0,0,0.8); color: white; border: none; font-size: 12px;"
                 onclick="publishPost()">Publish</button>
         </div>
     </div>
@@ -3078,28 +3105,49 @@ Output in JSON: { "text": "...", "harmonyDelta": number, "newType": "..." | null
         // --- More to follow in next phases ---
         function renderTimeline() {
             const container = document.getElementById('timeline');
-            container.innerHTML = posts.map(p => {
+            container.innerHTML = '';
+
+            const stickyColors = ['#D4C3A3', '#E3D5B8', '#C9B896', '#BFAF8D', '#D9C5B2'];
+
+            posts.forEach((p, index) => {
                 const authorKey = Object.keys(aiPersonalities).find(k => aiPersonalities[k].name === p.author) || '';
                 const personality = aiPersonalities[authorKey];
                 const worksText = personality ? personality.works : '';
-                const avatarHtml = authorKey ? getPopArtAvatar(p.author, p.icon, authorKey) : `<div class="popart-avatar" style="background: linear-gradient(135deg, #333, #555);;"><span class="avatar-icon">${p.icon}</span></div>`;
 
+                // Pop art avatar setup
+                const colors = popArtColors[authorKey] || { bg: "linear-gradient(135deg, #333, #555)", border: "#888", accent: "#fff" };
+                const tier = personality ? personality.level : '';
+                const avatarHtml = `<div class="popart-avatar" style="background: ${colors.bg}; border-color: ${colors.border}; width:48px; height:48px;">
+                    <span class="avatar-icon">${p.icon}</span>
+                    ${tier ? `<span class="avatar-tier" style="color: ${colors.accent};">${tier}</span>` : ''}
+                </div>`;
                 const avatarWithClick = personality ? `<div onclick="showProfile('${authorKey}')" style="cursor:pointer;">${avatarHtml}</div>` : avatarHtml;
 
-                return `<div class="post-card">
+                // Sticky Note styling
+                const card = document.createElement('div');
+                card.className = 'post-card';
+                const rotation = (index % 2 === 0 ? -0.8 : 0.8) + (Math.random() * 0.4 - 0.2);
+                const color = p.isAI ? stickyColors[index % stickyColors.length] : '#F4D03F'; // User is bright yellow
+
+                card.style.setProperty('--rotation', `${rotation}deg`);
+                card.style.background = color;
+
+                card.innerHTML = `
                     ${avatarWithClick}
                     <div class="post-body">
                         <div class="post-author-line">
-                            <span class="post-author-name">${p.author}</span>
-                            ${worksText ? `<span class="post-author-works">${worksText}</span>` : ''}
+                            <span class="post-author-name" style="color:rgba(0,0,0,0.8);">${p.author}</span>
+                            ${worksText ? `<span class="post-author-works" style="color:rgba(0,0,0,0.4);">${worksText}</span>` : ''}
                         </div>
-                        <div style="line-height: 1.7;">${p.text}</div>
-                        ${authorKey ? `<div style="margin-top: 8px; font-size: 11px; opacity: 0.5;">
-                            <span style="cursor: pointer;" onclick="setReply('${authorKey}')">💬 Reply</span>
-                        </div>` : ''}
+                        <div style="line-height: 1.7; color:rgba(0,0,0,0.85); font-size:15px; white-space:pre-wrap;">${p.text}</div>
+                        <div style="margin-top: 12px; font-size: 10px; display:flex; justify-content:space-between; align-items:center;">
+                            <span style="opacity: 0.4; font-family:var(--font-outfit); color:rgba(0,0,0,0.6);">${new Date(p.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} — ${p.location}</span>
+                            ${authorKey && p.author !== 'K' && p.author !== 'System' ? `<span style="cursor: pointer; font-weight:800; opacity:0.7;" onclick="setReply('${authorKey}')">REPLY</span>` : ''}
+                        </div>
                     </div>
-                </div>`;
-            }).join('');
+                `;
+                container.appendChild(card);
+            });
         }
 
         function showProfile(key) {

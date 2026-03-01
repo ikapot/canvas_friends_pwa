@@ -446,21 +446,130 @@
             animation: pulse-green 2s infinite;
         }
 
-        @keyframes pulse-green {
-            0% {
-                transform: scale(0.95);
-                opacity: 0.7;
-            }
+        /* --- Investigation Board (Murder Wall) --- */
+        .murder-wall-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 7000;
+            overflow: auto;
+            backdrop-filter: blur(10px);
+        }
 
-            70% {
-                transform: scale(1.1);
-                opacity: 1;
-            }
+        .murder-wall-container {
+            position: relative;
+            min-width: 1200px;
+            min-height: 1000px;
+            background-color: #4a3728;
+            background-image:
+                radial-gradient(circle at 2px 2px, rgba(0, 0, 0, 0.15) 1px, transparent 0),
+                linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+            background-size: 8px 8px, 40px 40px, 40px 40px;
+            border: 20px solid #2a1b0e;
+            box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.8), 0 20px 50px rgba(0, 0, 0, 0.5);
+            margin: 40px;
+            padding: 60px;
+        }
 
-            100% {
-                transform: scale(0.95);
-                opacity: 0.7;
-            }
+        .board-note {
+            position: absolute;
+            width: 140px;
+            padding: 15px;
+            background: #f4d03f;
+            box-shadow: 2px 5px 15px rgba(0, 0, 0, 0.4);
+            font-family: var(--font-sans);
+            font-size: 12px;
+            color: #333;
+            cursor: pointer;
+            z-index: 10;
+            transition: transform 0.2s;
+        }
+
+        .board-note:hover {
+            transform: scale(1.1) rotate(0deg) !important;
+            z-index: 100;
+        }
+
+        .polaroid {
+            position: absolute;
+            width: 100px;
+            background: #fff;
+            padding: 8px 8px 25px 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            border-radius: 2px;
+            z-index: 20;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .polaroid:hover {
+            transform: scale(1.15) rotate(0deg) !important;
+            z-index: 100;
+        }
+
+        .polaroid-img {
+            width: 84px;
+            height: 84px;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            border: 1px solid #ddd;
+        }
+
+        .polaroid-name {
+            font-family: var(--font-serif);
+            font-size: 9px;
+            color: #111;
+            text-align: center;
+            margin-top: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .evidence-string {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .pin {
+            width: 12px;
+            height: 12px;
+            background: radial-gradient(circle at 30% 30%, #ff4d4d, #990000);
+            border-radius: 50%;
+            position: absolute;
+            z-index: 30;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+        }
+
+        .murder-wall-close {
+            position: fixed;
+            top: 20px;
+            right: 40px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            padding: 10px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            z-index: 8000;
+            font-family: var(--font-outfit);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            backdrop-filter: blur(5px);
         }
 
         /* --- Timeline --- */
@@ -910,19 +1019,13 @@
 
     <canvas id="bg-canvas"></canvas>
 
-    <!-- World Map Modal -->
-    <div id="mapModal"
-        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.92); z-index:4000; overflow-y:auto;">
-        <div style="max-width:700px; margin:40px auto; padding:20px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
-                <h2 style="font-family:var(--font-outfit); font-weight:300; letter-spacing:0.2em; margin:0;">🗺️ WORLD
-                    MAP</h2>
-                <button onclick="closeMap()"
-                    style="background:none; border:1px solid rgba(255,255,255,0.3); color:#fff; padding:8px 20px; cursor:pointer; font-family:var(--font-sans); border-radius:6px;">✕
-                    閉じる</button>
-            </div>
-            <div id="mapGrid"
-                style="display:grid; grid-template-columns:repeat(auto-fill, minmax(130px, 1fr)); gap:12px;"></div>
+    <!-- Investigation Board Modal (The Murder Wall) -->
+    <div id="mapModal" class="murder-wall-modal">
+        <button class="murder-wall-close" onclick="closeMap()">Close Case Board</button>
+        <div class="murder-wall-container" id="murderWallBoard">
+            <svg class="evidence-string" id="evidenceStrings"></svg>
+            <div id="boardLocations"></div>
+            <div id="boardParticipants"></div>
         </div>
     </div>
 
@@ -950,8 +1053,6 @@
         <div style="display:flex; align-items:center; gap:15px;">
             <button onclick="openMap()"
                 style="background:none; border:none; font-size:24px; cursor:pointer; filter:none;">🗺️</button>
-            <button onclick="BungoArchive.open()"
-                style="background:none; border:none; font-size:24px; cursor:pointer; filter:none;">📚</button>
             <span id="currentLocIcon" style="font-size:20px;">☕</span>
         </div>
         <h1 id="appTitle">ITAPLA</h1>
@@ -1028,22 +1129,6 @@
         </div>
     </div>
 
-    <!-- Bungo Archive Modal -->
-    <div id="archiveModal"
-        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:7000; align-items:center; justify-content:center; backdrop-filter:blur(8px);">
-        <div
-            style="width:90%; max-width:500px; background:var(--glass-bg); border:1px solid var(--border-dim); border-radius:15px; padding:30px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h2 style="margin:0; font-family:var(--font-outfit); font-weight:300; letter-spacing:0.1em;">📚 BUNGO
-                    ARCHIVE</h2>
-                <button onclick="BungoArchive.close()"
-                    style="background:none; border:none; color:#fff; font-size:20px; cursor:pointer;">✕</button>
-            </div>
-            <div id="archiveList" style="max-height:400px; overflow-y:auto; display:grid; gap:10px;">
-                <!-- List populated by JS -->
-            </div>
-        </div>
-    </div>
 
     <!-- Profile Modal (Added) -->
     <div id="profile-modal"
@@ -2099,14 +2184,11 @@ ${newsSummary}
             let topicHistory = JSON.parse(localStorage.getItem('itapla_topic_history') || '[]');
             const historyContext = topicHistory.length > 0 ? `\n【過去の主要トピック（回顧録）】: ${topicHistory.join(' / ')}` : "";
 
-            // アーカイブ情報の取得
-            const archiveCatalog = BungoArchive.works.map(w => `『${w.title}』(${w.author})`).join(', ');
-            const archiveContext = `\n【ITAPLA文庫（ライブラリ）】: ${archiveCatalog}\n※必要に応じて、アーカイブ内の作品（ snippets ）に言及し、文豪としての実存感を高めよ。`;
 
             const systemPrompt = `You are the L1 Orchestrator of ITAPLA (文豪イタコ・プラザ).
 ${ITAPLA_CONTEXT}
 Analyze user input and current world state: [${worldState}] at [${locInfo ? locInfo.name : currentLocation}].
-CURRENT ZEITGEIST (World Noise): ${ITAPLA_WORLD_NOISE}${historyContext}${archiveContext}
+CURRENT ZEITGEIST (World Noise): ${ITAPLA_WORLD_NOISE}${historyContext}
 ${isBirthday ? "【SPECIAL EVENT】Today is the USER's birthday (May 10th). This is 'The Day the Abyss Opens'. All residents should include expressions of solemn celebration mixed with insights about 'remaining time' until 2036." : ""}
 
 【絶対遵守：二度と同じ話をしない】
@@ -2165,18 +2247,6 @@ Output in JSON ONLY: { "selection": ["key1"], "summary": "...", "interactionGuid
             }
         }
 
-        /**
-         * Get relevant snippets from the archive based on the conversation context.
-         */
-        function getRelevantArchiveSnippets(text) {
-            const matches = BungoArchive.works.filter(w =>
-                text.includes(w.title) || text.includes(w.author) ||
-                (w.snippet && w.snippet.substring(0, 10).split('').some(c => text.includes(c)))
-            );
-            if (matches.length === 0) return "";
-            return "\n\n【言及可能な著作の断片（ snippets ）】:\n" +
-                matches.map(w => `${w.author}『${w.title}』: 「${w.snippet}」`).join('\n');
-        }
 
 
         // --- WebLLM (Local Mind) Manager ---
@@ -2269,8 +2339,6 @@ Output in JSON ONLY: { "selection": ["key1"], "summary": "...", "interactionGuid
         }
 
         async function callMultiAI(personality, userText, context, customInstruction = "") {
-            // Get relevant bungo archive snippets for context
-            const archiveSnippets = getRelevantArchiveSnippets(userText + context + personality.name);
 
             // NDL Grounding
             let ndlContext = "";
@@ -2285,7 +2353,7 @@ Output in JSON ONLY: { "selection": ["key1"], "summary": "...", "interactionGuid
                 hideThinking();
             }
 
-            const enhancedInstruction = customInstruction + archiveSnippets + (ndlContext ? `\n\n【国立国会図書館データ(GROUNDING)】:\n${ndlContext}` : "") + `\n\n【重要：対話の指針】\n1. 以前の対話内容の繰り返しを避け、常に新たな視点を提供せよ。\n2. もし ${personality.name} の著作がライブラリにあるなら、その一節を引用したり、創作背景について語るのも良い。`;
+            const enhancedInstruction = customInstruction + (ndlContext ? `\n\n【国立国会図書館データ(GROUNDING)】:\n${ndlContext}` : "") + `\n\n【重要：対話の指針】\n1. 以前の対話内容の繰り返しを避け、常に新たな視点を提供せよ。`;
 
             // 0. OAuth Token (最優先)
             if (isOAuthValid()) {
@@ -2766,57 +2834,109 @@ ${ITAPLA_WORLD_NOISE}
 
         // --- Map Modal ---
         function openMap() {
-            const grid = document.getElementById('mapGrid');
-            grid.innerHTML = '';
-            grid.style.display = 'flex';
-            grid.style.flexDirection = 'column';
-            grid.style.gap = '5px';
+            const board = document.getElementById('murderWallBoard');
+            const locLayer = document.getElementById('boardLocations');
+            const partLayer = document.getElementById('boardParticipants');
+            const svgLayer = document.getElementById('evidenceStrings');
 
-            const stickyColors = ['#A8A856', '#D6C065', '#E3A658', '#E38B58', '#E37058', '#D65A5A'];
-            const getIcon = (key) => {
-                // Return simple line-based icons (SVG or Unicode characters that look like lines)
-                const icons = {
-                    cafe: "☕", seaside: "🌊", mountain: "⛰", city: "🏙", bar: "🥃",
-                    train: "🚃", salon: "💎", volcano: "🌋", corsia: "📖", swamp: "🫧",
-                    river: "🏞", temple: "⛩", mosque: "🕌", school: "🏫", factory: "🏭",
-                    police: "🚔", fire: "🚒", pleasure: "🎰", slum: "🏚", gallery: "🖼",
-                    bookstore: "📕", oracle: "🔮", library_new: "📚", vinyl: "🎵"
-                };
-                return icons[key] || "📍";
-            };
+            locLayer.innerHTML = '';
+            partLayer.innerHTML = '';
+            svgLayer.innerHTML = '';
 
-            Object.entries(worldLocations).forEach(([key, loc], index) => {
-                const isActive = key === currentLocation;
-                const card = document.createElement('div');
-                card.className = `map-card ${isActive ? 'active' : ''}`;
+            const locations = Object.entries(worldLocations);
+            const participants = Object.entries(aiPersonalities).filter(([k, p]) => k !== 'k' && k !== 'System');
 
-                // Rotation and color
-                const rotation = (index % 2 === 0 ? -1 : 1) * (Math.random() * 2 + 1);
-                const color = stickyColors[index % stickyColors.length];
+            // 1. Position Locations (Investigation Nodes)
+            const locPositions = {};
+            const cols = 5;
+            const spacingX = 220;
+            const spacingY = 180;
 
-                card.style.background = color;
-                if (!isActive) {
-                    card.style.transform = `rotate(${rotation}deg)`;
-                }
+            locations.forEach(([key, loc], i) => {
+                const x = 100 + (i % cols) * spacingX + (Math.random() * 40 - 20);
+                const y = 80 + Math.floor(i / cols) * spacingY + (Math.random() * 40 - 20);
+                locPositions[key] = { x, y };
 
-                card.innerHTML = `
-                    <div class="map-card-icon" style="border:1.5px solid rgba(0,0,0,0.4);">
-                        <span style="filter: grayscale(1) brightness(0.2); font-size:18px;">${getIcon(key)}</span>
-                    </div>
-                    <div>
-                        <div style="font-size:14px; font-weight:700; font-family:var(--font-sans); color:rgba(0,0,0,0.8);">${loc.name.toUpperCase()}</div>
-                        <div style="font-size:9px; opacity:0.6; font-family:var(--font-outfit); color:rgba(0,0,0,0.7);">${loc.desc}</div>
-                    </div>
-                    ${isActive ? '<div style="margin-left:auto; font-size:10px; font-weight:bold; color:#fff; background:rgba(0,0,0,0.5); padding:2px 8px; border-radius:10px;">HERE</div>' : ''}
+                const note = document.createElement('div');
+                note.className = `board-note ${key === currentLocation ? 'active' : ''}`;
+                note.style.left = `${x}px`;
+                note.style.top = `${y}px`;
+                note.style.transform = `rotate(${(Math.random() * 6 - 3)}deg)`;
+
+                note.innerHTML = `
+                    <div style="font-weight:800; border-bottom:1px solid rgba(0,0,0,0.1); padding-bottom:6px; margin-bottom:8px; font-size:12px;">${loc.icon} ${loc.name.toUpperCase()}</div>
+                    <div style="font-size:9px; opacity:0.7; line-height:1.4; font-weight:500;">${loc.desc}</div>
+                    <div class="pin" style="top:-6px; left:50%; margin-left:-6px;"></div>
                 `;
-                card.onclick = () => {
-                    if (!isActive) {
+                note.onclick = () => {
+                    if (key !== currentLocation) {
                         switchLocation(key);
                         closeMap();
                     }
                 };
-                grid.appendChild(card);
+                locLayer.appendChild(note);
             });
+
+            // 2. Position Participants (Suspects/Residents) and Draw Connections
+            // We group participants by location to avoid too many overlapping strings
+            const residentsByLoc = {};
+            participants.forEach(([key, p]) => {
+                if (!residentsByLoc[p.loc]) residentsByLoc[p.loc] = [];
+                residentsByLoc[p.loc].push({ key, ...p });
+            });
+
+            Object.entries(residentsByLoc).forEach(([locKey, residents]) => {
+                const locPos = locPositions[locKey];
+                if (!locPos) return;
+
+                residents.forEach((p, idx) => {
+                    // Position polaroid in a semi-circle or cluster around the location note
+                    const angle = (idx / residents.length) * Math.PI * 2 + (Math.random() * 0.5);
+                    const dist = 110 + Math.random() * 40;
+                    const px = locPos.x + 20 + Math.cos(angle) * dist;
+                    const py = locPos.y + 20 + Math.sin(angle) * dist;
+
+                    const polaroid = document.createElement('div');
+                    polaroid.className = 'polaroid';
+                    polaroid.style.left = `${px}px`;
+                    polaroid.style.top = `${py}px`;
+                    polaroid.style.transform = `rotate(${(Math.random() * 14 - 7)}deg)`;
+
+                    const colors = popArtColors[p.key] || { bg: "#333", border: "#888" };
+                    polaroid.innerHTML = `
+                        <div class="polaroid-img" style="background:${colors.bg}; border-color:${colors.border};">${p.icon}</div>
+                        <div class="polaroid-name">${p.name}</div>
+                        <div class="pin" style="top:-4px; left:50%; margin-left:-6px;"></div>
+                    `;
+                    polaroid.onclick = (e) => {
+                        e.stopPropagation();
+                        showProfile(p.key);
+                    };
+                    partLayer.appendChild(polaroid);
+
+                    // 3. Draw Red "Evidence" String
+                    // Start from polaroid pin, end at location note pin
+                    const startX = px + 50;
+                    const startY = py;
+                    const endX = locPos.x + 70;
+                    const endY = locPos.y;
+
+                    const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    // Slight curve to make it look like a string
+                    const cpX = (startX + endX) / 2;
+                    const cpY = Math.max(startY, endY) + 20;
+                    const d = `M ${startX} ${startY} Q ${cpX} ${cpY} ${endX} ${endY}`;
+
+                    line.setAttribute("d", d);
+                    line.setAttribute("stroke", "#b22222");
+                    line.setAttribute("stroke-width", "1.5");
+                    line.setAttribute("fill", "none");
+                    line.setAttribute("stroke-opacity", "0.7");
+                    line.setAttribute("stroke-dasharray", "none");
+                    svgLayer.appendChild(line);
+                });
+            });
+
             document.getElementById('mapModal').style.display = 'block';
         }
 
@@ -3170,63 +3290,6 @@ Output in JSON: { "text": "...", "harmonyDelta": number, "newType": "..." | null
 
         /* --- Bungo Archive (The Great Library of ITAPLA) --- */
 
-        /* --- Bungo Archive (The Great Library of ITAPLA) --- */
-        const BungoArchive = {
-            works: [],
-            async init() {
-                try {
-                    // Puter.js KV storage to persist the bibliography
-                    const data = await puter.kv.get('itapla_bungo_archive');
-                    this.works = data ? JSON.parse(data) : this.getInitialCollection();
-                    console.log("📚 Bungo Archive initialized.");
-                } catch (e) {
-                    console.warn("Archive init failed, using local collection.", e);
-                    this.works = this.getInitialCollection();
-                }
-            },
-            getInitialCollection() {
-                return [
-                    { id: 1, author: "夏目漱石", title: "こころ", snippet: "親譲りの無鉄砲で小供の時から損ばかりしている。小学校に居る時分学校の二階から飛び降りて一週間ほど腰を抜かした事がある。" },
-                    { id: 2, author: "太宰治", title: "人間失格", snippet: "恥の多い生涯を送って来ました。自分には、人間の生活というものが、見当つかないのです。" },
-                    { id: 3, author: "中島敦", title: "山月記", snippet: "隴西の李徴は博学才穎、天宝の末年、若くして名を虎榜に連ね、ついで江南尉に補せられたが、性は狷介、自ら恃むところ頗る厚く..." },
-                    { id: 4, author: "夏目漱石", title: "三四郎", snippet: "「熊本より東京は広い。東京より日本は広い。日本より……」と、三四郎は心のうちで言った。" },
-                    { id: 5, author: "夏目漱石", title: "それから", snippet: "代助は其れから、机の上に置いた新聞を取り上げて、其の中にある、殺人事件の、短い記事を読み始めた。 " },
-                    { id: 6, author: "夏目漱石", title: "門", snippet: "宗助は、縁側に座って、秋の日の当る庭を眺めていた。其処には、名も知れぬ小さな草が、静かに露を宿していた。" },
-                    { id: 7, author: "夏目漱石", title: "私の個人主義", snippet: "私は今日ここに、皆さんの前で、私の個人的な主義についてお話ししたいと思います。それは、他人の自由を認めることで、自己の自由を確保するという考え方です。" },
-                    { id: 8, author: "夏目漱石", title: "明暗", snippet: "津田は、病院の窓から、遠くの街を眺めていた。彼の心の中には、解決のつかない暗い影が、絶えず揺らめいていた。" },
-                    { id: 9, author: "ドストエフスキー", title: "賭博者", snippet: "ルーレット台の前に立つと、私の心臓は激しく波打った。全財産を赤に投じる。その一瞬の空白にこそ、私の人生のすべてが凝縮されていた。" },
-                    { id: 10, author: "ブコウスキー", title: "郵便局", snippet: "朝起きて、また仕事に行く。それが人生さ。時々、競馬場で勝つこともある。それ以外は、ただのクソだ。" },
-                    { id: 11, author: "セリーヌ", title: "夜の果てへの旅", snippet: "旅は有用だ。それは想像力を働かせる。あとはすべて幻滅と疲労にすぎない。我々の旅は、夜へと向かっているのだ。" },
-                    { id: 12, author: "カミュ", title: "異邦人", snippet: "今日、ママンが死んだ。もしかすると昨日だったかもしれない。私にはどうでもいいことだ。太陽があまりに眩しかった。" },
-                    { id: 13, author: "ボーヴァワール", title: "第二の性", snippet: "人は女に生まれるのではない。女になるのだ。文明が、この不均衡な運命を作り出したのだ。" },
-                    { id: 14, author: "ガルシア＝マルケス", title: "百年の孤独", snippet: "それから何年も経って、銃殺隊の前に立つことになったとき、アウレリャノ・ブエンディア大佐は、父に連れられて初めて氷を見に行った遠い日の午後を思い出すのだった。" },
-                    { id: 15, author: "ボルヘス", title: "バベルの図書館", snippet: "宇宙（他の人々はそれを「図書館」と呼んでいる）は、不特定多数の、あるいは無限の、六角形の回廊によって構成されている。" },
-                    { id: 16, author: "スティーブ・エリクソン", title: "エクスタシーの影", snippet: "ロサンゼルス。そこでは時間が海に沈み、私たちはまだ上映されていない映画の残像の中で生きている。" }
-                ];
-            },
-            async save() {
-                await puter.kv.set('itapla_bungo_archive', JSON.stringify(this.works));
-            },
-            open() {
-                const modal = document.getElementById('archiveModal');
-                const list = document.getElementById('archiveList');
-                list.innerHTML = this.works.map(w => `
-                    <div class="archive-item" onclick="BungoArchive.read(${w.id})">
-                        <div style="font-weight:bold; color:var(--accent-salon);">${w.title}</div>
-                        <div style="font-size:11px; opacity:0.6;">${w.author}</div>
-                    </div>
-                `).join('');
-                modal.style.display = 'flex';
-            },
-            close() {
-                document.getElementById('archiveModal').style.display = 'none';
-            },
-            read(id) {
-                const work = this.works.find(w => w.id === id);
-                if (!work) return;
-                alert(`『${work.title}』\n著者: ${work.author}\n\n${work.snippet}`);
-            }
-        };
 
         // --- ITAPLA Radio Logic (API Mode for GitHub Pages) ---
         const ItaplaRadio = {
@@ -3335,7 +3398,6 @@ Output in JSON: { "text": "...", "harmonyDelta": number, "newType": "..." | null
         ItaplaRadio.init();
 
         // Initialize Archive
-        BungoArchive.init();
     </script>
 </body>
 

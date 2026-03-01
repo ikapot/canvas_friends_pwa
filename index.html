@@ -17,7 +17,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@webllm/chat-sdk@latest"></script>
     <script src="https://js.puter.com/v2/"></script>
     <script src="https://accounts.google.com/gsi/client"></script>
-    <script src="https://www.youtube.com/iframe_api"></script>
     <script src="config.js" onerror="console.warn('config.js not found. OAuth disabled.')"></script>
 
     <style>
@@ -3120,25 +3119,41 @@ Output in JSON: { "text": "...", "harmonyDelta": number, "newType": "..." | null
                 { id: "J0q7f8q9w-0", title: "Cecil Taylor: Unit Structures" }
             ],
             init() {
+                console.log("📻 Radio: Initializing...");
+                // Define the callback globally BEFORE loading the script
                 window.onYouTubeIframeAPIReady = () => {
+                    console.log("📻 Radio: API Ready, creating player...");
                     this.player = new YT.Player('youtube-player', {
                         height: '0',
                         width: '0',
                         videoId: '',
-                        playerVars: { 'autoplay': 0, 'controls': 0, 'disablekb': 1 },
+                        playerVars: { 'autoplay': 0, 'controls': 0, 'disablekb': 1, 'origin': window.location.origin },
                         events: {
-                            'onReady': () => console.log("📻 Radio Ready."),
+                            'onReady': () => {
+                                console.log("📻 Radio: Player Ready.");
+                                document.getElementById('radio-info').textContent = "Radio Ready";
+                            },
                             'onStateChange': (e) => this.onPlayerStateChange(e),
                             'onError': (e) => {
-                                console.warn("Radio Error:", e);
+                                console.warn("📻 Radio: Player Error", e.data);
                                 this.next();
                             }
                         }
                     });
                 };
+
+                // Load the script dynamically
+                const tag = document.createElement('script');
+                tag.src = "https://www.youtube.com/iframe_api";
+                const firstScriptTag = document.getElementsByTagName('script')[0];
+                firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
             },
             toggle() {
-                if (!this.player) return;
+                if (!this.player || typeof this.player.playVideo !== 'function') {
+                    console.warn("📻 Radio: Player not ready yet.");
+                    document.getElementById('radio-info').textContent = "Wait, Loading...";
+                    return;
+                }
                 if (this.isPlaying) {
                     this.player.pauseVideo();
                 } else {
@@ -3150,8 +3165,13 @@ Output in JSON: { "text": "...", "harmonyDelta": number, "newType": "..." | null
                 }
             },
             next() {
+                if (!this.player || typeof this.player.loadVideoById !== 'function') {
+                    console.warn("📻 Radio: Player not ready for next.");
+                    return;
+                }
                 this.currentIndex = Math.floor(Math.random() * this.playlist.length);
                 const track = this.playlist[this.currentIndex];
+                console.log("📻 Radio: Playing", track.title);
                 this.player.loadVideoById(track.id);
                 document.getElementById('radio-info').textContent = track.title;
             },

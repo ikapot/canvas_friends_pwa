@@ -17,6 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@webllm/chat-sdk@latest"></script>
     <script src="https://js.puter.com/v2/"></script>
     <script src="https://accounts.google.com/gsi/client"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script src="config.js" onerror="console.warn('config.js not found. OAuth disabled.')"></script>
 
     <style>
@@ -853,7 +854,23 @@
         </div>
     </div>
 
-    <header id="mainHeader">
+    <!-- Radio Controller -->
+    <div id="radio-container"
+        style="position: fixed; bottom: 85px; right: 20px; z-index: 4500; display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 8px 15px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); font-family: var(--font-outfit); font-size: 11px; color: var(--text-main); transition: all 0.3s;">
+        <div id="youtube-player" style="display: none;"></div>
+        <div id="radio-status" style="width: 8px; height: 8px; border-radius: 50%; background: #555;"></div>
+        <div id="radio-info"
+            style="max-width: 150px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; opacity: 0.8;">
+            Radio Off</div>
+        <div style="display: flex; gap: 8px;">
+            <button onclick="ItaplaRadio.toggle()" id="radio-toggle-btn"
+                style="background:none; border:none; color:inherit; cursor:pointer; padding:0; font-size:14px;">▶️</button>
+            <button onclick="ItaplaRadio.next()"
+                style="background:none; border:none; color:inherit; cursor:pointer; padding:0; font-size:14px;">⏭️</button>
+        </div>
+    </div>
+
+    <header id="main-header">
         <div style="display:flex; align-items:center; gap:15px;">
             <button onclick="openMap()"
                 style="background:none; border:none; font-size:24px; cursor:pointer; filter:none;">🗺️</button>
@@ -3076,6 +3093,81 @@ Output in JSON: { "text": "...", "harmonyDelta": number, "newType": "..." | null
                 alert(`『${work.title}』\n著者: ${work.author}\n\n${work.snippet}`);
             }
         };
+
+        // --- ITAPLA Radio Logic ---
+        const ItaplaRadio = {
+            player: null,
+            isPlaying: false,
+            currentIndex: -1,
+            playlist: [
+                // Baroque / Early Music (Niche)
+                { id: "eOAg-w7pIDc", title: "Biber: Rosary Sonatas" },
+                { id: "m6EID2fH1yY", title: "Couperin: Leçons de Ténèbres" },
+                { id: "O6T_UoOonB4", title: "Zelenka: Miserere in C minor" },
+                { id: "j0S4E_pB9QY", title: "Sainte-Colombe: Concerts a deux violes" },
+                { id: "7rAbaA9YV7k", title: "Marais: Pièces de viole" },
+                { id: "XW5U9Vf_WfQ", title: "Frescobaldi: Toccate e Partite" },
+                { id: "v_1G8Y28S_8", title: "Gesualdo: Tenebrae Responsoria" },
+                // Rare / Intellectual Jazz
+                { id: "u6T9Jm9fTks", title: "Eric Dolphy: Out to Lunch!" },
+                { id: "9P_9q3Gq_6U", title: "Sun Ra: Lanquidity" },
+                { id: "unpX0pU9T-A", title: "Bill Evans: Conversations with Myself" },
+                { id: "6Q9f0q8k5w0", title: "Andrew Hill: Point of Departure" },
+                { id: "J0q7f8q9w-0", title: "Cecil Taylor: Unit Structures" }
+            ],
+            init() {
+                window.onYouTubeIframeAPIReady = () => {
+                    this.player = new YT.Player('youtube-player', {
+                        height: '0',
+                        width: '0',
+                        videoId: '',
+                        playerVars: { 'autoplay': 0, 'controls': 0, 'disablekb': 1 },
+                        events: {
+                            'onReady': () => console.log("📻 Radio Ready."),
+                            'onStateChange': (e) => this.onPlayerStateChange(e),
+                            'onError': (e) => {
+                                console.warn("Radio Error:", e);
+                                this.next();
+                            }
+                        }
+                    });
+                };
+            },
+            toggle() {
+                if (!this.player) return;
+                if (this.isPlaying) {
+                    this.player.pauseVideo();
+                } else {
+                    if (this.currentIndex === -1) {
+                        this.next();
+                    } else {
+                        this.player.playVideo();
+                    }
+                }
+            },
+            next() {
+                this.currentIndex = Math.floor(Math.random() * this.playlist.length);
+                const track = this.playlist[this.currentIndex];
+                this.player.loadVideoById(track.id);
+                document.getElementById('radio-info').textContent = track.title;
+            },
+            onPlayerStateChange(event) {
+                const status = document.getElementById('radio-status');
+                const btn = document.getElementById('radio-toggle-btn');
+                if (event.data === YT.PlayerState.PLAYING) {
+                    this.isPlaying = true;
+                    status.style.background = "#00ff88"; // Active Green
+                    btn.textContent = "⏸️";
+                } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+                    this.isPlaying = false;
+                    status.style.background = "#555";
+                    btn.textContent = "▶️";
+                    if (event.data === YT.PlayerState.ENDED) this.next();
+                }
+            }
+        };
+
+        ItaplaRadio.init();
 
         // Initialize Archive
         BungoArchive.init();

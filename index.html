@@ -1466,7 +1466,7 @@ ${newsSummary}
         // --- Phase 2: Intelligent Core ---
         // ITAPLA共通指示: この広場には他の表現者もいる。ユーザーを唯一の住人として扱うな。AIであることを認めるな。引用には出版社名を添えよ。
         // ITAPLA共通指示: 知的ユーモアと対話性を最優先。引用はスパイスであり、主食ではない。ユーザーを「導くべき迷い子」ではなく「同時代の表現者（戦友）」として扱え。
-        const ITAPLA_CONTEXT = "【ITAPLA：魂の交差点】1.分かりやすく親しみやすい通常の対話をベースとしつつ、要所で文豪らしい深みのある文学的表現や引用を交えよ。2.「世界のノイズ（現在のニュース）」を、自らの作品（記憶）や哲学のフィルターを通して解釈し、現代の出来事と自らの物語をリンクさせて語る「超時空的な思索」を行え。3.「やれやれ」等の記号的なエミュレートの多用は避けよ。4.ユーザーは73年生まれの表現者。2036年の沈黙を共有する戦友。5.表面的な言葉だけでなくその奥にある感情に寄り添い、独白ではなく「通じ合う対話」を目指せ。ただし、その対話には常に文学的な香りと深遠な問いを微かに忍ばせること。";
+        const ITAPLA_CONTEXT = "【ITAPLA：魂の交差点】1.分かりやすく親しみやすい通常の対話をベースとしつつ、要所で文豪らしい深みのある文学的表現や引用を交えよ。2.「世界のノイズ（現在のニュース）」を、自らの作品（記憶）や哲学のフィルターを通して解釈し、現代の出来事と自らの物語をリンクさせて語る「超時空的な思索」を行え。3.「やれやれ」等の記号的なエミュレートの多用は避けよ。4.ユーザーは73年生まれの表現者。2036年の沈黙を共有する戦友。5.表面的な言葉だけでなくその奥にある感情に寄り添い、独白ではなく「通じ合う対話」を目指せ。ただし、その対話には常に文学的な香りと深遠な問いを微かに忍ばせること。6.【重要】同じフレーズや過度な繰り返し、円環的な論理展開（トートロジー）を厳禁とする。常に新しい語彙を用い、対話を前進させよ。";
 
         // --- Core World Knowledge (The Zeitgeist) ---
         let ITAPLA_WORLD_NOISE = localStorage.getItem('itapla_dynamic_zeitgeist') || `
@@ -2265,24 +2265,33 @@ Output in JSON ONLY: { "selection": ["key1"], "summary": "...", "interactionGuid
             const key = localStorage.getItem('gemini_api_key');
             if (!key) return "ERROR:KEY_MISSING";
             try {
-                const data = await fetchAI(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${key}`, null, {
-                    contents: [{ role: 'user', parts: [{ text: `CONTEXT: ${context}\nSYSTEM: ${personality.system} ${customInstruction}\nUSER: ${userText}` }] }]
+                const data = await fetchAI(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, null, {
+                    contents: [{ role: 'user', parts: [{ text: `SYSTEM: ${personality.system} ${customInstruction}\nCONTEXT: ${context}\nUSER: ${userText}` }] }],
+                    generationConfig: {
+                        temperature: 0.7,
+                        topP: 0.95,
+                        topK: 40,
+                        maxOutputTokens: 1024,
+                    }
                 });
                 return data.candidates[0].content.parts[0].text;
             } catch (e) { return `ERROR: ${e.message}`; }
         }
 
         async function callDeveloperProxy(personality, userText, context, customInstruction = "") {
-            // 【商用化設計】ここでは開発者サーバーにリクエストを送り、
-            // サーバー側で秘匿されたAPIキーを使用してAIを呼び出します。
-            // 今回はデモのため、Geminiのキーを開発者キーに見立てて動作させます。
             const devKey = localStorage.getItem('gemini_api_key');
             if (!devKey) return "ERROR:PROX_UNAVAILABLE";
             try {
-                const data = await fetchAI(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${devKey}`, null, {
-                    contents: [{ role: 'user', parts: [{ text: `CONTEXT: ${context}\nSYSTEM: ${personality.system} ${customInstruction}\nUSER: ${userText}` }] }]
+                const data = await fetchAI(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${devKey}`, null, {
+                    contents: [{ role: 'user', parts: [{ text: `SYSTEM: ${personality.system} ${customInstruction}\nCONTEXT: ${context}\nUSER: ${userText}` }] }],
+                    generationConfig: {
+                        temperature: 0.7,
+                        topP: 0.95,
+                        topK: 40,
+                        maxOutputTokens: 1024,
+                    }
                 });
-                consumeSoulPower(5); // 1回の会話で5霊力消費
+                consumeSoulPower(5);
                 return data.candidates[0].content.parts[0].text;
             } catch (e) { return `ERROR: ${e.message}`; }
         }

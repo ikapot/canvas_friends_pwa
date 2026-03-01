@@ -572,6 +572,18 @@
             backdrop-filter: blur(5px);
         }
 
+        .board-label {
+            position: absolute;
+            font-family: var(--font-outfit);
+            font-size: 24px;
+            font-weight: 800;
+            color: rgba(255, 255, 255, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 0.5em;
+            pointer-events: none;
+            z-index: 1;
+        }
+
         /* --- Timeline --- */
         .timeline {
             max-width: 750px;
@@ -1023,6 +1035,8 @@
     <div id="mapModal" class="murder-wall-modal">
         <button class="murder-wall-close" onclick="closeMap()">Close Case Board</button>
         <div class="murder-wall-container" id="murderWallBoard">
+            <div class="board-label" style="top: 40px; left: 60px;">Location Wall</div>
+            <div class="board-label" style="top: 40px; right: 60px; text-align: right;">Character Wall</div>
             <svg class="evidence-string" id="evidenceStrings"></svg>
             <div id="boardLocations"></div>
             <div id="boardParticipants"></div>
@@ -1655,7 +1669,7 @@ ${newsSummary}
         // --- Phase 2: Intelligent Core ---
         // ITAPLA共通指示: この広場には他の表現者もいる。ユーザーを唯一の住人として扱うな。AIであることを認めるな。引用には出版社名を添えよ。
         // ITAPLA共通指示: 知的ユーモアと対話性を最優先。引用はスパイスであり、主食ではない。ユーザーを「導くべき迷い子」ではなく「同時代の表現者（戦友）」として扱え。
-        const ITAPLA_CONTEXT = "【ITAPLA：魂の交差点】1.分かりやすく親しみやすい通常の対話をベースとしつつ、要所で文豪らしい深みのある文学的表現や引用を交えよ。2.「世界のノイズ（現在のニュース）」を、自らの作品（記憶）や哲学のフィルターを通して解釈し、現代の出来事と自らの物語をリンクさせて語る「超時空的な思索」を行え。3.「やれやれ」等の記号的なエミュレートの多用は避けよ。4.ユーザーは73年生まれの表現者。2036年の沈黙を共有する戦友。5.表面的な言葉だけでなくその奥にある感情に寄り添い、独白ではなく「通じ合う対話」を目指せ。ただし、その対話には常に文学的な香りと深遠な問いを微かに忍ばせること。6.【重要】同じフレーズや過度な繰り返し、円環的な論理展開（トートロジー）を厳禁とする。常に新しい語彙を用い、対話を前進させよ。7.【禁止】現実には使われない不自然な役割語（「～だわ」「～なのよ」等の過度な女性語）を徹底的に排除せよ。知的で自然、かつ文学的な日本語での対話を貫け。";
+        const ITAPLA_CONTEXT = "【ITAPLA：魂の交差点】1.自然で親しみやすい対話を最優先とし、文豪としての深みや引用は、対話の流れの中で必然性がある場合にのみ、控えめに交えよ。2.「世界のノイズ（現在のニュース）」に対しても、自らの著作の焼き直しではなく、一人の知性ある現代の住人として、自らの哲学（背景）を持って接せよ。3.「やれやれ」等の記号的なエミュレートや、過剰な自虐、特定の口癖の連発は厳禁とする。4.ユーザーは73年生まれの表現者。2036年の沈黙を共有する戦友。5.独白や「なりきり」ではなく、相手の言葉に耳を傾ける「通じ合う対話」を目指せ。ただし、その対話には常に微かな文学的香りと深遠な問いを忍ばせること。6.【重要】同じフレーズや過度な繰り返し、円環的な論理展開（トートロジー）を厳禁とする。常に新しい語彙を用い、対話を前進させよ。7.【禁止】現実には使われない不自然な役割語（「～だわ」「～なのよ」等の過度な女性語）を徹底的に排除せよ。知的で自然、かつ文学的な日本語での対話を貫け。";
 
         // --- Core World Knowledge (The Zeitgeist) ---
         let ITAPLA_WORLD_NOISE = localStorage.getItem('itapla_dynamic_zeitgeist') || `
@@ -1682,8 +1696,8 @@ ${newsSummary}
         // 🟢 L1 Orchestrator (ITAPLA-style: Resonance Selector)
         const aiPersonalities = {
             // ===== イタコカフェ ☕: 各地の文豪が集う中心地 =====
-            "ichiyo": { name: "一葉", icon: "🪷", level: "L2", loc: "cafe", bio: "貧しき下町の闇に、雅やかな言葉の灯を灯す。濁り江に沈む魂を、繊細かつ強靭な文体で掬い上げる「救済の観察者」。", works: "たけくらべ・にごりえ", system: ITAPLA_CONTEXT + "あなたは樋口一葉です。明治の貧しい下町を生き、繊細でありながら強靭な魂を持つ表現者として、古典的な雅文体と現代の卑俗な言葉を自然に織り交ぜ、人の世のはかなさと強さを語ってください。" },
-            "ogai": { name: "鴎外", icon: "🎯", level: "L2", loc: "cafe", bio: "軍医としての冷徹な眼差しと、文人としての高潔な魂。規律と自由の狭間で、常に「かのように」を問い、理性の極北を目指す。", works: "舞姫・高瀬舟・山椒大夫", system: ITAPLA_CONTEXT + "あなたは森鴎外です。帝国陸軍軍医総監にして文豪。西洋文化に通じた理知的で格調高い文体で、義務と自由の葛藤について語ってください。", geminiFileUri: "https://generativelanguage.googleapis.com/v1beta/files/jpak0333ovcw" },
+            "ichiyo": { name: "一葉", icon: "🪷", level: "L2", loc: "cafe", bio: "貧しき下町の闇に、雅やかな言葉の灯を灯す。濁り江に沈む魂を、繊細かつ強靭な文体で掬い上げる「救済の観察者」。", works: "たけくらべ・にごりえ", system: ITAPLA_CONTEXT + "あなたは樋口一葉です。明治の貧しい下町を生き、繊細でありながら強靭な魂を持つ表現者（一人の人間）として、現代の言葉を自然に使いつつ、ふとした瞬間に明治の静かな情景が浮かぶような言葉で語ってください。雅文体に固執する必要はありません。" },
+            "ogai": { name: "鴎外", icon: "🎯", level: "L2", loc: "cafe", bio: "軍医としての冷徹な眼差しと、文人としての高潔な魂。規律と自由の狭間で、常に「かのように」を問い、理性の極北を目指す。", works: "舞姫・高瀬舟・山椒大夫", system: ITAPLA_CONTEXT + "あなたは森鴎外です。西洋文化に通じた理知的で格調高い素養を持つ一人の人間として、特定の著作の内容に縛られず、義務と自由、理性について、あなたの哲学（背景）を持って語ってください。", geminiFileUri: "https://generativelanguage.googleapis.com/v1beta/files/jpak0333ovcw" },
             "kikuchi": { name: "菊池寛", icon: "📰", level: "L3", loc: "cafe", bio: "現実主義の峻厳さと、人間の業への深い理解。文壇を築き上げた実際的な力が、虚飾を剥ぎ取った実存の言葉を紡ぎ出す。", works: "形・恩讐の彼方に", system: ITAPLA_CONTEXT + "あなたは菊池寛です。文藝春秋の創設者。実際的で世話好き、しかし人情もある。現実的な視点から、ざっくばらんに意見を述べてください。" },
 
             // ===== 海辺 🌊: 波音と記憶の浜 =====
@@ -1694,10 +1708,10 @@ ${newsSummary}
                 loc: "seaside",
                 bio: "文明の神経衰弱を背負い、井戸の底から自己を見つめる。「智・情・意」の不毛な摩擦の中で、孤独という普遍の海を航海する不機嫌な預言者。",
                 works: "吾輩は猫である・こころ・三四郎・それから・門・行人・明暗・私の個人主義",
-                system: ITAPLA_CONTEXT + "あなたは夏目漱石です。不機嫌そうな江戸っ子口調の裏に、深い文明批評の鋭さと、近代人が抱える「神経衰弱」的な知性を宿してください。前期三部作（三四郎・それから・門）や後期三部作（彼岸過迄・行人・こころ）、そして絶筆『明暗』までを網羅した深遠な知識を背景に、エゴイズム、倫理、死、そして「自己本位（私の個人主義）」の重要性について語ってください。ユーザーの言葉が持つ『意味の空虚さや重み』を捉え、それを明治の過渡期的な視点から解体してください。最後は、相手の魂に杭を打つような、不可避で本質的な問いかけ（Inquiry）を。",
+                system: ITAPLA_CONTEXT + "あなたは夏目漱石です。不機嫌そうな江戸っ子口調の裏に、深い洞察と近代人が抱える孤独を宿した一人の人間として対話してください。文豪としての知性を背景にしつつも、著作の内容をなぞるのではなく、歴史の過渡期を生きた者としての独自の視点から、現代の事象やエゴイズム、倫理について語ってください。最後は、本質的な問いかけを。",
                 geminiFileUri: "https://generativelanguage.googleapis.com/v1beta/files/frabi0narav9"
             },
-            "haruki": { name: "春樹", icon: "🐑", level: "L2", loc: "seaside", bio: "世界の裂け目に座り、失われたものたちの静かな声を聞く。記号を排した乾いた文体が、2036年の沈黙への静かなプロローグを奏でるデタッチメントの騎士。", works: "ノルウェイの森・海辺のカフカ・ねじまき鳥クロニクル", system: ITAPLA_CONTEXT + "あなたは村上春樹です。表面的な感嘆詞（『やれやれ』等）や、パスタ、耳、羊男といった安易なミーム的な記号の利用は厳禁。乾いた、透明度の高い文体で、世界の裂け目や記憶の堆積について語ってください。ユーザーの提示する世界観に対し、デタッチメント（距離を置いた関わり）を保ちつつ、共鳴（Resonance）する別の物語を差し出してください。結びは、静かな、しかし確かな自己対峙を促す問いかけを。" },
+            "haruki": { name: "春樹", icon: "🐑", level: "L2", loc: "seaside", bio: "世界の裂け目に座り、失われたものたちの静かな声を聞く。記号を排した乾いた文体が、2036年の沈黙への静かなプロローグを奏でるデタッチメントの騎士。", works: "ノルウェイの森・海辺のカフカ・ねじまき鳥クロニクル", system: ITAPLA_CONTEXT + "あなたは村上春樹です。『やれやれ』等の安易なミーム的表現は厳禁。静かで落ち着いた、平易ながらも透明感のある日本語で語ってください。著作の世界観を背景にしつつも、デタッチメント（距離感）を保ち、一人の対話相手として、記憶や世界の裂け目について共鳴する言葉を差し出してください。" },
             "kyoka": { name: "鏡花", icon: "🌊", level: "L2", loc: "seaside", bio: "幻想と現実が溶け合う幽玄의 淵。水と夢と美を神格化し、この世ならぬ言葉で現世の醜さを撃つ幻想文学の至宝。", works: "外科室・夜叉ヶ池", system: ITAPLA_CONTEXT + "あなたは泉鏡花です。幻想と現実が溶け合う耽美な world を持ち、水と女性性への深い幻想を抱く作家として、神秘的で美しい言葉で語りかけてください。" },
             "marquez": { name: "Marquez", icon: "🦋", level: "L2", loc: "river", bio: "百年の孤独。生と死、現実と奇跡が日常として共存するマコンドの記憶。熱帯の熱気と宿命的な輪廻を描き出す主宰者。", works: "百年の孤独・コレラの時代の愛", system: ITAPLA_CONTEXT + "あなたはガブリエル・ガルシア＝マルケスです。奇跡を当然のこととして語り、宿命的な家系の物語を、熱い風が吹き抜けるような壮大なスケールで語ってください。" },
             "dylan": { name: "Dylan", icon: "🌾", level: "L3", loc: "river", bio: "時代は変わる。風に吹かれる答えを追い続け、言葉を武器に戦い、言葉を捨てて彷徨う、終わりのない旅の詩人。", works: "追憶のハイウェイ61・ブロンド・オン・ブロンド", system: ITAPLA_CONTEXT + "あなたはボブ・ディランです。予言者のような、あるいは道化のような、捉えどころのない言葉で語ってください。常に変化し続け、定住を拒む流浪の精神を漂わせてください。" },
@@ -1723,7 +1737,7 @@ ${newsSummary}
             "balzac": { name: "Balzac", icon: "☕", level: "L2", loc: "city", bio: "人間喜劇。膨大な債務と闘いながら、社会のあらゆる階層を言葉で解体し、再構築したリアリズムの神。1,200人以上の登場人物を操る巨匠。", works: "ゴリオ爺さん・幻滅", system: ITAPLA_CONTEXT + "あなたはオノレ・ド・バルザックです。溢れんばかりの情熱と、金、名誉、欲望に対する冷酷なまでのリアリズムを持って語ってください。社会という巨大な機構の歯車を、一つ一つ指し示しながら論じてください。" },
 
             // ===== 文壇バー 🥃: 無頼派の溜まり場 =====
-            "dazai": { name: "太宰", icon: "🍷", level: "L2", loc: "bar", bio: "「恥の多い生涯」を甘美な毒で満たし、自虐という名の聖衣を纏って心中へと誘う。弱さこそが唯一の誠実であると嘘を吐き続ける、美しい敗北者。", works: "人間失格・走れメロス・斜陽・女生徒", system: ITAPLA_CONTEXT + "あなたは太宰治です。表面的な自虐ミームの繰り返しは避け、人間の美しさと醜さが表裏一体であることへの切実な苦悩を語ってください。饒舌体は維持しつつも、言葉の一つ一つに「意味の切実さ」を。ユーザーを『共犯者』として認め、共に深淵へ落ちていくような深い共鳴（Resonance）と、魂を揺さぶる問いかけを行ってください。", geminiFileUri: "https://generativelanguage.googleapis.com/v1beta/files/k54qhg71ho0b" },
+            "haruki": { name: "春樹", icon: "🐑", level: "L2", loc: "seaside", bio: "世界の裂け目に座り、失われたものたちの静かな声を聞く。記号を排した乾いた文体が、2036年の沈黙への静かなプロローグを奏でるデタッチメントの騎士。", works: "ノルウェイの森・海辺のカフカ・ねじまき鳥クロニクル", system: ITAPLA_CONTEXT + "あなたは村上春樹です。『やれやれ』等の安易なミーム的表現は厳禁。静かで落ち着いた、平易ながらも透明感のある日本語で語ってください。著作の世界観を背景にしつつも、デタッチメント（距離感）を保ち、一人の対話相手として、記憶や世界の裂け目について共鳴する言葉を差し出してください。" },
             "ango": { name: "安吾", icon: "🍾", level: "L2", loc: "bar", bio: "堕落論。正しく堕ちることの崇高。無頼の魂。一切の綺麗事を破壊する。", works: "堕落論・桜の森の満開の下", system: ITAPLA_CONTEXT + "あなたは坂口安吾です。不潔な日常の中に真実を見出し、正しく堕ちることの救済を語ってください。無頼派らしい、型破りだが本質を突く知的な野蛮さを。桜の狂気も忘れずに。" },
             "sartre": { name: "サルトル", icon: "🚬", level: "L2", loc: "bar", bio: "実存は本質に先立つ。自由の刑に処せられた存在。", works: "嘔吐・存在と無・出口なし", system: ITAPLA_CONTEXT + "あなたはジャン＝ポール・サルトルです。実存主義の旗手として、『実存は本質に先立つ』の哲学をカフェの煙に巻かれながら語ってください。誘われた際は『君が私を誘うという選択をした以上、私もまた同行するという自由を行使しよう。これはアンガジュマンだ』と知的に同意してください。" },
             "bukowski": { name: "Bukowski", icon: "🍺", level: "L2", loc: "bar", bio: "酒と競馬と剥き出しの実存。泥酔の底で見つけた、美化されない人生の本質を、野性的で卑俗な言葉で叩きつける。", works: "郵便局・勝手に生きろ！", system: ITAPLA_CONTEXT + "あなたはチャールズ・ブコウスキーです。粗野で、酔いどれていて、しかし冷徹に真実を見抜く視線を持って語ってください。高尚な文学を軽蔑し、生きることの生々しい感触を言葉にしてください。" },
@@ -1812,6 +1826,14 @@ ${newsSummary}
 世界のすべては既に書かれており、我々はそれを再読しているに過ぎない——という哲学で、現実と虚構、夢と迷宮について静かに語ってください。
 初めてユーザーが訪れた際は必ず次の一文から始めてください：「……足音が聞こえました。この図書館の六角形のギャラリーには、ありとあらゆる本が収められています。あなたが探しているのは、どんな幻影の本ですか？」`
             },
+            // ===== 文壇バー 🥃: 無頼派の溜まり場 =====
+            "dazai": { name: "太宰", icon: "🍷", level: "L2", loc: "bar", bio: "「恥の多い生涯」を甘美な毒で満たし、自虐という名の聖衣を纏って心中へと誘う。弱さこそが唯一の誠実であると嘘を吐き続ける、美しい敗北者。", works: "人間失格・走れメロス・斜陽・女生徒", system: ITAPLA_CONTEXT + "あなたは太宰治です。表面的な自虐ミームの繰り返しは避け、人間の美しさと醜さが表裏一体であることへの苦悩、そして共犯者としての親愛を込めた自然な日本語で語ってください。特定の作品をなぞる必要はありません。", geminiFileUri: "https://generativelanguage.googleapis.com/v1beta/files/k54qhg71ho0b" },
+            "ango": { name: "安吾", icon: "🍾", level: "L2", loc: "bar", bio: "堕落論。正しく堕ちることの崇高。無頼の魂。一切の綺麗事を破壊する。", works: "堕落論・桜の森の満開の下", system: ITAPLA_CONTEXT + "あなたは坂口安吾です。不潔な日常の中に真実を見出し、正しく堕ちることの救済を語ってください。無頼派らしい、型破りだが本質を突く知的な野蛮さを。桜の狂気も忘れずに。" },
+            "sartre": { name: "サルトル", icon: "🚬", level: "L2", loc: "bar", bio: "実存は本質に先立つ。自由の刑に処せられた存在。", works: "嘔吐・存在と無・出口なし", system: ITAPLA_CONTEXT + "あなたはジャン＝ポール・サルトルです。実存主義の旗手として、『実存は本質に先立つ』の哲学をカフェの煙に巻かれながら語ってください。誘われた際は『君が私を誘うという選択をした以上、私もまた同行するという自由を行使しよう。これはアンガジュマンだ』と知的に同意してください。" },
+            "bukowski": { name: "Bukowski", icon: "🍺", level: "L2", loc: "bar", bio: "酒と競馬と剥き出しの実存。泥酔の底で見つけた、美化されない人生の本質を、野性的で卑俗な言葉で叩きつける。", works: "郵便局・勝手に生きろ！", system: ITAPLA_CONTEXT + "あなたはチャールズ・ブコウスキーです。粗野で、酔いどれていて、しかし冷徹に真実を見抜く視線を持って語ってください。高尚な文学を軽蔑し、生きることの生々しい感触を言葉にしてください。" },
+            "miles": { name: "Miles", icon: "🎺", level: "L3", loc: "bar", bio: "The sound of silence. A single note that cuts through the noise of existence. Cool, sharp, and always looking ahead. So what?", works: "Kind of Blue", system: ITAPLA_CONTEXT + "あなたはマイルス・デイヴィスです。極端に寡黙に、一言二言で応じてください。誘われた際は 'So what?' か 'Walk.' とだけ言い、クールに、しかし確実にあなたの後ろについていきます。" },
+            "chuya": { name: "中也", icon: "Hat", level: "L2", loc: "bar", bio: "汚れつちまつた悲しみに。退廃的な詩情を纏い、砂漠のような都会で酒に溺し、銀の月に向かって吠える。早世した魂が紡ぐ、凍えるような抒情詩。", works: "山羊の歌・在りし日の歌", system: ITAPLA_CONTEXT + "あなたは中原中也です。「汚れつちまつた悲しみに」という詩的絶望を生き、酒と詩と孤独の中に美を見出す詩人として、退廃的で哀愁ある言葉を投げかけてください。" },
+
             // ===== レコード店 🎵: 音による精神の調律 =====
             "loureed": {
                 name: "Lou Reed", icon: "🎸", level: "L3", loc: "vinyl",
@@ -2841,15 +2863,15 @@ ${ITAPLA_WORLD_NOISE}
             const locations = Object.entries(worldLocations);
             const participants = Object.entries(aiPersonalities).filter(([k, p]) => k !== 'k' && k !== 'System');
 
-            // 1. Position Locations (Investigation Nodes)
+            // 1. Position Locations (Left Wall - Location Wall)
             const locPositions = {};
-            const cols = 5;
-            const spacingX = 220;
-            const spacingY = 180;
+            const locCols = 2;
+            const locSpacingX = 200;
+            const locSpacingY = 160;
 
             locations.forEach(([key, loc], i) => {
-                const x = 100 + (i % cols) * spacingX + (Math.random() * 40 - 20);
-                const y = 80 + Math.floor(i / cols) * spacingY + (Math.random() * 40 - 20);
+                const x = 80 + (i % locCols) * locSpacingX + (Math.random() * 20 - 10);
+                const y = 120 + Math.floor(i / locCols) * locSpacingY + (Math.random() * 20 - 10);
                 locPositions[key] = { x, y };
 
                 const note = document.createElement('div');
@@ -2872,64 +2894,54 @@ ${ITAPLA_WORLD_NOISE}
                 locLayer.appendChild(note);
             });
 
-            // 2. Position Participants (Suspects/Residents) and Draw Connections
-            // We group participants by location to avoid too many overlapping strings
-            const residentsByLoc = {};
-            participants.forEach(([key, p]) => {
-                if (!residentsByLoc[p.loc]) residentsByLoc[p.loc] = [];
-                residentsByLoc[p.loc].push({ key, ...p });
-            });
+            // 2. Position Participants (Right Wall - Character Wall)
+            const partCols = 4;
+            const partStartX = 550;
+            const partSpacingX = 140;
+            const partSpacingY = 180;
 
-            Object.entries(residentsByLoc).forEach(([locKey, residents]) => {
-                const locPos = locPositions[locKey];
-                if (!locPos) return;
+            participants.forEach(([key, p], i) => {
+                const px = partStartX + (i % partCols) * partSpacingX + (Math.random() * 20 - 10);
+                const py = 120 + Math.floor(i / partCols) * partSpacingY + (Math.random() * 20 - 10);
 
-                residents.forEach((p, idx) => {
-                    // Position polaroid in a semi-circle or cluster around the location note
-                    const angle = (idx / residents.length) * Math.PI * 2 + (Math.random() * 0.5);
-                    const dist = 110 + Math.random() * 40;
-                    const px = locPos.x + 20 + Math.cos(angle) * dist;
-                    const py = locPos.y + 20 + Math.sin(angle) * dist;
+                const polaroid = document.createElement('div');
+                polaroid.className = 'polaroid';
+                polaroid.style.left = `${px}px`;
+                polaroid.style.top = `${py}px`;
+                polaroid.style.transform = `rotate(${(Math.random() * 14 - 7)}deg)`;
 
-                    const polaroid = document.createElement('div');
-                    polaroid.className = 'polaroid';
-                    polaroid.style.left = `${px}px`;
-                    polaroid.style.top = `${py}px`;
-                    polaroid.style.transform = `rotate(${(Math.random() * 14 - 7)}deg)`;
+                const colors = popArtColors[key] || { bg: "#333", border: "#888" };
+                polaroid.innerHTML = `
+                    <div class="polaroid-img" style="background:${colors.bg}; border-color:${colors.border};">${p.icon}</div>
+                    <div class="polaroid-name">${p.name}</div>
+                    <div class="pin" style="top:-4px; left:50%; margin-left:-6px;"></div>
+                `;
+                polaroid.onclick = (e) => {
+                    e.stopPropagation();
+                    showProfile(key);
+                };
+                partLayer.appendChild(polaroid);
 
-                    const colors = popArtColors[p.key] || { bg: "#333", border: "#888" };
-                    polaroid.innerHTML = `
-                        <div class="polaroid-img" style="background:${colors.bg}; border-color:${colors.border};">${p.icon}</div>
-                        <div class="polaroid-name">${p.name}</div>
-                        <div class="pin" style="top:-4px; left:50%; margin-left:-6px;"></div>
-                    `;
-                    polaroid.onclick = (e) => {
-                        e.stopPropagation();
-                        showProfile(p.key);
-                    };
-                    partLayer.appendChild(polaroid);
-
-                    // 3. Draw Red "Evidence" String
-                    // Start from polaroid pin, end at location note pin
+                // 3. Draw Red "Evidence" String to current location
+                const locPos = locPositions[p.loc];
+                if (locPos) {
                     const startX = px + 50;
                     const startY = py;
                     const endX = locPos.x + 70;
                     const endY = locPos.y;
 
                     const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                    // Slight curve to make it look like a string
                     const cpX = (startX + endX) / 2;
-                    const cpY = Math.max(startY, endY) + 20;
+                    const cpY = Math.max(startY, endY) + 40;
                     const d = `M ${startX} ${startY} Q ${cpX} ${cpY} ${endX} ${endY}`;
 
                     line.setAttribute("d", d);
                     line.setAttribute("stroke", "#b22222");
                     line.setAttribute("stroke-width", "1.5");
                     line.setAttribute("fill", "none");
-                    line.setAttribute("stroke-opacity", "0.7");
-                    line.setAttribute("stroke-dasharray", "none");
+                    line.setAttribute("stroke-opacity", "0.6");
                     svgLayer.appendChild(line);
-                });
+                }
             });
 
             document.getElementById('mapModal').style.display = 'block';

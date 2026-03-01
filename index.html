@@ -907,91 +907,8 @@
                 </p>
             </div>
 
-            <label class="settings-label" style="font-size: 11px; opacity: 0.5; margin-bottom: 15px; display: block;">──
-                または、手動でAPIキーを入力 ──</label>
-
-            <div class="settings-group">
-                <label class="settings-label">Gemini API Key</label>
-                <div class="key-input-wrapper">
-                    <input type="password" id="key-gemini" class="settings-input" placeholder="...">
-                    <div class="input-actions">
-                        <button class="input-action-btn" title="Paste" onclick="pasteToInput('key-gemini')">📋</button>
-                        <button class="input-action-btn" title="Toggle Visibility"
-                            onclick="toggleKeyVisibility('key-gemini')">👁️</button>
-                    </div>
-                </div>
-            </div>
-            <div class="settings-group">
-                <label class="settings-label">OpenAI API Key</label>
-                <div class="key-input-wrapper">
-                    <input type="password" id="key-openai" class="settings-input" placeholder="...">
-                    <div class="input-actions">
-                        <button class="input-action-btn" title="Paste" onclick="pasteToInput('key-openai')">📋</button>
-                        <button class="input-action-btn" title="Toggle Visibility"
-                            onclick="toggleKeyVisibility('key-openai')">👁️</button>
-                    </div>
-                </div>
-            </div>
-            <div class="settings-group">
-                <label class="settings-label">OpenRouter API Key</label>
-                <div class="key-input-wrapper">
-                    <input type="password" id="key-openrouter" class="settings-input" placeholder="...">
-                    <div class="input-actions">
-                        <button class="input-action-btn" title="Paste"
-                            onclick="pasteToInput('key-openrouter')">📋</button>
-                        <button class="input-action-btn" title="Toggle Visibility"
-                            onclick="toggleKeyVisibility('key-openrouter')">👁️</button>
-                    </div>
-                </div>
-            </div>
-            <div class="settings-group">
-                <label class="settings-label">DeepSeek API Key</label>
-                <div class="key-input-wrapper">
-                    <input type="password" id="key-deepseek" class="settings-input" placeholder="...">
-                    <div class="input-actions">
-                        <button class="input-action-btn" title="Paste"
-                            onclick="pasteToInput('key-deepseek')">📋</button>
-                        <button class="input-action-btn" title="Toggle Visibility"
-                            onclick="toggleKeyVisibility('key-deepseek')">👁️</button>
-                    </div>
-                </div>
-            </div>
-            <div class="settings-group">
-                <label class="settings-label">Mistral API Key</label>
-                <div class="key-input-wrapper">
-                    <input type="password" id="key-mistral" class="settings-input" placeholder="...">
-                    <div class="input-actions">
-                        <button class="input-action-btn" title="Paste" onclick="pasteToInput('key-mistral')">📋</button>
-                        <button class="input-action-btn" title="Toggle Visibility"
-                            onclick="toggleKeyVisibility('key-mistral')">👁️</button>
-                    </div>
-                </div>
-            </div>
-            <div class="settings-group">
-                <label class="settings-label">Hugging Face API Key</label>
-                <div class="key-input-wrapper">
-                    <input type="password" id="key-hf" class="settings-input" placeholder="...">
-                    <div class="input-actions">
-                        <button class="input-action-btn" title="Paste" onclick="pasteToInput('key-hf')">📋</button>
-                        <button class="input-action-btn" title="Toggle Visibility"
-                            onclick="toggleKeyVisibility('key-hf')">👁️</button>
-                    </div>
-                </div>
-            </div>
-            <div class="settings-group" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
-                <label class="settings-label">Local Mind (WebLLM)</label>
-                <button id="webllm-load-btn" class="btn-cosmic"
-                    style="margin-top:0; width:100%; font-size:12px; padding:10px;" onclick="initWebLLM()">Load Local AI
-                    Engine</button>
-                <p style="font-size:9px; opacity:0.4; margin-top:8px; line-height:1.4;">
-                    ※ブラウザ上でAIが直接動作します（約1GBの通信が発生）。<br>
-                    クレジットを消費せず、オフラインでも「本物の知能」を維持できます。
-                </p>
-                <button class="btn-cosmic" style="margin-top:10px; width:100%; font-size:10px; opacity:0.3;"
-                    onclick="localStorage.setItem('itapla_soul_power', 100); location.reload();">Reset Soul Power
-                    (Debug)</button>
-            </div>
-            <div class="settings-actions">
+            <div class="settings-actions"
+                style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
                 <button class="btn-cosmic"
                     style="margin:0; width:100%; border-radius:12px; font-size:16px; padding:15px; background:white; color:black;"
                     onclick="saveSettings()">OK</button>
@@ -1398,13 +1315,6 @@ ${newsSummary}
 
         // --- UI Logic Helpers ---
         function openSettings() {
-            ['gemini', 'openai', 'openrouter', 'deepseek', 'mistral', 'hf'].forEach(key => {
-                const input = document.getElementById(`key-${key}`);
-                if (input) {
-                    input.value = localStorage.getItem(`${key}_api_key`) || "";
-                    input.type = "password"; // Reset to password on open
-                }
-            });
             // Sync OAuth status
             if (isOAuthValid()) {
                 updateOAuthStatusUI(true, oauthUserEmail || 'Connected');
@@ -1437,13 +1347,8 @@ ${newsSummary}
         }
 
         function saveSettings() {
-            ['gemini', 'openai', 'openrouter', 'deepseek', 'mistral', 'hf'].forEach(key => {
-                const val = document.getElementById(`key-${key}`).value;
-                localStorage.setItem(`${key}_api_key`, val || "");
-            });
             document.getElementById('settingsModal').style.display = 'none';
             updateSoulPowerUI();
-            alert("Settings saved.");
         }
 
         function closeProfile() {
@@ -2767,25 +2672,6 @@ ${ITAPLA_WORLD_NOISE}
         }
 
 
-        function openSettings() {
-            document.getElementById('key-gemini').value = localStorage.getItem('gemini_api_key') || "";
-            document.getElementById('key-openai').value = localStorage.getItem('openai_api_key') || "";
-            document.getElementById('key-openrouter').value = localStorage.getItem('openrouter_api_key') || "";
-            document.getElementById('key-deepseek').value = localStorage.getItem('deepseek_api_key') || "";
-            document.getElementById('key-mistral').value = localStorage.getItem('mistral_api_key') || "";
-            document.getElementById('key-hf').value = localStorage.getItem('hf_api_key') || "";
-            document.getElementById('settingsModal').style.display = 'block';
-        }
-
-        function saveSettings() {
-            localStorage.setItem('gemini_api_key', document.getElementById('key-gemini').value.trim());
-            localStorage.setItem('openai_api_key', document.getElementById('key-openai').value.trim());
-            localStorage.setItem('openrouter_api_key', document.getElementById('key-openrouter').value.trim());
-            localStorage.setItem('deepseek_api_key', document.getElementById('key-deepseek').value.trim());
-            localStorage.setItem('mistral_api_key', document.getElementById('key-mistral').value.trim());
-            localStorage.setItem('hf_api_key', document.getElementById('key-hf').value.trim());
-            document.getElementById('settingsModal').style.display = 'none';
-        }
 
         // --- Phase 3: Narrative World & Mystery ---
         function setWorldState(newState) {

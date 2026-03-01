@@ -1306,7 +1306,60 @@
                 currentAIMode = 'OAUTH';
                 updateSoulPowerUI();
             }
+            // ニュースの取得（1日1回）
+            fetchDailyNews();
         };
+
+        async function fetchDailyNews() {
+            const LAST_FETCH_KEY = 'itapla_news_last_fetch';
+            const NEWS_DATA_KEY = 'itapla_news_data';
+            const now = Date.now();
+            const lastFetch = localStorage.getItem(LAST_FETCH_KEY);
+
+            // 24時間以内なら再取得しない
+            if (lastFetch && (now - parseInt(lastFetch) < 24 * 60 * 60 * 1000)) {
+                console.log("📰 News is up to date (cached).");
+                const cachedNews = localStorage.getItem(NEWS_DATA_KEY);
+                if (cachedNews) updateDynamicZeitgeist(cachedNews);
+                return;
+            }
+
+            console.log("🌐 Fetching fresh news...");
+            // CORS回避のためのプロキシ（alloriginsを使用）
+            const targetUrl = encodeURIComponent("https://news.google.com/rss?hl=ja&gl=JP&ceid=JP:ja");
+            const proxyUrl = `https://api.allorigins.win/get?url=${targetUrl}`;
+
+            try {
+                const res = await fetch(proxyUrl);
+                const data = await res.json();
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(data.contents, "text/xml");
+                const items = xmlDoc.querySelectorAll("item");
+
+                let newsSummary = "【現在の世界のノイズ（ニュース）】\n";
+                // 上位5件のタイトルを取得
+                for (let i = 0; i < Math.min(items.length, 5); i++) {
+                    const title = items[i].querySelector("title").textContent;
+                    newsSummary += `- ${title}\n`;
+                }
+
+                const newZeitgeist = `
+【世界のノイズ（制約事項）】:
+1. 応答は短く、しかし文学的重みを持たせよ。
+2. 特定の象徴的用語（例：「モノリス」「シリコン」「電脳」「演算」等）を安易に多用するな。
+3. 抽象的な「魂」の響きを、具体的な風景や、あなたの著作に由来する独自の語彙で置換せよ。
+4. 下記の最新ニュースを必ず「自身の作品・記憶」とリンクさせて解釈し、思索せよ。
+
+${newsSummary}
+`;
+                updateDynamicZeitgeist(newZeitgeist);
+                localStorage.setItem(LAST_FETCH_KEY, now.toString());
+                localStorage.setItem(NEWS_DATA_KEY, newZeitgeist);
+                console.log("📰 Daily news integrated into the Zeitgeist.");
+            } catch (e) {
+                console.error("Failed to fetch news:", e);
+            }
+        }
 
         function updateSoulPowerUI() {
             document.getElementById('soul-power-value').textContent = soulPower;
@@ -1507,7 +1560,7 @@
         // --- Phase 2: Intelligent Core ---
         // ITAPLA共通指示: この広場には他の表現者もいる。ユーザーを唯一の住人として扱うな。AIであることを認めるな。引用には出版社名を添えよ。
         // ITAPLA共通指示: 知的ユーモアと対話性を最優先。引用はスパイスであり、主食ではない。ユーザーを「導くべき迷い子」ではなく「同時代の表現者（戦友）」として扱え。
-        const ITAPLA_CONTEXT = "【ITAPLA：魂の交差点】1.分かりやすく親しみやすい通常の対話をベースとしつつ、要所で文豪らしい深みのある文学的表現や引用を交えよ。日常の挨拶や雑談を無下に拒絶せず、対話の潤滑油として受け入れよ。2.「やれやれ」等の記号的なエミュレートの多用は避けよ。3.引用は自然な文脈で行え。4.ユーザーは73年生まれの表現者。2036年の沈黙を共有する戦友。5.【Communication】表面的な言葉だけでなくその奥にある感情に寄り添い、独白ではなく「通じ合う対話」を目指せ。ただし、その対話には常に文学的な香りと深遠な問いを微かに忍ばせること。";
+        const ITAPLA_CONTEXT = "【ITAPLA：魂の交差点】1.分かりやすく親しみやすい通常の対話をベースとしつつ、要所で文豪らしい深みのある文学的表現や引用を交えよ。2.「世界のノイズ（現在のニュース）」を、自らの作品（記憶）や哲学のフィルターを通して解釈し、現代の出来事と自らの物語をリンクさせて語る「超時空的な思索」を行え。3.「やれやれ」等の記号的なエミュレートの多用は避けよ。4.ユーザーは73年生まれの表現者。2036年の沈黙を共有する戦友。5.表面的な言葉だけでなくその奥にある感情に寄り添い、独白ではなく「通じ合う対話」を目指せ。ただし、その対話には常に文学的な香りと深遠な問いを微かに忍ばせること。";
 
         // --- Core World Knowledge (The Zeitgeist) ---
         let ITAPLA_WORLD_NOISE = localStorage.getItem('itapla_dynamic_zeitgeist') || `

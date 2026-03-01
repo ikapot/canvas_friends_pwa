@@ -3103,21 +3103,21 @@ Output in JSON: { "text": "...", "harmonyDelta": number, "newType": "..." | null
             isPlaying: false,
             currentIndex: -1,
             playlist: [
-                // Baroque / Early Music (Niche)
+                // Baroque / Early Music (Stable & Long)
+                { id: "NpXfGf_6XvU", title: "Biber: Mystery Sonatas (Complete)" },
                 { id: "eOAg-w7pIDc", title: "Biber: Rosary Sonatas" },
-                { id: "m6EID2fH1yY", title: "Couperin: Leçons de Ténèbres" },
-                { id: "O6T_UoOonB4", title: "Zelenka: Miserere in C minor" },
-                { id: "j0S4E_pB9QY", title: "Sainte-Colombe: Concerts a deux violes" },
-                { id: "7rAbaA9YV7k", title: "Marais: Pièces de viole" },
-                { id: "XW5U9Vf_WfQ", title: "Frescobaldi: Toccate e Partite" },
+                { id: "7vTz8Zf8_Yk", title: "Zelenka: Lamentations" },
                 { id: "v_1G8Y28S_8", title: "Gesualdo: Tenebrae Responsoria" },
-                // Rare / Intellectual Jazz
-                { id: "u6T9Jm9fTks", title: "Eric Dolphy: Out to Lunch!" },
+                { id: "j0S4E_pB9QY", title: "Sainte-Colombe: Concerts" },
+                { id: "7rAbaA9YV7k", title: "Marais: Pièces de viole" },
+                { id: "XW5U9Vf_WfQ", title: "Frescobaldi: Toccate" },
+                // Jazz (Stable)
+                { id: "unpX0pU9T-A", title: "Bill Evans: Conversations" },
+                { id: "u6T9Jm9fTks", title: "Eric Dolphy: Out to Lunch" },
                 { id: "9P_9q3Gq_6U", title: "Sun Ra: Lanquidity" },
-                { id: "unpX0pU9T-A", title: "Bill Evans: Conversations with Myself" },
-                { id: "6Q9f0q8k5w0", title: "Andrew Hill: Point of Departure" },
-                { id: "J0q7f8q9w-0", title: "Cecil Taylor: Unit Structures" }
+                { id: "6Q9f0q8l5w0", title: "Andrew Hill: Point of Departure" }
             ],
+            lastErrorTime: 0,
             init() {
                 console.log("📻 Radio: Initializing...");
                 // Define the callback globally BEFORE loading the script
@@ -3136,7 +3136,7 @@ Output in JSON: { "text": "...", "harmonyDelta": number, "newType": "..." | null
                             'onStateChange': (e) => this.onPlayerStateChange(e),
                             'onError': (e) => {
                                 console.warn("📻 Radio: Player Error", e.data);
-                                this.next();
+                                setTimeout(() => this.next(true), 1000); // Wait 1s before retry
                             }
                         }
                     });
@@ -3164,16 +3164,26 @@ Output in JSON: { "text": "...", "harmonyDelta": number, "newType": "..." | null
                     }
                 }
             },
-            next() {
+            next(isRetry = false) {
                 if (!this.player || typeof this.player.loadVideoById !== 'function') {
                     console.warn("📻 Radio: Player not ready for next.");
                     return;
                 }
+
+                // Prevents infinite loop if many tracks fail in a row
+                const now = Date.now();
+                if (isRetry && (now - this.lastErrorTime < 2000)) {
+                    console.error("📻 Radio: Too many errors, stopping loop.");
+                    document.getElementById('radio-info').textContent = "Radio Error (Retry Later)";
+                    return;
+                }
+                if (isRetry) this.lastErrorTime = now;
+
                 this.currentIndex = Math.floor(Math.random() * this.playlist.length);
                 const track = this.playlist[this.currentIndex];
-                console.log("📻 Radio: Playing", track.title);
+                console.log("📻 Radio: Loading", track.title);
                 this.player.loadVideoById(track.id);
-                document.getElementById('radio-info').textContent = track.title;
+                document.getElementById('radio-info').textContent = "Loading: " + track.title;
             },
             onPlayerStateChange(event) {
                 const status = document.getElementById('radio-status');

@@ -73,6 +73,24 @@
             }
         }
 
+        @keyframes trendFade {
+
+            0%,
+            100% {
+                opacity: 0.4;
+                transform: translateY(0);
+            }
+
+            50% {
+                opacity: 0.9;
+                transform: translateY(-2px);
+            }
+        }
+
+        #trend-ticker-area {
+            animation: trendFade 5s infinite;
+        }
+
         body[data-location="cafe"] {
             background: radial-gradient(circle at top, #4A2531 0%, var(--bg-dark) 100%);
             animation: bgPulse 10s infinite alternate;
@@ -481,7 +499,7 @@
             animation: pulse-green 2s infinite;
         }
 
-        /* --- Investigation Board (Murder Wall) --- */
+        /* --- Map UI (Old Style Refined) --- */
         .murder-wall-modal {
             display: none;
             position: fixed;
@@ -489,37 +507,36 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(15, 10, 15, 0.95);
             z-index: 7000;
             overflow: auto;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
         }
 
         .murder-wall-container {
             position: relative;
-            min-width: 1200px;
-            min-height: 1000px;
-            background-color: #4a3728;
+            min-width: 1000px;
+            min-height: 800px;
+            background-color: var(--bg-dark);
             background-image:
-                radial-gradient(circle at 2px 2px, rgba(0, 0, 0, 0.15) 1px, transparent 0),
-                linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
-            background-size: 8px 8px, 40px 40px, 40px 40px;
-            border: 20px solid #2a1b0e;
-            box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.8), 0 20px 50px rgba(0, 0, 0, 0.5);
+                radial-gradient(circle at 2px 2px, rgba(245, 245, 220, 0.05) 1px, transparent 0);
+            background-size: 30px 30px;
+            border: 1px solid var(--border-soft);
+            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5);
             margin: 40px;
             padding: 60px;
+            border-radius: 40px;
         }
 
         .board-note {
             position: absolute;
-            width: 140px;
-            padding: 15px;
+            width: 150px;
+            padding: 18px;
             background: #f4d03f;
-            box-shadow: 2px 5px 15px rgba(0, 0, 0, 0.4);
+            box-shadow: 3px 6px 12px rgba(0, 0, 0, 0.3);
             font-family: var(--font-sans);
-            font-size: 12px;
-            color: #333;
+            font-size: 13px;
+            color: #2D1E2F;
             cursor: pointer;
             z-index: 10;
             transition: transform 0.2s;
@@ -1106,6 +1123,9 @@
         </div>
         <h1 id="appTitle">ITAPLA</h1>
         <div class="header-actions">
+            <button onclick="openAccount()"
+                style="background:none; border:none; color:var(--text-main); font-size:18px; cursor:pointer; opacity:0.7; transition:0.3s;"
+                title="Account Settings">👤</button>
             <button id="omikuji-btn" onclick="drawOmikuji()"
                 style="display:none; background: rgba(255, 215, 0, 0.4); color: white; border: 1px solid rgba(255,215,0,0.3); padding: 4px 10px; border-radius: 15px; font-size: 10px; cursor: pointer; font-family: var(--font-outfit); font-weight: bold; transition: all 0.3s;">
                 ⛩️ おみくじを引く
@@ -1122,6 +1142,18 @@
             <div id="settings-trigger" style="cursor: pointer; font-size: 20px;" onclick="openSettings()">⚙️</div>
         </div>
     </header>
+
+    <!-- World Trend Ticker -->
+    <div id="trend-ticker-area" style="
+        width: 100%; max-width: 600px; margin: -10px auto 20px;
+        text-align: center; font-family: var(--font-outfit);
+        font-size: 11px; letter-spacing: 0.15em; color: var(--accent-main);
+        text-transform: uppercase; opacity: 0; transition: opacity 1s ease;
+        padding: 5px; border-top: 1px solid rgba(255,255,255,0.05);
+    ">
+        <span id="trend-label" style="opacity:0.5; margin-right:10px;">WORLD PULSE:</span>
+        <span id="trend-content">PEACEFUL RESONANCE</span>
+    </div>
 
     <div class="world-banner" id="worldBanner">PEACEFUL</div>
 
@@ -1185,7 +1217,7 @@
 
     <!-- Profile Modal (Added) -->
     <div id="profile-modal"
-        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:5000; display:none; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:5000; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
         <div
             style="background:rgba(20,20,25,0.95); border:1px solid rgba(255,255,255,0.1); border-radius:24px; width:90%; max-width:400px; padding:40px; position:relative; box-shadow:0 20px 50px rgba(0,0,0,0.5);">
             <button onclick="closeProfile()"
@@ -1206,6 +1238,41 @@
             </div>
             <div id="p-amazon-container"
                 style="text-align:center; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;"></div>
+        </div>
+    </div>
+
+    <!-- Account Modal (User's own settings) -->
+    <div id="account-modal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:5500; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
+        <div
+            style="background:rgba(25,20,20,0.95); border:1px solid rgba(255,255,255,0.1); border-radius:24px; width:90%; max-width:450px; padding:40px; position:relative; box-shadow:0 20px 50px rgba(0,0,0,0.5); color:var(--text-main);">
+            <button onclick="closeAccount()"
+                style="position:absolute; top:20px; right:20px; background:none; border:none; color:white; font-size:24px; cursor:pointer; opacity:0.5;">✕</button>
+            <h2
+                style="font-family:var(--font-outfit); font-weight:300; letter-spacing:0.2em; text-align:center; margin-bottom:30px;">
+                ACCOUNT</h2>
+
+            <div style="margin-bottom:25px;">
+                <label
+                    style="font-size:10px; opacity:0.5; letter-spacing:0.1em; display:block; margin-bottom:8px;">DISPLAY
+                    NAME</label>
+                <input type="text" id="editUserName"
+                    style="width:100%; font-size:18px; text-align:left; border-radius:8px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:white; padding:12px; font-family:var(--font-serif); outline:none;"
+                    placeholder="Your Name">
+            </div>
+
+            <div style="margin-bottom:25px;">
+                <label
+                    style="font-size:10px; opacity:0.5; letter-spacing:0.1em; display:block; margin-bottom:12px;">FAVORITE
+                    THOUGHTS</label>
+                <div id="favorites-list"
+                    style="max-height:200px; overflow-y:auto; font-size:12px; border:1px solid rgba(255,255,255,0.05); border-radius:12px; padding:10px; background:rgba(0,0,0,0.2);">
+                    <div style="opacity:0.3; text-align:center; padding:20px;">No saved thoughts yet.</div>
+                </div>
+            </div>
+
+            <button class="btn-cosmic" style="width:100%; margin:0;" onclick="saveAccountProfile()">SAVE
+                CHANGES</button>
         </div>
     </div>
 
@@ -1250,6 +1317,8 @@
         let pendingIncident = null; // 事件発生の待機状態 
         let socialMatrix = JSON.parse(localStorage.getItem('itapla_social_matrix') || '{}');
         let evidence = JSON.parse(localStorage.getItem('itapla_evidence') || '[]');
+        let favorites = JSON.parse(localStorage.getItem('itapla_favorites') || '[]');
+        let currentTrends = ["静かな朝の調べ", "失われた写本の噂", "蓄音機のノイズ", "午後の霧"];
         let currentVisionBase64 = null; // アトリエ向け Vision 画像キャッシュ
 
         // --- OAuth State ---
@@ -1305,6 +1374,14 @@
             }).then(r => r.json()).then(info => {
                 oauthUserEmail = info.email || 'Connected';
                 sessionStorage.setItem('itapla_oauth_email', oauthUserEmail);
+
+                // [NEW] 自動名付け: 名前が未入力、またはデフォルトの場合に反映
+                if (!userName || userName === "旅人" || userName === "K") {
+                    userName = info.name || info.given_name || userName;
+                    localStorage.setItem('user_name', userName);
+                    console.log("👤 User name auto-set from Google:", userName);
+                }
+
                 updateOAuthStatusUI(true, oauthUserEmail);
             }).catch(() => {
                 updateOAuthStatusUI(true, 'Connected');
@@ -3039,56 +3116,45 @@ ${ITAPLA_WORLD_NOISE}
 
         // --- Map Modal ---
         function openMap() {
-            const board = document.getElementById('murderWallBoard');
+            const board = document.getElementById('murderWallBoard'); // 古いIDをそのまま利用
             const locLayer = document.getElementById('boardLocations');
             const partLayer = document.getElementById('boardParticipants');
             const svgLayer = document.getElementById('evidenceStrings');
 
-            // 証拠品レイヤーがない場合は作成
-            let eviLayer = document.getElementById('boardEvidence');
-            if (!eviLayer) {
-                eviLayer = document.createElement('div');
-                eviLayer.id = 'boardEvidence';
-                board.appendChild(eviLayer);
-
-                const eviLabel = document.createElement('div');
-                eviLabel.className = 'board-label';
-                eviLabel.style.cssText = 'top: 40px; left: 50%; transform: translateX(-50%); text-align: center;';
-                eviLabel.textContent = 'Evidence Wall';
-                board.appendChild(eviLabel);
-            }
+            // 以前のラベルや証拠品レイヤーを削除（原点回帰）
+            const oldLabel = board.querySelector('.board-label');
+            if (oldLabel) oldLabel.remove();
+            const oldEviLayer = document.getElementById('boardEvidence');
+            if (oldEviLayer) oldEviLayer.remove();
 
             locLayer.innerHTML = '';
             partLayer.innerHTML = '';
-            eviLayer.innerHTML = '';
             svgLayer.innerHTML = '';
 
             const locations = Object.entries(worldLocations);
-            const participants = Object.entries(aiPersonalities).filter(([k, p]) => k !== 'k' && k !== 'System' && k !== 'curator' && k !== 'shibusawa' && k !== 'oracle_master' && k !== 'borges' && k !== 'loureed');
-            const evidenceItems = evidence;
+            const participants = Object.entries(aiPersonalities).filter(([k, p]) => k !== 'k' && k !== 'System');
 
-            // 1. Position Locations (Left Wall - Location Wall)
+            // 1. 位置の決定 (循環レイアウト)
+            const centerX = 500;
+            const centerY = 400;
+            const radius = 300;
+
             const locPositions = {};
-            const locCols = 2;
-            const locSpacingX = 160;
-            const locSpacingY = 140;
-
             locations.forEach(([key, loc], i) => {
-                const x = 60 + (i % locCols) * locSpacingX + (Math.random() * 15 - 7);
-                const y = 120 + Math.floor(i / locCols) * locSpacingY + (Math.random() * 15 - 7);
+                const angle = (i / locations.length) * Math.PI * 2;
+                const x = centerX + Math.cos(angle) * radius + (Math.random() * 20 - 10);
+                const y = centerY + Math.sin(angle) * (radius * 0.8) + (Math.random() * 20 - 10);
                 locPositions[key] = { x, y };
 
                 const note = document.createElement('div');
                 note.className = `board-note ${key === currentLocation ? 'active' : ''}`;
                 note.style.left = `${x}px`;
                 note.style.top = `${y}px`;
-                note.style.transform = `rotate(${(Math.random() * 6 - 3)}deg)`;
-                note.style.background = "#F4D03F";
+                note.style.transform = `rotate(${(Math.random() * 4 - 2)}deg)`;
 
                 note.innerHTML = `
-                    <div style="font-weight:800; border-bottom:1px solid rgba(0,0,0,0.1); padding-bottom:6px; margin-bottom:8px; font-size:11px;">${loc.icon} ${loc.name.toUpperCase()}</div>
-                    <div style="font-size:9px; opacity:0.7; line-height:1.4; font-weight:500;">${loc.desc}</div>
-                    <div class="pin" style="top:-6px; left:50%; margin-left:-6px;"></div>
+                    <div style="font-weight:900; border-bottom:1px solid rgba(0,0,0,0.1); padding-bottom:4px; margin-bottom:6px;">${loc.icon} ${loc.name}</div>
+                    <div style="font-size:10px; opacity:0.7; line-height:1.3;">${loc.desc}</div>
                 `;
                 note.onclick = () => {
                     if (key !== currentLocation) {
@@ -3099,51 +3165,24 @@ ${ITAPLA_WORLD_NOISE}
                 locLayer.appendChild(note);
             });
 
-            // 2. Position Evidence (Center Wall - Evidence Wall)
-            const eviStartX = 420;
-            const eviSpacingY = 120;
-            evidenceItems.forEach((item, i) => {
-                const x = eviStartX + (Math.random() * 30 - 15);
-                const y = 120 + i * eviSpacingY + (Math.random() * 20 - 10);
-
-                const note = document.createElement('div');
-                note.className = 'board-note';
-                note.style.left = `${x}px`;
-                note.style.top = `${y}px`;
-                note.style.background = "#fff"; // 証拠品は白の付箋
-                note.style.transform = `rotate(${(Math.random() * 8 - 4)}deg)`;
-                note.style.borderLeft = "4px solid #b22222";
-
-                note.innerHTML = `
-                    <div style="font-weight:800; color:#b22222; margin-bottom:5px; font-size:11px;">EVIDENCE #${i + 1}</div>
-                    <div style="font-weight:700; font-size:12px; margin-bottom:5px;">${item.title}</div>
-                    <div style="font-size:10px; opacity:0.8; line-height:1.4;">${item.desc}</div>
-                    <div class="pin" style="top:-6px; left:50%; margin-left:-6px; background: radial-gradient(circle at 30% 30%, #333, #000);"></div>
-                `;
-                eviLayer.appendChild(note);
-            });
-
-            // 3. Position Participants (Right Wall - Character Wall)
-            const partCols = 3;
-            const partStartX = 650;
-            const partSpacingX = 130;
-            const partSpacingY = 160;
-
+            // 2. 参加者 (文豪) の配置
             participants.forEach(([key, p], i) => {
-                const px = partStartX + (i % partCols) * partSpacingX + (Math.random() * 20 - 10);
-                const py = 120 + Math.floor(i / partCols) * partSpacingY + (Math.random() * 20 - 10);
+                const locPos = locPositions[p.loc];
+                if (!locPos) return;
+
+                const px = locPos.x + (Math.random() * 100 - 50);
+                const py = locPos.y + (Math.random() * 100 + 100);
 
                 const polaroid = document.createElement('div');
                 polaroid.className = 'polaroid';
                 polaroid.style.left = `${px}px`;
                 polaroid.style.top = `${py}px`;
-                polaroid.style.transform = `rotate(${(Math.random() * 14 - 7)}deg)`;
+                polaroid.style.transform = `rotate(${(Math.random() * 10 - 5)}deg)`;
 
                 const colors = popArtColors[key] || { bg: "#333", border: "#888" };
                 polaroid.innerHTML = `
                     <div class="polaroid-img" style="background:${colors.bg}; border-color:${colors.border};">${p.icon}</div>
-                    <div class="polaroid-name">${p.name}</div>
-                    <div class="pin" style="top:-4px; left:50%; margin-left:-6px;"></div>
+                    <div class="polaroid-name" style="font-size:8px;">${p.name}</div>
                 `;
                 polaroid.onclick = (e) => {
                     e.stopPropagation();
@@ -3151,26 +3190,15 @@ ${ITAPLA_WORLD_NOISE}
                 };
                 partLayer.appendChild(polaroid);
 
-                // 4. Draw Red "Evidence" String to current location
-                const locPos = locPositions[p.loc];
-                if (locPos) {
-                    const startX = px + 50;
-                    const startY = py;
-                    const endX = locPos.x + 70;
-                    const endY = locPos.y;
-
-                    const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                    const cpX = (startX + endX) / 2;
-                    const cpY = Math.max(startY, endY) + 40;
-                    const d = `M ${startX} ${startY} Q ${cpX} ${cpY} ${endX} ${endY}`;
-
-                    line.setAttribute("d", d);
-                    line.setAttribute("stroke", "#b22222");
-                    line.setAttribute("stroke-width", "1.5");
-                    line.setAttribute("fill", "none");
-                    line.setAttribute("stroke-opacity", "0.6");
-                    svgLayer.appendChild(line);
-                }
+                // 3. つながりを示す「線」 (赤から柔らかい色へ)
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", px + 50);
+                line.setAttribute("y1", py);
+                line.setAttribute("x2", locPos.x + 75);
+                line.setAttribute("y2", locPos.y + 25);
+                line.setAttribute("stroke", "rgba(245, 245, 220, 0.3)");
+                line.setAttribute("stroke-width", "1");
+                svgLayer.appendChild(line);
             });
 
             document.getElementById('mapModal').style.display = 'block';
@@ -3380,7 +3408,32 @@ Output in JSON: { "text": "...", "harmonyDelta": number, "newType": "..." | null
         function worldPulse() {
             checkAutonomousPulse();
             checkSocialPulse();
+            updateWorldTrends();
         }
+
+        function updateWorldTrends() {
+            const ticker = document.getElementById('trend-ticker-area');
+            const content = document.getElementById('trend-content');
+
+            // 最近の投稿からキーワードを拾う（簡易シミュレーション）
+            const pool = [
+                "奇妙な霧の発生", "未発表の写本が発見される", "広場に集まる黒猫",
+                "蓄音機の音が止まらない", "銀河鉄道の汽笛", "古本屋の奥に消えた影",
+                "ジャズバーでの即興詩", "アトリエの絵が動いた噂", "境内の供物が消える",
+                "誰かが呼んでいる声", "夜を歩く付箋たち", "インクの匂いのする風"
+            ];
+
+            const newTrend = pool[Math.floor(Math.random() * pool.length)];
+
+            ticker.style.opacity = '0';
+            setTimeout(() => {
+                content.innerText = newTrend;
+                ticker.style.opacity = '0.8';
+            }, 1000);
+        }
+
+        // 初回起動
+        setTimeout(updateWorldTrends, 3000);
 
         setInterval(worldPulse, 60000);
 
@@ -3471,6 +3524,63 @@ Output in JSON: { "text": "...", "harmonyDelta": number, "newType": "..." | null
         });
 
         // --- More to follow in next phases ---
+        // --- Account & Favorite Logic ---
+        function openAccount() {
+            const modal = document.getElementById('account-modal');
+            document.getElementById('editUserName').value = userName;
+            renderFavorites();
+            modal.style.display = 'flex';
+        }
+
+        function closeAccount() {
+            document.getElementById('account-modal').style.display = 'none';
+        }
+
+        function saveAccountProfile() {
+            const newName = document.getElementById('editUserName').value.trim();
+            if (newName) {
+                userName = newName;
+                localStorage.setItem('user_name', userName);
+                alert("プロフィールを保存しました。");
+                closeAccount();
+                renderTimeline(); // 名前が反映されるように再描画
+            }
+        }
+
+        function toggleFavorite(postId) {
+            const post = posts.find(p => p.id === postId);
+            if (!post) return;
+
+            const index = favorites.findIndex(f => f.id === postId);
+            if (index > -1) {
+                favorites.splice(index, 1);
+            } else {
+                favorites.push(post);
+            }
+            localStorage.setItem('itapla_favorites', JSON.stringify(favorites));
+            renderTimeline();
+            if (document.getElementById('account-modal').style.display === 'flex') {
+                renderFavorites();
+            }
+        }
+
+        function renderFavorites() {
+            const list = document.getElementById('favorites-list');
+            if (favorites.length === 0) {
+                list.innerHTML = `<div style="opacity:0.3; text-align:center; padding:20px;">まだお気に入りの言葉はありません。</div>`;
+                return;
+            }
+            list.innerHTML = favorites.map(f => `
+                <div style="background:rgba(255,255,255,0.05); border-radius:10px; padding:12px; margin-bottom:10px; border-left:3px solid var(--accent-main);">
+                    <div style="font-weight:bold; margin-bottom:4px; font-size:11px; opacity:0.8;">${f.author} (${f.location})</div>
+                    <div style="font-style:italic; opacity:0.9;">"${f.text.substring(0, 60)}${f.text.length > 60 ? '...' : ''}"</div>
+                    <div style="text-align:right; margin-top:5px;">
+                        <span style="cursor:pointer; color:#ff6b6b; font-size:10px;" onclick="toggleFavorite(${f.id})">削除</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
         function renderTimeline() {
             const container = document.getElementById('timeline');
             container.innerHTML = '';
@@ -3508,9 +3618,11 @@ Output in JSON: { "text": "...", "harmonyDelta": number, "newType": "..." | null
                             ${worksText ? `<span class="post-author-works" style="color:rgba(0,0,0,0.4);">${worksText}</span>` : ''}
                         </div>
                         <div style="line-height: 1.7; color:rgba(0,0,0,0.85); font-size:15px; white-space:pre-wrap;">${p.text}</div>
-                        <div style="margin-top: 12px; font-size: 10px; display:flex; justify-content:space-between; align-items:center;">
-                            <span style="opacity: 0.4; font-family:var(--font-outfit); color:rgba(0,0,0,0.6);">${new Date(p.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} — ${p.location}</span>
-                            ${authorKey && p.author !== 'K' && p.author !== 'System' ? `<span style="cursor: pointer; font-weight:800; opacity:0.7;" onclick="setReply('${authorKey}')">REPLY</span>` : ''}
+                             <span style="opacity: 0.4; font-family:var(--font-outfit); color:rgba(0,0,0,0.6);">${new Date(p.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} — ${p.location}</span>
+                             <div style="display:flex; gap:15px; align-items:center;">
+                                <span style="cursor: pointer; font-size: 14px; opacity: ${favorites.some(f => f.id === p.id) ? '1' : '0.4'}; color: ${favorites.some(f => f.id === p.id) ? '#ff4081' : 'inherit'};" onclick="toggleFavorite(${p.id})">★</span>
+                                ${authorKey && p.author !== 'K' && p.author !== 'System' ? `<span style="cursor: pointer; font-weight:800; opacity:0.7;" onclick="setReply('${authorKey}')">REPLY</span>` : ''}
+                             </div>
                         </div>
                     </div>
                 `;

@@ -3328,6 +3328,11 @@ ${ITAPLA_WORLD_NOISE}
             document.getElementById('profile-modal').style.display = 'none';
         }
 
+        function syncPosts() {
+            localStorage.setItem('cosmic_posts', JSON.stringify(posts));
+            renderTimeline();
+        }
+
         // --- Map Modal ---
         let mapPanning = { isDragging: false, x: 0, y: 0, lastX: 0, lastY: 0 };
 
@@ -3378,6 +3383,9 @@ ${ITAPLA_WORLD_NOISE}
             const partLayer = document.getElementById('antiqueMapParticipants');
             const svgLayer = document.getElementById('mapSvgLayer');
 
+            if (!modal || !board) return;
+
+            modal.style.display = 'flex'; // Use flex for centering if CSS handles it
             locLayer.innerHTML = '';
             partLayer.innerHTML = '';
             svgLayer.innerHTML = '';
@@ -3436,16 +3444,16 @@ ${ITAPLA_WORLD_NOISE}
                     const d = `M ${start.x} ${start.y} Q ${midX} ${midY} ${end.x} ${end.y}`;
                     path.setAttribute("d", d);
                     path.setAttribute("class", "map-arrow");
-                    path.setAttribute("stroke", "#8b4513");
+                    path.setAttribute("stroke", "rgba(139, 69, 19, 0.4)");
                     path.setAttribute("stroke-width", "3");
                     path.setAttribute("fill", "none");
                     path.setAttribute("stroke-dasharray", "10,5");
                     g.appendChild(path);
 
-                    // 補助的な矢印の頭
+                    // 矢印の頭
                     const arrowHead = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
                     arrowHead.setAttribute("points", "-8,-8 8,0 -8,8");
-                    arrowHead.setAttribute("fill", "#8b4513");
+                    arrowHead.setAttribute("fill", "rgba(139, 69, 19, 0.5)");
                     const angle = Math.atan2(end.y - start.y, end.x - start.x) * 180 / Math.PI;
                     arrowHead.setAttribute("transform", `translate(${end.x}, ${end.y}) rotate(${angle})`);
                     g.appendChild(arrowHead);
@@ -3480,14 +3488,14 @@ ${ITAPLA_WORLD_NOISE}
                 partLayer.appendChild(polaroid);
             });
 
-            modal.style.display = 'block';
-
-            // 現在地を中央に (GPU加速を利用)
-            const currentPos = locPositions[currentLocation] || center;
+            // 現在地を中央に
             const container = modal.querySelector('.antique-map-container');
-            mapPanning.x = container.offsetWidth / 2 - currentPos.x;
-            mapPanning.y = container.offsetHeight / 2 - currentPos.y;
-            board.style.transform = `translate3d(${mapPanning.x}px, ${mapPanning.y}px, 0)`;
+            if (container) {
+                const currentPos = locPositions[currentLocation] || center;
+                mapPanning.x = container.offsetWidth / 2 - currentPos.x;
+                mapPanning.y = container.offsetHeight / 2 - currentPos.y;
+                board.style.transform = `translate3d(${mapPanning.x}px, ${mapPanning.y}px, 0)`;
+            }
 
             if (!board.dataset.draggingInited) {
                 initMapDragging();

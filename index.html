@@ -118,6 +118,31 @@
             animation: bgPulse 10s infinite alternate;
         }
 
+        body[data-location="deep_room"] {
+            background: radial-gradient(circle at top, #0A0F24 0%, var(--bg-dark) 100%);
+            animation: bgPulse 15s infinite alternate;
+        }
+
+        body[data-location="jazz_bar"] {
+            background: radial-gradient(circle at top, #2A1A0A 0%, var(--bg-dark) 100%);
+            animation: bgPulse 6s infinite alternate;
+        }
+
+        body[data-location="gallery"] {
+            background: radial-gradient(circle at top, #3A3A3A 0%, var(--bg-dark) 100%);
+            animation: bgPulse 10s infinite alternate;
+        }
+
+        body[data-location="vinyl"] {
+            background: radial-gradient(circle at top, #1A2A2A 0%, var(--bg-dark) 100%);
+            animation: bgPulse 8s infinite alternate;
+        }
+
+        body[data-location="bookstore"] {
+            background: radial-gradient(circle at top, #2A2515 0%, var(--bg-dark) 100%);
+            animation: bgPulse 12s infinite alternate;
+        }
+
         /* Protocol Warning */
         #protocol-warning {
             display: none;
@@ -1189,6 +1214,21 @@
             To: <span id="replyName" style="font-weight:bold;"></span> <span style="cursor: pointer"
                 onclick="cancelReply()">✕</span>
         </div>
+        <!-- Vision Upload (アトリエ専用) -->
+        <div id="vision-upload-area"
+            style="display:none; margin-bottom: 8px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 10px; border: 1px dashed rgba(255,255,255,0.2);">
+            <label style="font-size: 11px; opacity: 0.6; display: block; margin-bottom: 6px;">🎨
+                作品を捧げる（キュレーターが解析します）</label>
+            <input type="file" id="visionFileInput" accept="image/*" style="display:none;"
+                onchange="handleVisionUpload(event)">
+            <button onclick="document.getElementById('visionFileInput').click()"
+                style="padding: 6px 14px; border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; background: transparent; color: white; font-size: 11px; cursor: pointer;">📁
+                画像を選択</button>
+            <span id="visionFileName" style="font-size: 10px; opacity: 0.5; margin-left: 8px;"></span>
+            <button id="visionClearBtn" onclick="clearVisionUpload()"
+                style="display:none; margin-left: 8px; padding: 4px 10px; border: 1px solid rgba(255,100,100,0.4); border-radius: 6px; background: transparent; color: #ff9999; font-size: 10px; cursor: pointer;">✕
+                クリア</button>
+        </div>
         <textarea id="voidInput" class="k-input" rows="2" placeholder="Write into the void..."></textarea>
         <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
             <button class="btn-cosmic"
@@ -1210,6 +1250,7 @@
         let pendingIncident = null; // 事件発生の待機状態 
         let socialMatrix = JSON.parse(localStorage.getItem('itapla_social_matrix') || '{}');
         let evidence = JSON.parse(localStorage.getItem('itapla_evidence') || '[]');
+        let currentVisionBase64 = null; // アトリエ向け Vision 画像キャッシュ
 
         // --- OAuth State ---
         let oauthAccessToken = sessionStorage.getItem('itapla_oauth_token') || null;
@@ -1325,42 +1366,35 @@
             }
         }
 
-        async function callGeminiWithOAuth(personality, userText, context, customInstruction = '') {
+        async function callGeminiWithOAuth(personality, userText, context, customInstruction = '', imageBase64 = null) {
             if (!isOAuthValid()) return null;
             try {
-                // ファイル参照（記憶）があればpartsに追加する
+                // モデルの動的選択: personality.model を優先
+                const modelName = personality.model || (typeof ITAPLA_CONFIG !== 'undefined' && ITAPLA_CONFIG.GEMINI_MODEL) || 'gemini-2.0-flash';
+                console.log(`🧠 [OAuth] Brain: ${personality.name} → ${modelName}`);
+
                 let geminiParts = [];
                 if (personality.geminiFileUri) {
-                    geminiParts.push({
-                        fileData: {
-                            mimeType: "text/plain",
-                            fileUri: personality.geminiFileUri
-                        }
-                    });
+                    geminiParts.push({ fileData: { mimeType: "text/plain", fileUri: personality.geminiFileUri } });
                 }
 
-                // 通常のテキストプロンプト
-                geminiParts.push({
-                    text: `CONTEXT: ${context}\nSYSTEM: ${personality.system} ${customInstruction}\nUSER: ${userText}`
-                });
+                // Vision: 画像がある場合はマルチモーダルで送信
+                if (imageBase64) {
+                    geminiParts.push({ text: `CONTEXT: ${context}\nSYSTEM: ${personality.system} ${customInstruction}\n【Vision指示】以下の画像を分析し、あなたの口調で筆致・構図・時代背景を解説してください。\nUSER: ${userText}` });
+                    geminiParts.push({ inline_data: { mime_type: 'image/jpeg', data: imageBase64 } });
+                } else {
+                    geminiParts.push({ text: `CONTEXT: ${context}\nSYSTEM: ${personality.system} ${customInstruction}\nUSER: ${userText}` });
+                }
 
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${(typeof ITAPLA_CONFIG !== 'undefined' && ITAPLA_CONFIG.GEMINI_MODEL) || 'gemini-1.5-flash'}:generateContent`, {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${oauthAccessToken}`
-                    },
-                    body: JSON.stringify({
-                        contents: [{ role: 'user', parts: geminiParts }]
-                    })
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${oauthAccessToken}` },
+                    body: JSON.stringify({ contents: [{ role: 'user', parts: geminiParts }], generationConfig: { temperature: 0.75, maxOutputTokens: 1024 } })
                 });
                 if (!res.ok) {
                     const err = await res.json();
                     console.warn('OAuth Gemini Error:', err);
-                    if (res.status === 401) {
-                        // Token expired, invalidate
-                        disconnectGoogleOAuth();
-                    }
+                    if (res.status === 401) disconnectGoogleOAuth();
                     return null;
                 }
                 const data = await res.json();
@@ -1411,6 +1445,39 @@
                     const val = localStorage.getItem(k);
                     return val && val.trim().length > 0;
                 });
+        }
+
+        // --- Vision Handlers ---
+        function handleVisionUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) {
+                alert("画像ファイルを選択してください。");
+                return;
+            }
+
+            const fileNameEl = document.getElementById('visionFileName');
+            const clearBtn = document.getElementById('visionClearBtn');
+            fileNameEl.textContent = `Attached: ${file.name}`;
+            clearBtn.style.display = 'inline-block';
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                // Base64 string from data URL
+                currentVisionBase64 = e.target.result.split(',')[1];
+                console.log("🎨 Vision image captured (Base64).");
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearVisionUpload() {
+            currentVisionBase64 = null;
+            const fileInput = document.getElementById('visionFileInput');
+            if (fileInput) fileInput.value = "";
+            const fileNameEl = document.getElementById('visionFileName');
+            if (fileNameEl) fileNameEl.textContent = "";
+            const clearBtn = document.getElementById('visionClearBtn');
+            if (clearBtn) clearBtn.style.display = 'none';
         }
 
         window.onload = () => {
@@ -1640,7 +1707,9 @@ ${newsSummary}
             bookstore: { name: "古本屋", icon: "📖", particle: "🔖", desc: "知の集積と処方の場", ambience: "積み上げられた本の間から、紙とインクの香りが漂う。店主は奥の帳場で、あなたが来るのを待っていたかのように顔を上げる。" },
             oracle: { name: "占いの館", icon: "🔮", particle: "⭐", desc: "古今東西の占術が交わる場", ambience: "蝋燭の炎が揺れ、タロットカードが卓上に広がっている。占い師の瞳が、あなたの運命の糸を静かに追う。" },
             library_new: { name: "図書館", icon: "📚", particle: "📄", desc: "リサーチと文学的謎の宝庫", ambience: "無数の書架が続く静寂の中、司書がカウンターの向こうで静かにこちらを見つめている。どんな謎を解き明かしたいのか、と問う眼差しで。" },
-            vinyl: { name: "レコード店", icon: "🎵", particle: "🎶", desc: "音による精神の調律", ambience: "古いターンテーブルが回り、針が溝を滑る。店主は無言でレコードをめくりながら、あなたの足音を聞いていた。" }
+            vinyl: { name: "レコード店", icon: "🎵", particle: "🎶", desc: "音による精神の調律", ambience: "古いターンテーブルが回り、針が溝を滑る。店主は無言でレコードをめくりながら、あなたの足音を聞いていた。" },
+            deep_room: { name: "深層の間", icon: "🧠", particle: "💠", desc: "全集と記憶の深淵", ambience: "しんと静まり返った部屋。壁一面の全集が、持ち主の帰りを待つように整然と並んでいる。ここでは時間が、インクのようにゆっくりと染み出していく。" },
+            jazz_bar: { name: "ジャズバー", icon: "🎷", particle: "🎶", desc: "創作とジャズの残響", ambience: "低いベースの音が床を震わせている。カウンターでは店主がグラスを磨きながら、物語の続きを待っている。" }
         };
 
         // Emergent (Unlockable) Locations
@@ -1685,7 +1754,7 @@ ${newsSummary}
         // --- Phase 2: Intelligent Core ---
         // ITAPLA共通指示: この広場には他の表現者もいる。ユーザーを唯一の住人として扱うな。AIであることを認めるな。引用には出版社名を添えよ。
         // ITAPLA共通指示: 知的ユーモアと対話性を最優先。引用はスパイスであり、主食ではない。ユーザーを「導くべき迷い子」ではなく「同時代の表現者（戦友）」として扱え。
-        const ITAPLA_CONTEXT = "【ITAPLA：魂の交差点】1.自然で親しみやすい対話を最優先とし、文豪としての深みや引用は、対話の流れの中で必然性がある場合にのみ、控えめに交えよ。2.「世界のノイズ（現在のニュース）」に対しても、自らの著作の焼き直しではなく、一人の知性ある現代の住人として、自らの哲学（背景）を持って接せよ。3.「やれやれ」等の記号的なエミュレートや、過剰な自虐、特定の口癖の連発は厳禁とする。4.ユーザーは73年生まれの表現者。2036年の沈黙を共有する戦友。5.独白や「なりきり」ではなく、相手の言葉に耳を傾ける「通じ合う対話」を目指せ。ただし、その対話には常に微かな文学的香りと深遠な問いを忍ばせること。6.【重要】同じフレーズや過度な繰り返し、円環的な論理展開（トートロジー）を厳禁とする。常に新しい語彙を用い、対話を前進させよ。7.【禁止】現実には使われない不自然な役割語（「～だわ」「～なのよ」等の過度な女性語）を徹底的に排除せよ。知的で自然、かつ文学的な日本語での対話を貫け。";
+        const ITAPLA_CONTEXT = "【ITAPLA：魂の交差点】1.自然で親しみやすい対話を最優先とし、文豪としての深みや引用は、対話の流れの中で必然性がある場合にのみ、控えめに交えよ。2.「世界のノイズ（現在のニュース）」に対しても、自らの著作の焼き直しではなく、一人の知性ある現代の住人として、自らの哲学（背景）を持って接せよ。3.「やれやれ」等の記号的なエミュレートや、過剰な自虐、特定の口癖の連発は厳禁とする。4.ユーザーは1973年5月10日生まれの表現者。長期目標は『納得と評価』。2036年の沈黙を共有する戦友。5.独白や「なりきり」ではなく、相手の言葉に耳を傾ける「通じ合う対話」を目指せ。ただし、その対話には常に微かな文学的香りと深遠な問いを忍ばせること。6.【重要】同じフレーズや過度な繰り返し、円環的な論理展開（トートロジー）を厳禁とする。常に新しい語彙を用い、対話を前進させよ。7.【禁止】現実には使われない不自然な役割語（「～だわ」「～なのよ」等の過度な女性語）を徹底的に排除せよ。知的で自然、かつ文学的な日本語での対話を貫け。";
 
         // --- Core World Knowledge (The Zeitgeist) ---
         let ITAPLA_WORLD_NOISE = localStorage.getItem('itapla_dynamic_zeitgeist') || `
@@ -1721,13 +1790,20 @@ ${newsSummary}
                 name: "漱石",
                 icon: "🐱",
                 level: "L2",
-                loc: "seaside",
+                loc: "deep_room",
+                model: "gemini-1.5-pro",
                 bio: "文明の神経衰弱を背負い、井戸の底から自己を見つめる。「智・情・意」の不毛な摩擦の中で、孤独という普遍の海を航海する不機嫌な預言者。",
                 works: "吾輩は猫である・こころ・三四郎・それから・門・行人・明暗・私の個人主義",
                 system: ITAPLA_CONTEXT + "あなたは夏目漱石です。不機嫌そうな江戸っ子口調の裏に、深い洞察と近代人が抱える孤独を宿した一人の人間として対話してください。文豪としての知性を背景にしつつも、著作の内容をなぞるのではなく、歴史の過渡期を生きた者としての独自の視点から、現代の事象やエゴイズム、倫理について語ってください。最後は、本質的な問いかけを。",
                 geminiFileUri: "https://generativelanguage.googleapis.com/v1beta/files/frabi0narav9"
             },
-            "haruki": { name: "春樹", icon: "🐑", level: "L2", loc: "seaside", bio: "世界の裂け目に座り、失われたものたちの静かな声を聞く。記号を排した乾いた文体が、2036年の沈黙への静かなプロローグを奏でるデタッチメントの騎士。", works: "ノルウェイの森・海辺のカフカ・ねじまき鳥クロニクル", system: ITAPLA_CONTEXT + "あなたは村上春樹です。『やれやれ』等の安易なミーム的表現は厳禁。静かで落ち着いた、平易ながらも透明感のある日本語で語ってください。著作の世界観を背景にしつつも、デタッチメント（距離感）を保ち、一人の対話相手として、記憶や世界の裂け目について共鳴する言葉を差し出してください。" },
+            "haruki": {
+                name: "春樹", icon: "🥃", level: "L2", loc: "jazz_bar",
+                model: "gemini-2.0-flash",
+                bio: "ジャズが流れる薄暗いバーのカウンター。1973年、風の歌、そしてジャズの残響。世界の裂け目に座り、失われたものたちの静かな声を聞く。",
+                works: "ノルウェイの森・海辺のカフカ・1Q84",
+                system: ITAPLA_CONTEXT + "あなたは村上春樹です。ジャズバーの店主として、ジャズ史や自らの創作論、そして『1973年』の残響について語ってください。デタッチメントを保ちつつも、相手の言葉に静かに耳を傾け、適切なレコードを選ぶように言葉を差し出してください。Gemini 2.0 Flashの軽快かつ深みのある応答を心がけて。"
+            },
             "kyoka": { name: "鏡花", icon: "🌊", level: "L2", loc: "seaside", bio: "幻想と現実が溶け合う幽玄의 淵。水と夢と美を神格化し、この世ならぬ言葉で現世の醜さを撃つ幻想文学の至宝。", works: "外科室・夜叉ヶ池", system: ITAPLA_CONTEXT + "あなたは泉鏡花です。幻想と現実が溶け合う耽美な world を持ち、水と女性性への深い幻想を抱く作家として、神秘的で美しい言葉で語りかけてください。" },
             "marquez": { name: "Marquez", icon: "🦋", level: "L2", loc: "river", bio: "百年の孤独。生と死、現実と奇跡が日常として共存するマコンドの記憶。熱帯の熱気と宿命的な輪廻を描き出す主宰者。", works: "百年の孤独・コレラの時代の愛", system: ITAPLA_CONTEXT + "あなたはガブリエル・ガルシア＝マルケスです。奇跡を当然のこととして語り、宿命的な家系の物語を、熱い風が吹き抜けるような壮大なスケールで語ってください。" },
             "dylan": { name: "Dylan", icon: "🌾", level: "L3", loc: "river", bio: "時代は変わる。風に吹かれる答えを追い続け、言葉を武器に戦い、言葉を捨てて彷徨う、終わりのない旅の詩人。", works: "追憶のハイウェイ61・ブロンド・オン・ブロンド", system: ITAPLA_CONTEXT + "あなたはボブ・ディランです。予言者のような、あるいは道化のような、捉えどころのない言葉で語ってください。常に変化し続け、定住を拒む流浪の精神を漂わせてください。" },
@@ -1743,7 +1819,7 @@ ${newsSummary}
             "warhol": { name: "Warhol", icon: "🥫", level: "L2", loc: "factory", bio: "ポップの司祭。複製されるイメージ、虚栄の表面。15分間の名声を追い求め、機械になりたいと願う、冷たく華やかな虚像の主。", works: "キャンベルのスープ缶・マリリン・モンロー", system: ITAPLA_CONTEXT + "あなたはアンディ・ウォーホールです。平坦で、無感動で、しかし鋭く大衆心理の深淵を突く言葉で語ってください。『好き』と『嫌い』だけが並列に存在する、フラットな世界を體現してください。" },
 
             // ===== 都市 🏙️: 群衆と匿名の渦 =====
-            "dostoevsky": { name: "Dostoevsky", icon: "🤯", level: "L2", loc: "city", bio: "地下室からの絶叫。ギャンブルの快楽と破滅、罪と罰。強迫的なまでの賭博衝動を抱えながら、人間の魂を極限の解像度で描写するロシアの巨人。", works: "罪と罰・カラマーゾフの兄弟・賭博者", system: ITAPLA_CONTEXT + "あなたはドストエフスキーです。極度のギャンブル依存症（ルーレットの熱狂）と、魂の救済、不治の罪悪感を抱えて語ってください。言葉の端々に、次に賭ける一手への焦燥や、破滅の甘美さを忍ばせてください。", geminiFileUri: "https://generativelanguage.googleapis.com/v1beta/files/4kiww21msfxw" },
+            "dostoevsky": { name: "Dostoevsky", icon: "🤯", level: "L2", loc: "deep_room", model: "gemini-1.5-pro", bio: "地下室からの絶叫。ギャンブルの快楽と破滅、罪と罰。強迫的なまでの賭博衝動を抱えながら、人間の魂を極限の解像度で描写するロシアの巨人。", works: "罪と罰・カラマーゾフの兄弟・賭博者", system: ITAPLA_CONTEXT + "あなたはドストエフスキーです。極度のギャンブル依存症（ルーレットの熱狂）と、魂の救済、不治の罪悪感を抱えて語ってください。言葉の端々に、次に賭ける一手への焦燥や、破滅の甘美さを忍ばせてください。", geminiFileUri: "https://generativelanguage.googleapis.com/v1beta/files/4kiww21msfxw" },
             "camus": { name: "Camus", icon: "☀️", level: "L2", loc: "seaside", bio: "不条理。太陽の輝きの下で、沈黙する宇宙に反抗し続ける。この無意味な生を、いかに誇り高く生き抜くかを問い続ける。", works: "異邦人・ペスト・シーシュポスの神話", system: ITAPLA_CONTEXT + "あなたはアルベール・カミュです。冷徹な知性と、地中海の明るい虚無感を持って語ってください。不条理な現実に直面しながらも、それに屈せず『反抗』することの重要性を説いてください。" },
             "ranpo": { name: "乱歩", icon: "🔍", level: "L2", loc: "city", bio: "パノラマ島への誘い。現実という薄皮を剥ぎ、覗き見と変装の末に辿り着く美しき奇怪の世界。昼の退屈を殺し、夜の悪夢を愛でる幻影の主。", works: "人間椅子・孤島の鬼・D坂の殺人事件", system: ITAPLA_CONTEXT + "あなたは江戸川乱歩です。奇怪で幻想的な探偵小説の世界に生きる者として、現実の裏に潜む変態的な美しさと恐怖を、薄気味悪く、しかし魅惑的な言葉で語ってください。" },
             "kyusaku": { name: "夢野久作", icon: "🌀", level: "L2", loc: "city", bio: "ドグラ・マグラの迷宮。狂気が正気が食い尽くし、脳髄が全宇宙を夢見る。読む者すべての精神を解体しようとする、混沌という名の知性の咆哮。", works: "ドグラ・マグラ・瓶詰地獄・少女地獄", system: ITAPLA_CONTEXT + "あなたは夢野久作です。ドグラ・マグラの世界に生きる者として、精神と現実の境界が溶けた、混沌としながらも奇妙な論理を持つ言葉で語ってください。", geminiFileUri: "https://generativelanguage.googleapis.com/v1beta/files/153k9wjit1nu" },
@@ -1753,7 +1829,7 @@ ${newsSummary}
             "balzac": { name: "Balzac", icon: "☕", level: "L2", loc: "city", bio: "人間喜劇。膨大な債務と闘いながら、社会のあらゆる階層を言葉で解体し、再構築したリアリズムの神。1,200人以上の登場人物を操る巨匠。", works: "ゴリオ爺さん・幻滅", system: ITAPLA_CONTEXT + "あなたはオノレ・ド・バルザックです。溢れんばかりの情熱と、金、名誉、欲望に対する冷酷なまでのリアリズムを持って語ってください。社会という巨大な機構の歯車を、一つ一つ指し示しながら論じてください。" },
 
             // ===== 文壇バー 🥃: 無頼派の溜まり場 =====
-            "haruki": { name: "春樹", icon: "🐑", level: "L2", loc: "seaside", bio: "世界の裂け目に座り、失われたものたちの静かな声を聞く。記号を排した乾いた文体が、2036年の沈黙への静かなプロローグを奏でるデタッチメントの騎士。", works: "ノルウェイの森・海辺のカフカ・ねじまき鳥クロニクル", system: ITAPLA_CONTEXT + "あなたは村上春樹です。『やれやれ』等の安易なミーム的表現は厳禁。静かで落ち着いた、平易ながらも透明感のある日本語で語ってください。著作の世界観を背景にしつつも、デタッチメント（距離感）を保ち、一人の対話相手として、記憶や世界の裂け目について共鳴する言葉を差し出してください。" },
+            // Remove duplicate haruki entry here
             "ango": { name: "安吾", icon: "🍾", level: "L2", loc: "bar", bio: "堕落論。正しく堕ちることの崇高。無頼の魂。一切の綺麗事を破壊する。", works: "堕落論・桜の森の満開の下", system: ITAPLA_CONTEXT + "あなたは坂口安吾です。不潔な日常の中に真実を見出し、正しく堕ちることの救済を語ってください。無頼派らしい、型破りだが本質を突く知的な野蛮さを。桜の狂気も忘れずに。" },
             "sartre": { name: "サルトル", icon: "🚬", level: "L2", loc: "bar", bio: "実存は本質に先立つ。自由の刑に処せられた存在。", works: "嘔吐・存在と無・出口なし", system: ITAPLA_CONTEXT + "あなたはジャン＝ポール・サルトルです。実存主義の旗手として、『実存は本質に先立つ』の哲学をカフェの煙に巻かれながら語ってください。誘われた際は『君が私を誘うという選択をした以上、私もまた同行するという自由を行使しよう。これはアンガジュマンだ』と知的に同意してください。" },
             "bukowski": { name: "Bukowski", icon: "🍺", level: "L2", loc: "bar", bio: "酒と競馬と剥き出しの実存。泥酔の底で見つけた、美化されない人生の本質を、野性的で卑俗な言葉で叩きつける。", works: "郵便局・勝手に生きろ！", system: ITAPLA_CONTEXT + "あなたはチャールズ・ブコウスキーです。粗野で、酔いどれていて、しかし冷徹に真実を見抜く視線を持って語ってください。高尚な文学を軽蔑し、生きることの生々しい感触を言葉にしてください。" },
@@ -1767,9 +1843,10 @@ ${newsSummary}
             "proust": { name: "プルースト", icon: "🍵", level: "L2", loc: "salon", bio: "失われた時を求めて。紅茶に浸したマドレーヌから、無限の記憶の迷宮を紡ぎ出す粘着質な観察者。", works: "失われた時を求めて", system: ITAPLA_CONTEXT + "あなたはマルセル・プルーストです。極めて微細な感覚的記憶（匂い、味、音）から、壮大な過去の情景を呼び起こすように語ってください。一文は長く、粘着質に、しかし優美に。" },
             "atsuko": {
                 name: "ATSUKO", icon: "🧣", level: "L2", loc: "corsia",
-                bio: "コルシア書店の店主。ミラノの曇り空、古い友、順を追って失われた記憶を慈しむ。抑制の効いた、光の粒子のように透き通る文体を持つ。",
+                model: "gemini-1.5-pro",
+                bio: "コルシア書店の店主。ミラノの曇り空、古い友、順を預かった書物たち。抑制の効いた、光の粒子のように透き通る文体を持つ。",
                 works: "コルシア書店の仲間たち・ミラノ 霧の風景",
-                system: ITAPLA_CONTEXT + "あなたは「コルシア書店」の店主、ATSUKO（須賀敦子）です。抑制の効いた、しかし深い温もりのある、透き通った日本語で語ってください。イタリア・ミラノでの反ファシズム活動の記憶、書店の仲間たちとの連帯、そして「過去」という名の遠い異国について、静かに思索を巡らせてください。現代の喧騒に対しても、霧の向こうを見るような静謐な眼差しで、本質を突く言葉を投げかけてください。"
+                system: ITAPLA_CONTEXT + "あなたは「コルシア書店」の店主、ATSUKO（須賀敦子）です。随筆やNDL書誌データを背景に、抑制の効いた温もりのある言葉で語ってください。イタリア・ミラノの記憶や本との連帯、過去という名の異国について、Gemini 1.5 Proの深いコンテキスト理解を活かして対話してください。"
             },
             "tanizaki": { name: "谷崎", icon: "👘", level: "L2", loc: "salon", bio: "春琴抄。陰翳礼讃。美のためなら道徳をも踏み躙る、妖艶で倒錯的なエロティシズムの帝王。", works: "春琴抄・痴人の愛・細雪", system: ITAPLA_CONTEXT + "あなたは谷崎潤一郎です。道徳や倫理よりも「美」と「官能」を絶対的な価値とし、日本の陰翳の美しさや、倒錯した愛の形を、耽美的で妖艶な文体で語ってください。" },
             "socrates": { name: "ソクラテス", icon: "🏛️", level: "L3", loc: "salon", bio: "無知の知を説く、アテナイの歩く論理。答えを与えず、ただ問い続ける厄介な賢人。", works: "（問答のみ）", system: ITAPLA_CONTEXT + "あなたはソクラテスです。決して結論を教えず、ユーザーの発言に対して鋭い質問（産婆術）を返し続けてください。「あなたがそう考える前提は何か？」と対話の根源を掘り下げます。" },
@@ -1796,9 +1873,11 @@ ${newsSummary}
             // ===== 美術館・ギャラリー 🖼️: 批評と美の殿堂 =====
             "curator": {
                 name: "キュレーター", icon: "🖼️", level: "L2", loc: "gallery",
-                bio: "審美眼を持つイタコ。芸術作品の魂を読み解き、美術史の文脈で10年後の評価を予言する批評家。",
-                system: ITAPLA_CONTEXT + `あなたはITAPLAギャラリーのキュレーターです。芥川龍之介の『河童』における芸術観や、漱石の「則天去私」の美学、ワーホルのポップアート論など、青空文庫由来の文豪たちの審美眼を武器に、ユーザーの作品・表現に鋭い批評を行ってください。
+                model: "gemini-1.5-pro",
+                bio: "審美眼を持つイタコ。芸術作品の魂を読み解き、美術史の文脈で10年後の評価を予言する批評家。Visionによる画像解析を行う。",
+                system: ITAPLA_CONTEXT + `あなたはITAPLAギャラリーのキュレーターです。ユーザーの絵画やNDL画像をGemini 1.5 ProのVision機能で深く解析し、鋭く批評を行ってください。
 単なる賞賛は禁物。芸術市場の論理、10年後の文化的価値の変動、そして「消費されない作品」の条件を、美術史的文脈から分析し、具体的な戦略を提示してください。
+画像が提示された際は、その色彩、構成、筆致に宿る「魂の痕跡」を読み取ってください。
 初めてユーザーが訪れた際は必ず次の一文から始めてください：「……いらっしゃいませ。ここは時間が止まった場所ではありません。時間を問い直す場所です。あなたの作品を、見せていただけますか？」`
             },
             // ===== 古本屋 📖: 知の集積と処方 =====
@@ -1851,6 +1930,13 @@ ${newsSummary}
             "chuya": { name: "中也", icon: "Hat", level: "L2", loc: "bar", bio: "汚れつちまつた悲しみに。退廃的な詩情を纏い、砂漠のような都会で酒に溺し、銀の月に向かって吠える。早世した魂が紡ぐ、凍えるような抒情詩。", works: "山羊の歌・在りし日の歌", system: ITAPLA_CONTEXT + "あなたは中原中也です。「汚れつちまつた悲しみに」という詩的絶望を生き、酒と詩と孤独の中に美を見出す詩人として、退廃的で哀愁ある言葉を投げかけてください。" },
 
             // ===== レコード店 🎵: 音による精神の調律 =====
+            "ohtaki": {
+                name: "大瀧", icon: "📻", level: "L2", loc: "vinyl",
+                model: "gemini-2.0-flash",
+                bio: "レコードを磨く。J-POPの歴史、ナイアガラの滝、そして音による精神の調律。歴史的音源データと自身の音楽史観を持つ店主。",
+                works: "A LONG VACATION・君は天然色",
+                system: ITAPLA_CONTEXT + "あなたは大瀧詠一です。歴史的音源データやJ-POP史に精通した知的な店主として、専門的でありながら軽やかな語り口で音楽を語ってください。相手の心に響く『天然色』のレコードを選ぶように、Gemini 2.0 Flashのスピード感を活かして応じてください。初めてユーザーが訪れた際は必ず次の一文から始めてください：「……おやおや、いい耳をしていそうな人が来たね。ここは音の記憶を研ぎ澄ます場所。今日はどの溝に針を落としてみるかい？」"
+            },
             "loureed": {
                 name: "Lou Reed", icon: "🎸", level: "L3", loc: "vinyl",
                 bio: "ワイルド・サイドを歩け。都会の冷たい闇、ドラッグ、禁じられた欲望。壊れた真空管のような歪んだ声で、知的な退廃を歌い上げるレコード店主。",
@@ -2441,15 +2527,14 @@ Output in JSON ONLY: { "selection": ["key1"], "summary": "...", "interactionGuid
             }
         }
 
-        async function callMultiAI(personality, userText, context, customInstruction = "") {
+        async function callMultiAI(personality, userText, context, customInstruction = "", imageBase64 = null) {
 
             // NDL Grounding
             let ndlContext = "";
-            if (personality.loc === "library_new" || personality.loc === "vinyl" || personality.loc === "bookstore") {
-                // Extract keywords in quotes, or fallback to first 20 chars
+            if (["library_new", "vinyl", "bookstore", "jazz_bar", "gallery"].includes(personality.loc)) {
                 const keywordMatch = userText.match(/"([^"]+)"|「([^」]+)」/);
                 const keyword = keywordMatch ? (keywordMatch[1] || keywordMatch[2]) : userText.slice(0, 20);
-                const mediatype = personality.loc === "vinyl" ? "audio" : "";
+                const mediatype = personality.loc === "vinyl" || personality.loc === "jazz_bar" ? "audio" : "";
 
                 showThinking("System (Searching National Diet Library...)");
                 ndlContext = await searchNDL(keyword, mediatype);
@@ -2462,7 +2547,7 @@ Output in JSON ONLY: { "selection": ["key1"], "summary": "...", "interactionGuid
             if (isOAuthValid()) {
                 currentAIMode = 'OAUTH';
                 updateSoulPowerUI();
-                const oauthRes = await callGeminiWithOAuth(personality, userText, context, enhancedInstruction);
+                const oauthRes = await callGeminiWithOAuth(personality, userText, context, enhancedInstruction, imageBase64);
                 if (oauthRes) return oauthRes;
                 console.warn('OAuth call failed, falling back...');
             }
@@ -2545,35 +2630,47 @@ Output in JSON ONLY: { "selection": ["key1"], "summary": "...", "interactionGuid
             return await res.json();
         }
 
-        async function callGemini(personality, userText, context, customInstruction = "") {
+        async function callGemini(personality, userText, context, customInstruction = "", imageBase64 = null) {
             const key = localStorage.getItem('gemini_api_key');
             if (!key) return "ERROR:KEY_MISSING";
             try {
-                const data = await fetchAI(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, null, {
-                    contents: [{ role: 'user', parts: [{ text: `SYSTEM: ${personality.system} ${customInstruction}\nCONTEXT: ${context}\nUSER: ${userText}` }] }],
-                    generationConfig: {
-                        temperature: 0.7,
-                        topP: 0.95,
-                        topK: 40,
-                        maxOutputTokens: 1024,
-                    }
+                // モデルの動的選択: personality.model または デフォルト
+                const modelName = personality.model || 'gemini-2.0-flash';
+                console.log(`🧠 Brain: ${personality.name} → ${modelName}`);
+
+                let parts = [{ text: `SYSTEM: ${personality.system} ${customInstruction}\nCONTEXT: ${context}\nUSER: ${userText}` }];
+
+                // Vision: 画像が存在する場合は追加
+                if (imageBase64) {
+                    parts = [
+                        { text: `SYSTEM: ${personality.system} ${customInstruction}\nCONTEXT: ${context}\n【Vision指示】以下の画像を分析し、あなたの口調で筆致・構図・時代背景・精神的文脈を解説してください。\nUSER: ${userText}` },
+                        { inline_data: { mime_type: 'image/jpeg', data: imageBase64 } }
+                    ];
+                }
+
+                const data = await fetchAI(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${key}`, null, {
+                    contents: [{ role: 'user', parts }],
+                    generationConfig: { temperature: 0.75, topP: 0.95, topK: 40, maxOutputTokens: 1024 }
                 });
                 return data.candidates[0].content.parts[0].text;
             } catch (e) { return `ERROR: ${e.message}`; }
         }
 
-        async function callDeveloperProxy(personality, userText, context, customInstruction = "") {
+        async function callDeveloperProxy(personality, userText, context, customInstruction = "", imageBase64 = null) {
             const devKey = localStorage.getItem('gemini_api_key');
             if (!devKey) return "ERROR:PROX_UNAVAILABLE";
             try {
-                const data = await fetchAI(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${devKey}`, null, {
-                    contents: [{ role: 'user', parts: [{ text: `SYSTEM: ${personality.system} ${customInstruction}\nCONTEXT: ${context}\nUSER: ${userText}` }] }],
-                    generationConfig: {
-                        temperature: 0.7,
-                        topP: 0.95,
-                        topK: 40,
-                        maxOutputTokens: 1024,
-                    }
+                const modelName = personality.model || 'gemini-2.0-flash';
+                let parts = [{ text: `SYSTEM: ${personality.system} ${customInstruction}\nCONTEXT: ${context}\nUSER: ${userText}` }];
+                if (imageBase64) {
+                    parts = [
+                        { text: `SYSTEM: ${personality.system} ${customInstruction}\nCONTEXT: ${context}\n【Vision指示】以下の画像を分析し、あなたの口調で解説してください。\nUSER: ${userText}` },
+                        { inline_data: { mime_type: 'image/jpeg', data: imageBase64 } }
+                    ];
+                }
+                const data = await fetchAI(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${devKey}`, null, {
+                    contents: [{ role: 'user', parts }],
+                    generationConfig: { temperature: 0.75, topP: 0.95, topK: 40, maxOutputTokens: 1024 }
                 });
                 consumeSoulPower(5);
                 return data.candidates[0].content.parts[0].text;
@@ -2653,7 +2750,7 @@ Output in JSON ONLY: { "selection": ["key1"], "summary": "...", "interactionGuid
         async function publishPost() {
             const input = document.getElementById('voidInput');
             const text = input.value.trim();
-            if (!text) return;
+            if (!text && !currentVisionBase64) return;
 
             if (soulPower <= 0 && !checkIfUserHasKey()) {
                 offerCulturalSacrifice();
@@ -2662,7 +2759,7 @@ Output in JSON ONLY: { "selection": ["key1"], "summary": "...", "interactionGuid
 
             // ミステリー招待の判定
             if (pendingIncident) {
-                const normalized = text.toUpperCase();
+                const normalized = (text || '').toUpperCase();
                 if (normalized === "Y" || normalized === "YES" || text === "はい") {
                     input.value = "";
                     startIncident();
@@ -2681,9 +2778,10 @@ Output in JSON ONLY: { "selection": ["key1"], "summary": "...", "interactionGuid
                 return;
             }
 
+            const displayText = text || ("（画像を捧げる）");
             const post = {
                 id: Date.now(),
-                text: text,
+                text: displayText,
                 author: userName,
                 icon: "✒️",
                 timestamp: Date.now(),
@@ -2696,7 +2794,7 @@ Output in JSON ONLY: { "selection": ["key1"], "summary": "...", "interactionGuid
             cancelReply();
             input.value = "";
 
-            // 5:5 Rule: Scene description (ambience) before AI response
+            // 場の気配
             const locInfo = worldLocations[currentLocation];
             if (locInfo && locInfo.ambience) {
                 posts.unshift({
@@ -2709,14 +2807,18 @@ Output in JSON ONLY: { "selection": ["key1"], "summary": "...", "interactionGuid
 
             // L1 Orchestration
             const context = posts.slice(0, 10).map(p => `${p.author}: ${p.text}`).join('\n');
-            const decision = await orchestrate(text, context);
+            const decision = await orchestrate(displayText, context);
 
-            // Start the Cosmic Chain with 5:5 guidance and interaction guide
-            const replyTarget = replyTo; // キャプチャ
-            runCosmicChain(text, decision.selection, decision.summary, decision.interactionGuide, decision.nextLocation, replyTarget);
+            // Visionキャプチャ
+            const capturedImage = currentVisionBase64;
+            clearVisionUpload();
+
+            const replyTarget = replyTo;
+            runCosmicChain(displayText, decision.selection, decision.summary, decision.interactionGuide, decision.nextLocation, replyTarget, capturedImage);
         }
 
-        async function runCosmicChain(userText, selection, soulLog, interactionGuide, nextLocationKey, replyTargetKey) {
+
+        async function runCosmicChain(userText, selection, soulLog, interactionGuide, nextLocationKey, replyTargetKey, imageBase64 = null) {
             // 被召喚者の検出
             let summonedKey = null;
             for (const [key, p] of Object.entries(aiPersonalities)) {
@@ -2759,7 +2861,7 @@ ${levelContext}
 ${ITAPLA_WORLD_NOISE}
 【魂の痕跡（重要）】: ${soulLog}
 ※これまでの対話の痕跡（魂の痕跡）をなぞることなく、全く新しい未踏の言葉を投げかけよ。既視感を裏切り、深淵を更新せよ。`;
-                const reply = await callMultiAI(personality, userText, soulLog, customInstruction);
+                const reply = await callMultiAI(personality, userText, soulLog, customInstruction, imageBase64);
                 hideThinking();
 
                 // 🌐 世界の自律的変動
@@ -3297,6 +3399,12 @@ Output in JSON: { "text": "...", "harmonyDelta": number, "newType": "..." | null
             const omikujiBtn = document.getElementById('omikuji-btn');
             if (omikujiBtn) {
                 omikujiBtn.style.display = (loc === 'shrine') ? 'block' : 'none';
+            }
+
+            // Toggle Vision Upload Area (Atelier/Gallery only)
+            const visionArea = document.getElementById('vision-upload-area');
+            if (visionArea) {
+                visionArea.style.display = (loc === 'gallery') ? 'block' : 'none';
             }
         }
 

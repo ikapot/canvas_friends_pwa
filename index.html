@@ -195,6 +195,138 @@
             }
         }
 
+        /* --- Antique Map UI --- */
+        .antique-map-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 6000;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+        .antique-map-container {
+            position: relative;
+            width: 1000px;
+            height: 800px;
+            margin: 50px auto;
+            background: #f4e4bc url('https://www.transparenttextures.com/patterns/old-map.png');
+            border: 20px solid #5d4037;
+            border-image: linear-gradient(to bottom, #5d4037, #3e2723) 1;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), inset 0 0 100px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            cursor: grab;
+        }
+
+        .antique-map-container:active {
+            cursor: grabbing;
+        }
+
+        .map-svg-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .antique-marker {
+            position: absolute;
+            padding: 10px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            filter: sepia(0.5) contrast(1.2);
+        }
+
+        .antique-marker:hover {
+            transform: scale(1.1);
+            filter: sepia(0) contrast(1.5);
+        }
+
+        .antique-marker.active {
+            filter: none;
+            border-bottom: 2px solid #8b4513;
+        }
+
+        .marker-icon {
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+
+        .marker-label {
+            font-family: 'Noto Serif JP', serif;
+            font-size: 13px;
+            font-weight: bold;
+            color: #3e2723;
+            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+            white-space: nowrap;
+            border-bottom: 1px solid rgba(62, 39, 35, 0.2);
+        }
+
+        .map-arrow {
+            pointer-events: auto;
+            cursor: pointer;
+            fill: #8b4513;
+            opacity: 0.7;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        .map-arrow:hover {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
+        .map-close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: 2px solid #5d4037;
+            color: #5d4037;
+            padding: 5px 15px;
+            font-family: 'Noto Serif JP', serif;
+            cursor: pointer;
+            z-index: 100;
+            background: rgba(244, 228, 188, 0.8);
+        }
+
+        .polaroid-on-map {
+            position: absolute;
+            width: 60px;
+            background: #fff;
+            padding: 4px;
+            padding-bottom: 12px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            transform: rotate(-5deg);
+            pointer-events: auto;
+        }
+
+        .polaroid-on-map .p-img {
+            width: 100%;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .polaroid-on-map .p-name {
+            font-size: 8px;
+            text-align: center;
+            color: #333;
+            margin-top: 4px;
+            overflow: hidden;
+        }
+
         /* Protocol Warning */
         #protocol-warning {
             display: none;
@@ -1117,15 +1249,13 @@
 
     <canvas id="bg-canvas"></canvas>
 
-    <!-- Investigation Board Modal (The Murder Wall) -->
-    <div id="mapModal" class="murder-wall-modal">
-        <button class="murder-wall-close" onclick="closeMap()">Close Case Board</button>
-        <div class="murder-wall-container" id="murderWallBoard">
-            <div class="board-label" style="top: 40px; left: 60px;">Location Wall</div>
-            <div class="board-label" style="top: 40px; right: 60px; text-align: right;">Character Wall</div>
-            <svg class="evidence-string" id="evidenceStrings"></svg>
-            <div id="boardLocations"></div>
-            <div id="boardParticipants"></div>
+    <!-- Antique Map UI (Replaces Investigation Board) -->
+    <div id="mapModal" class="antique-map-modal">
+        <button class="map-close-btn" onclick="closeMap()">Close Map</button>
+        <div class="antique-map-container" id="antiqueMapBoard">
+            <svg class="map-svg-layer" id="mapSvgLayer"></svg>
+            <div id="antiqueMapLocations"></div>
+            <div id="antiqueMapParticipants"></div>
         </div>
     </div>
 
@@ -3172,92 +3302,109 @@ ${ITAPLA_WORLD_NOISE}
 
         // --- Map Modal ---
         function openMap() {
-            const board = document.getElementById('murderWallBoard'); // 古いIDをそのまま利用
-            const locLayer = document.getElementById('boardLocations');
-            const partLayer = document.getElementById('boardParticipants');
-            const svgLayer = document.getElementById('evidenceStrings');
-
-            // 以前のラベルや証拠品レイヤーを削除（原点回帰）
-            const oldLabel = board.querySelector('.board-label');
-            if (oldLabel) oldLabel.remove();
-            const oldEviLayer = document.getElementById('boardEvidence');
-            if (oldEviLayer) oldEviLayer.remove();
+            const modal = document.getElementById('mapModal');
+            const locLayer = document.getElementById('antiqueMapLocations');
+            const partLayer = document.getElementById('antiqueMapParticipants');
+            const svgLayer = document.getElementById('mapSvgLayer');
 
             locLayer.innerHTML = '';
             partLayer.innerHTML = '';
             svgLayer.innerHTML = '';
 
             const locations = Object.entries(worldLocations);
-            const participants = Object.entries(aiPersonalities).filter(([k, p]) => k !== 'k' && k !== 'System');
+            const participants = Object.entries(aiPersonalities).filter(([k, p]) => k !== 'k' && k !== 'System' && k !== 'Orchestrator');
 
-            // 1. 位置の決定 (循環レイアウト)
-            const centerX = 500;
-            const centerY = 400;
-            const radius = 300;
-
+            // 1. 位置の決定 (有機的な配置)
             const locPositions = {};
+            const center = { x: 500, y: 400 };
+
+            // 古地図風の配置 (少しランダム性のある円環 + 接続)
             locations.forEach(([key, loc], i) => {
                 const angle = (i / locations.length) * Math.PI * 2;
-                const x = centerX + Math.cos(angle) * radius + (Math.random() * 20 - 10);
-                const y = centerY + Math.sin(angle) * (radius * 0.8) + (Math.random() * 20 - 10);
+                const dist = 280 + (Math.random() * 40 - 20);
+                const x = center.x + Math.cos(angle) * dist;
+                const y = center.y + Math.sin(angle) * dist * 0.8;
                 locPositions[key] = { x, y };
 
-                const note = document.createElement('div');
-                note.className = `board-note ${key === currentLocation ? 'active' : ''}`;
-                note.style.left = `${x}px`;
-                note.style.top = `${y}px`;
-                note.style.transform = `rotate(${(Math.random() * 4 - 2)}deg)`;
-
-                note.innerHTML = `
-                    <div style="font-weight:900; border-bottom:1px solid rgba(0,0,0,0.1); padding-bottom:4px; margin-bottom:6px;">${loc.icon} ${loc.name}</div>
-                    <div style="font-size:10px; opacity:0.7; line-height:1.3;">${loc.desc}</div>
+                // マーカー
+                const marker = document.createElement('div');
+                marker.className = `antique-marker ${key === currentLocation ? 'active' : ''}`;
+                marker.style.left = `${x}px`;
+                marker.style.top = `${y}px`;
+                marker.innerHTML = `
+                    <div class="marker-icon">${loc.icon}</div>
+                    <div class="marker-label">${loc.name}</div>
                 `;
-                note.onclick = () => {
+                marker.onclick = () => {
                     if (key !== currentLocation) {
                         switchLocation(key);
                         closeMap();
                     }
                 };
-                locLayer.appendChild(note);
+                locLayer.appendChild(marker);
             });
 
-            // 2. 参加者 (文豪) の配置
-            participants.forEach(([key, p], i) => {
+            // 2. 矢印による接続 (SVG)
+            locations.forEach(([key, loc], i) => {
+                const nextKey = locations[(i + 1) % locations.length][0];
+                const start = locPositions[key];
+                const end = locPositions[nextKey];
+
+                if (start && end) {
+                    const arrowLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    const midX = (start.x + end.x) / 2 + 50;
+                    const midY = (start.y + end.y) / 2 + 50;
+
+                    // ベジェ曲線で古地図らしい線の歪みを表現
+                    const d = `M ${start.x + 20} ${start.y + 20} Q ${midX} ${midY} ${end.x + 20} ${end.y + 20}`;
+                    arrowLine.setAttribute("d", d);
+                    arrowLine.setAttribute("stroke", "#8b4513");
+                    arrowLine.setAttribute("stroke-width", "1.5");
+                    arrowLine.setAttribute("fill", "none");
+                    arrowLine.setAttribute("stroke-dasharray", "5,5");
+                    arrowLine.setAttribute("opacity", "0.4");
+                    svgLayer.appendChild(arrowLine);
+
+                    // 矢印の頭
+                    const arrowHead = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                    arrowHead.setAttribute("points", "-5,-5 5,0 -5,5");
+                    arrowHead.setAttribute("fill", "#8b4513");
+                    arrowHead.setAttribute("opacity", "0.6");
+
+                    // 角度の計算
+                    const angle = Math.atan2(end.y - start.y, end.x - start.x) * 180 / Math.PI;
+                    arrowHead.setAttribute("transform", `translate(${end.x}, ${end.y}) rotate(${angle})`);
+                    svgLayer.appendChild(arrowHead);
+                }
+            });
+
+            // 3. 参加者 (ポラロイド風)
+            participants.forEach(([key, p]) => {
                 const locPos = locPositions[p.loc];
                 if (!locPos) return;
 
-                const px = locPos.x + (Math.random() * 100 - 50);
-                const py = locPos.y + (Math.random() * 100 + 100);
+                const px = locPos.x + (Math.random() * 80 - 40);
+                const py = locPos.y + (Math.random() * 60 + 40);
 
                 const polaroid = document.createElement('div');
-                polaroid.className = 'polaroid';
+                polaroid.className = 'polaroid-on-map';
                 polaroid.style.left = `${px}px`;
                 polaroid.style.top = `${py}px`;
-                polaroid.style.transform = `rotate(${(Math.random() * 10 - 5)}deg)`;
+                polaroid.style.transform = `rotate(${(Math.random() * 14 - 7)}deg)`;
 
-                const colors = popArtColors[key] || { bg: "#333", border: "#888" };
+                const colors = popArtColors[key] || { bg: "#eee", border: "#ccc" };
                 polaroid.innerHTML = `
-                    <div class="polaroid-img" style="background:${colors.bg}; border-color:${colors.border};">${p.icon}</div>
-                    <div class="polaroid-name" style="font-size:8px;">${p.name}</div>
+                    <div class="p-img" style="background:${colors.bg}">${p.icon}</div>
+                    <div class="p-name">${p.name}</div>
                 `;
                 polaroid.onclick = (e) => {
                     e.stopPropagation();
                     showProfile(key);
                 };
                 partLayer.appendChild(polaroid);
-
-                // 3. つながりを示す「線」 (赤から柔らかい色へ)
-                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                line.setAttribute("x1", px + 50);
-                line.setAttribute("y1", py);
-                line.setAttribute("x2", locPos.x + 75);
-                line.setAttribute("y2", locPos.y + 25);
-                line.setAttribute("stroke", "rgba(245, 245, 220, 0.3)");
-                line.setAttribute("stroke-width", "1");
-                svgLayer.appendChild(line);
             });
 
-            document.getElementById('mapModal').style.display = 'block';
+            modal.style.display = 'block';
         }
 
         function closeMap() {

@@ -168,30 +168,43 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.1);
-            background-image:
-                repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0px, rgba(255, 255, 255, 0.05) 1px, transparent 1px, transparent 2px),
-                url('https://www.transparenttextures.com/patterns/p6.png');
+            background: rgba(0, 0, 0, 0.05);
+            background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
             pointer-events: none;
             z-index: 10000;
-            mix-blend-mode: overlay;
-            animation: noiseFlicker 0.1s infinite;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .surveillance-noise.active {
+            opacity: 0.15;
+            animation: noiseFlicker 0.3s infinite ease-in-out;
         }
 
         @keyframes noiseFlicker {
             0% {
-                opacity: 0.8;
                 transform: translate(0, 0);
+                opacity: 0.12;
+            }
+
+            25% {
+                transform: translate(-1px, 1px);
+                opacity: 0.15;
             }
 
             50% {
-                opacity: 1;
-                transform: translate(-1px, 1px);
+                transform: translate(1px, -1px);
+                opacity: 0.18;
+            }
+
+            75% {
+                transform: translate(-0.5px, -0.5px);
+                opacity: 0.15;
             }
 
             100% {
-                opacity: 0.9;
-                transform: translate(1px, -1px);
+                transform: translate(0, 0);
+                opacity: 0.12;
             }
         }
 
@@ -211,19 +224,30 @@
 
         .antique-map-container {
             position: relative;
-            width: 1000px;
-            height: 800px;
-            margin: 50px auto;
-            background: #f4e4bc url('https://www.transparenttextures.com/patterns/old-map.png');
-            border: 20px solid #5d4037;
+            width: 95vw;
+            height: 80vh;
+            margin: 40px auto;
+            background: #f4e4bc;
+            border: 15px solid #5d4037;
             border-image: linear-gradient(to bottom, #5d4037, #3e2723) 1;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), inset 0 0 100px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
             overflow: hidden;
-            cursor: grab;
         }
 
-        .antique-map-container:active {
+        .antique-map-board {
+            position: absolute;
+            width: 2000px;
+            height: 1600px;
+            background: #f4e4bc url('https://www.transparenttextures.com/patterns/old-map.png');
+            cursor: grab;
+            transition: transform 0.3s cubic-bezier(0.2, 0, 0.4, 1);
+            will-change: transform;
+            transform-origin: 0 0;
+        }
+
+        .antique-map-board:active {
             cursor: grabbing;
+            transition: none;
         }
 
         .map-svg-layer {
@@ -1231,6 +1255,8 @@
         ⚠️ Puter.js Error: Unsupported Protocol. <br>
         ファイルを直接開かず、付属の <code>serve.py</code> を実行して <code>http://localhost:8000</code> から開いてください。
     </div>
+    <!-- Persistent Noise Layer -->
+    <div id="global-noise" class="surveillance-noise"></div>
     <div id="entrance-layer">
         <div class="k-dialog-box" id="k-dialog">
             <div style="font-size:40px; margin-bottom:20px;">🚪</div>
@@ -3303,35 +3329,45 @@ ${ITAPLA_WORLD_NOISE}
         }
 
         // --- Map Modal ---
-        let mapPanning = { isDragging: false, startX: 0, startY: 0, scrollX: 0, scrollY: 0 };
+        let mapPanning = { isDragging: false, x: 0, y: 0, lastX: 0, lastY: 0 };
 
         function initMapDragging() {
             const board = document.getElementById('antiqueMapBoard');
             if (!board) return;
 
+            const updateTransform = () => {
+                board.style.transform = `translate3d(${mapPanning.x}px, ${mapPanning.y}px, 0)`;
+            };
+
             const startDrag = (e) => {
                 mapPanning.isDragging = true;
-                mapPanning.startX = (e.pageX || e.touches[0].pageX) - board.offsetLeft;
-                mapPanning.startY = (e.pageY || e.touches[0].pageY) - board.offsetTop;
+                const pageX = e.pageX || e.touches[0].pageX;
+                const pageY = e.pageY || e.touches[0].pageY;
+                mapPanning.lastX = pageX;
+                mapPanning.lastY = pageY;
             };
 
             const doDrag = (e) => {
                 if (!mapPanning.isDragging) return;
-                e.preventDefault();
-                const x = (e.pageX || e.touches[0].pageX) - mapPanning.startX;
-                const y = (e.pageY || e.touches[0].pageY) - mapPanning.startY;
-                board.style.left = `${x}px`;
-                board.style.top = `${y}px`;
+                const pageX = e.pageX || e.touches[0].pageX;
+                const pageY = e.pageY || e.touches[0].pageY;
+                const dx = pageX - mapPanning.lastX;
+                const dy = pageY - mapPanning.lastY;
+                mapPanning.x += dx;
+                mapPanning.y += dy;
+                mapPanning.lastX = pageX;
+                mapPanning.lastY = pageY;
+                updateTransform();
             };
 
             const endDrag = () => { mapPanning.isDragging = false; };
 
             board.addEventListener('mousedown', startDrag);
-            board.addEventListener('mousemove', doDrag);
+            window.addEventListener('mousemove', doDrag);
             window.addEventListener('mouseup', endDrag);
 
-            board.addEventListener('touchstart', startDrag);
-            board.addEventListener('touchmove', doDrag);
+            board.addEventListener('touchstart', startDrag, { passive: false });
+            window.addEventListener('touchmove', (e) => { if (mapPanning.isDragging) e.preventDefault(); doDrag(e); }, { passive: false });
             window.addEventListener('touchend', endDrag);
         }
 
@@ -3446,11 +3482,12 @@ ${ITAPLA_WORLD_NOISE}
 
             modal.style.display = 'block';
 
-            // 現在地を中央に
+            // 現在地を中央に (GPU加速を利用)
             const currentPos = locPositions[currentLocation] || center;
             const container = modal.querySelector('.antique-map-container');
-            board.style.left = `${container.offsetWidth / 2 - currentPos.x}px`;
-            board.style.top = `${container.offsetHeight / 2 - currentPos.y}px`;
+            mapPanning.x = container.offsetWidth / 2 - currentPos.x;
+            mapPanning.y = container.offsetHeight / 2 - currentPos.y;
+            board.style.transform = `translate3d(${mapPanning.x}px, ${mapPanning.y}px, 0)`;
 
             if (!board.dataset.draggingInited) {
                 initMapDragging();
@@ -3691,12 +3728,11 @@ Output in JSON: { "text": "...", "harmonyDelta": number, "newType": "..." | null
                 syncPosts();
             }
 
-            // Visual noise trigger if very high
-            if (surveillanceLevel > 80) {
-                const overlay = document.createElement('div');
-                overlay.className = 'surveillance-noise';
-                document.body.appendChild(overlay);
-                setTimeout(() => overlay.remove(), 2000);
+            // Visual noise active logic
+            const noise = document.getElementById('global-noise');
+            if (noise && surveillanceLevel > 60) {
+                noise.classList.add('active');
+                setTimeout(() => noise.classList.remove('active'), 3000);
             }
         }
 

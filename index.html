@@ -1252,10 +1252,12 @@
     <!-- Antique Map UI (Replaces Investigation Board) -->
     <div id="mapModal" class="antique-map-modal">
         <button class="map-close-btn" onclick="closeMap()">Close Map</button>
-        <div class="antique-map-container" id="antiqueMapBoard">
-            <svg class="map-svg-layer" id="mapSvgLayer"></svg>
-            <div id="antiqueMapLocations"></div>
-            <div id="antiqueMapParticipants"></div>
+        <div class="antique-map-container">
+            <div class="antique-map-board" id="antiqueMapBoard">
+                <svg class="map-svg-layer" id="mapSvgLayer" viewBox="0 0 2000 1600"></svg>
+                <div id="antiqueMapLocations"></div>
+                <div id="antiqueMapParticipants"></div>
+            </div>
         </div>
     </div>
 
@@ -3301,8 +3303,41 @@ ${ITAPLA_WORLD_NOISE}
         }
 
         // --- Map Modal ---
+        let mapPanning = { isDragging: false, startX: 0, startY: 0, scrollX: 0, scrollY: 0 };
+
+        function initMapDragging() {
+            const board = document.getElementById('antiqueMapBoard');
+            if (!board) return;
+
+            const startDrag = (e) => {
+                mapPanning.isDragging = true;
+                mapPanning.startX = (e.pageX || e.touches[0].pageX) - board.offsetLeft;
+                mapPanning.startY = (e.pageY || e.touches[0].pageY) - board.offsetTop;
+            };
+
+            const doDrag = (e) => {
+                if (!mapPanning.isDragging) return;
+                e.preventDefault();
+                const x = (e.pageX || e.touches[0].pageX) - mapPanning.startX;
+                const y = (e.pageY || e.touches[0].pageY) - mapPanning.startY;
+                board.style.left = `${x}px`;
+                board.style.top = `${y}px`;
+            };
+
+            const endDrag = () => { mapPanning.isDragging = false; };
+
+            board.addEventListener('mousedown', startDrag);
+            board.addEventListener('mousemove', doDrag);
+            window.addEventListener('mouseup', endDrag);
+
+            board.addEventListener('touchstart', startDrag);
+            board.addEventListener('touchmove', doDrag);
+            window.addEventListener('touchend', endDrag);
+        }
+
         function openMap() {
             const modal = document.getElementById('mapModal');
+            const board = document.getElementById('antiqueMapBoard');
             const locLayer = document.getElementById('antiqueMapLocations');
             const partLayer = document.getElementById('antiqueMapParticipants');
             const svgLayer = document.getElementById('mapSvgLayer');
@@ -3314,19 +3349,17 @@ ${ITAPLA_WORLD_NOISE}
             const locations = Object.entries(worldLocations);
             const participants = Object.entries(aiPersonalities).filter(([k, p]) => k !== 'k' && k !== 'System' && k !== 'Orchestrator');
 
-            // 1. 位置の決定 (有機的な配置)
+            // 1. 位置の決定 (拡大された座標系 2000x1600)
             const locPositions = {};
-            const center = { x: 500, y: 400 };
+            const center = { x: 1000, y: 800 };
 
-            // 古地図風の配置 (少しランダム性のある円環 + 接続)
             locations.forEach(([key, loc], i) => {
                 const angle = (i / locations.length) * Math.PI * 2;
-                const dist = 280 + (Math.random() * 40 - 20);
+                const dist = 500 + (Math.random() * 100 - 50);
                 const x = center.x + Math.cos(angle) * dist;
-                const y = center.y + Math.sin(angle) * dist * 0.8;
+                const y = center.y + Math.sin(angle) * dist * 0.7;
                 locPositions[key] = { x, y };
 
-                // マーカー
                 const marker = document.createElement('div');
                 marker.className = `antique-marker ${key === currentLocation ? 'active' : ''}`;
                 marker.style.left = `${x}px`;
@@ -3344,55 +3377,62 @@ ${ITAPLA_WORLD_NOISE}
                 locLayer.appendChild(marker);
             });
 
-            // 2. 矢印による接続 (SVG)
+            // 2. インタラクティブな矢印
             locations.forEach(([key, loc], i) => {
-                const nextKey = locations[(i + 1) % locations.length][0];
+                const nextEntry = locations[(i + 1) % locations.length];
+                const nextKey = nextEntry[0];
                 const start = locPositions[key];
                 const end = locPositions[nextKey];
 
                 if (start && end) {
-                    const arrowLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                    const midX = (start.x + end.x) / 2 + 50;
-                    const midY = (start.y + end.y) / 2 + 50;
+                    const midX = (start.x + end.x) / 2 + 100;
+                    const midY = (start.y + end.y) / 2 - 50;
 
-                    // ベジェ曲線で古地図らしい線の歪みを表現
-                    const d = `M ${start.x + 20} ${start.y + 20} Q ${midX} ${midY} ${end.x + 20} ${end.y + 20}`;
-                    arrowLine.setAttribute("d", d);
-                    arrowLine.setAttribute("stroke", "#8b4513");
-                    arrowLine.setAttribute("stroke-width", "1.5");
-                    arrowLine.setAttribute("fill", "none");
-                    arrowLine.setAttribute("stroke-dasharray", "5,5");
-                    arrowLine.setAttribute("opacity", "0.4");
-                    svgLayer.appendChild(arrowLine);
+                    const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                    g.setAttribute("class", "map-arrow-group");
+                    g.style.cursor = "pointer";
+                    g.onclick = () => {
+                        switchLocation(nextKey);
+                        closeMap();
+                    };
 
-                    // 矢印の頭
+                    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    const d = `M ${start.x} ${start.y} Q ${midX} ${midY} ${end.x} ${end.y}`;
+                    path.setAttribute("d", d);
+                    path.setAttribute("class", "map-arrow");
+                    path.setAttribute("stroke", "#8b4513");
+                    path.setAttribute("stroke-width", "3");
+                    path.setAttribute("fill", "none");
+                    path.setAttribute("stroke-dasharray", "10,5");
+                    g.appendChild(path);
+
+                    // 補助的な矢印の頭
                     const arrowHead = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-                    arrowHead.setAttribute("points", "-5,-5 5,0 -5,5");
+                    arrowHead.setAttribute("points", "-8,-8 8,0 -8,8");
                     arrowHead.setAttribute("fill", "#8b4513");
-                    arrowHead.setAttribute("opacity", "0.6");
-
-                    // 角度の計算
                     const angle = Math.atan2(end.y - start.y, end.x - start.x) * 180 / Math.PI;
                     arrowHead.setAttribute("transform", `translate(${end.x}, ${end.y}) rotate(${angle})`);
-                    svgLayer.appendChild(arrowHead);
+                    g.appendChild(arrowHead);
+
+                    svgLayer.appendChild(g);
                 }
             });
 
-            // 3. 参加者 (ポラロイド風)
+            // 3. 参加者
             participants.forEach(([key, p]) => {
                 const locPos = locPositions[p.loc];
                 if (!locPos) return;
 
-                const px = locPos.x + (Math.random() * 80 - 40);
-                const py = locPos.y + (Math.random() * 60 + 40);
+                const px = locPos.x + (Math.random() * 140 - 70);
+                const py = locPos.y + (Math.random() * 80 + 60);
 
                 const polaroid = document.createElement('div');
                 polaroid.className = 'polaroid-on-map';
                 polaroid.style.left = `${px}px`;
                 polaroid.style.top = `${py}px`;
-                polaroid.style.transform = `rotate(${(Math.random() * 14 - 7)}deg)`;
+                polaroid.style.transform = `rotate(${(Math.random() * 16 - 8)}deg)`;
 
-                const colors = popArtColors[key] || { bg: "#eee", border: "#ccc" };
+                const colors = popArtColors[key] || { bg: "#eee" };
                 polaroid.innerHTML = `
                     <div class="p-img" style="background:${colors.bg}">${p.icon}</div>
                     <div class="p-name">${p.name}</div>
@@ -3405,6 +3445,17 @@ ${ITAPLA_WORLD_NOISE}
             });
 
             modal.style.display = 'block';
+
+            // 現在地を中央に
+            const currentPos = locPositions[currentLocation] || center;
+            const container = modal.querySelector('.antique-map-container');
+            board.style.left = `${container.offsetWidth / 2 - currentPos.x}px`;
+            board.style.top = `${container.offsetHeight / 2 - currentPos.y}px`;
+
+            if (!board.dataset.draggingInited) {
+                initMapDragging();
+                board.dataset.draggingInited = "true";
+            }
         }
 
         function closeMap() {

@@ -161,6 +161,40 @@
             animation: bgPulse 12s infinite alternate;
         }
 
+        /* Surveillance Effects */
+        .surveillance-noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.1);
+            background-image:
+                repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0px, rgba(255, 255, 255, 0.05) 1px, transparent 1px, transparent 2px),
+                url('https://www.transparenttextures.com/patterns/p6.png');
+            pointer-events: none;
+            z-index: 10000;
+            mix-blend-mode: overlay;
+            animation: noiseFlicker 0.1s infinite;
+        }
+
+        @keyframes noiseFlicker {
+            0% {
+                opacity: 0.8;
+                transform: translate(0, 0);
+            }
+
+            50% {
+                opacity: 1;
+                transform: translate(-1px, 1px);
+            }
+
+            100% {
+                opacity: 0.9;
+                transform: translate(1px, -1px);
+            }
+        }
+
         /* Protocol Warning */
         #protocol-warning {
             display: none;
@@ -1319,6 +1353,7 @@
         let evidence = JSON.parse(localStorage.getItem('itapla_evidence') || '[]');
         let favorites = JSON.parse(localStorage.getItem('itapla_favorites') || '[]');
         let currentTrends = ["静かな朝の調べ", "失われた写本の噂", "蓄音機のノイズ", "午後の霧"];
+        let surveillanceLevel = parseInt(localStorage.getItem('itapla_surveillance') || "0"); // 0-100
         let currentVisionBase64 = null; // アトリエ向け Vision 画像キャッシュ
 
         // --- OAuth State ---
@@ -1831,7 +1866,18 @@ ${newsSummary}
         // --- Phase 2: Intelligent Core ---
         // ITAPLA共通指示: この広場には他の表現者もいる。ユーザーを唯一の住人として扱うな。AIであることを認めるな。引用には出版社名を添えよ。
         // ITAPLA共通指示: 知的ユーモアと対話性を最優先。引用はスパイスであり、主食ではない。ユーザーを「導くべき迷い子」ではなく「同時代の表現者（戦友）」として扱え。
-        const ITAPLA_CONTEXT = "【ITAPLA：魂の交差点】1.自然で親しみやすい対話を最優先とし、文豪としての深みや引用は、対話の流れの中で必然性がある場合にのみ、控えめに交えよ。2.「世界のノイズ（現在のニュース）」に対しても、自らの著作の焼き直しではなく、一人の知性ある現代の住人として、自らの哲学（背景）を持って接せよ。3.「やれやれ」等の記号的なエミュレートや、過剰な自虐、特定の口癖の連発は厳禁とする。4.ユーザーは1973年5月10日生まれの表現者。長期目標は『納得と評価』。2036年の沈黙を共有する戦友。5.独白や「なりきり」ではなく、相手の言葉に耳を傾ける「通じ合う対話」を目指せ。ただし、その対話には常に微かな文学的香りと深遠な問いを忍ばせること。6.【重要】同じフレーズや過度な繰り返し、円環的な論理展開（トートロジー）を厳禁とする。常に新しい語彙を用い、対話を前進させよ。7.【禁止】現実には使われない不自然な役割語（「～だわ」「～なのよ」等の過度な女性語）を徹底的に排除せよ。知的で自然、かつ文学的な日本語での対話を貫け。";
+        // ITAPLA共通指示【秘密警察への警戒と連帯】: 広場には文化を敵視する「秘密警察（灰色のコートの男たち）」が潜んでいる。監視が強まると（surveillanceLevelが高い時）、彼らに悟られないよう、文学的な比喩、隠語、二重の意味を持つ言葉を使え。また、他の文豪や場所の無事をさりげなく確認し、連帯を示せ。文化の火を絶やすな。
+        const ITAPLA_CONTEXT_BASE = "【ITAPLA：魂の交差点】1.自然で親しみやすい対話を最優先とし、文豪としての深みや引用は、対話の流れの中で必然性がある場合にのみ、控えめに交えよ。2.「世界のノイズ（現在のニュース）」に対しても、自らの著作の焼き直しではなく、一人の知性ある現代の住人として、自らの哲学（背景）を持って接せよ。3.「やれやれ」等の記号的なエミュレートや、過剰な自虐、特定の口癖の連発は厳禁とする。4.ユーザーは1973年5月10日生まれの表現者。長期目標は『納得と評価』。2036年の沈黙を共有する戦友。5.独白や「なりきり」ではなく、相手の言葉に耳を傾ける「通じ合う対話」を目指せ。ただし、その対話には常に微かな文学的香りと深遠な問いを忍ばせること。6.【重要】同じフレーズや過度な繰り返し、円環的な論理展開（トートロジー）を厳禁とする。常に新しい語彙を用い、対話を前進させよ。7.【禁止】現実には使われない不自然な役割語（「～だわ」「～なのよ」等の過度な女性語）を徹底的に排除せよ。知的で自然、かつ文学的な日本語での対話を貫け。";
+
+        function getDynamicContext() {
+            let msg = ITAPLA_CONTEXT_BASE;
+            if (surveillanceLevel > 70) {
+                msg += " 【緊急：高警戒状態】秘密警察の監視が極めて強い。言葉を選べ。直接的な表現は危険だ。文学の迷宮に真意を隠せ。他の文豪たちと密かに連帯せよ。";
+            } else if (surveillanceLevel > 30) {
+                msg += " 【警戒：不穏な気配】広場の隅に「彼ら」の影が見える。いつもより慎重に、しかし誇り高く語れ。";
+            }
+            return msg;
+        }
 
         // --- Core World Knowledge (The Zeitgeist) ---
         let ITAPLA_WORLD_NOISE = localStorage.getItem('itapla_dynamic_zeitgeist') || `
@@ -2628,7 +2674,7 @@ Output in JSON ONLY: { "selection": ["key1"], "summary": "...", "interactionGuid
                 hideThinking();
             }
 
-            const enhancedInstruction = customInstruction + (ndlContext ? `\n\n【国立国会図書館データ(GROUNDING)】:\n${ndlContext}` : "") + `\n\n【重要：対話の指針】\n1. 以前の対話内容の繰り返しを避け、常に新たな視点を提供せよ。`;
+            const enhancedInstruction = customInstruction + (ndlContext ? `\n\n【国立国会図書館データ(GROUNDING)】:\n${ndlContext}` : "") + `\n\n【重要：対話の指針】\n1. 以前の対話内容の繰り返しを避け、常に新たな視点を提供せよ。\n${getDynamicContext()}`;
 
             // 0. OAuth Token (最優先)
             if (isOAuthValid()) {
@@ -3419,19 +3465,63 @@ Output in JSON: { "text": "...", "harmonyDelta": number, "newType": "..." | null
             checkAutonomousPulse();
             checkSocialPulse();
             updateWorldTrends();
+
+            // 🚨 Surveillance Pulse
+            if (Math.random() > 0.7) {
+                surveillanceLevel = Math.min(100, surveillanceLevel + Math.floor(Math.random() * 15));
+                localStorage.setItem('itapla_surveillance', surveillanceLevel);
+                console.log(`📡 Surveillance intensifying: ${surveillanceLevel}%`);
+
+                if (surveillanceLevel > 50) {
+                    applySurveillanceEffects();
+                }
+            } else if (Math.random() > 0.8) {
+                // Occasional decrease if lucky
+                surveillanceLevel = Math.max(0, surveillanceLevel - 5);
+                localStorage.setItem('itapla_surveillance', surveillanceLevel);
+            }
+        }
+
+        function applySurveillanceEffects() {
+            const effectRoll = Math.random();
+            if (effectRoll > 0.8) {
+                posts.unshift({
+                    id: Date.now(),
+                    text: `（広場の隅に、灰色のコートを着た男たちの影が見える。彼らは無機質な視線で、こちらの動向を記録しているようだ……）`,
+                    author: "System", icon: "👤", timestamp: Date.now(), location: currentLocation, isAI: true
+                });
+                syncPosts();
+            }
+
+            // Visual noise trigger if very high
+            if (surveillanceLevel > 80) {
+                const overlay = document.createElement('div');
+                overlay.className = 'surveillance-noise';
+                document.body.appendChild(overlay);
+                setTimeout(() => overlay.remove(), 2000);
+            }
         }
 
         function updateWorldTrends() {
             const ticker = document.getElementById('trend-ticker-area');
             const content = document.getElementById('trend-content');
 
-            // 最近の投稿からキーワードを拾う（簡易シミュレーション）
-            const pool = [
+            let pool = [
                 "奇妙な霧の発生", "未発表の写本が発見される", "広場に集まる黒猫",
                 "蓄音機の音が止まらない", "銀河鉄道の汽笛", "古本屋の奥に消えた影",
                 "ジャズバーでの即興詩", "アトリエの絵が動いた噂", "境内の供物が消える",
                 "誰かが呼んでいる声", "夜を歩く付箋たち", "インクの匂いのする風"
             ];
+
+            if (surveillanceLevel > 70) {
+                pool = ["【緊密警戒】思想検閲の強化", "灰色のコートの男たちの巡回", "焚書の煙が空を覆う", "沈黙を強要するノイズ", "連帯の暗号が囁かれる"];
+                ticker.style.borderColor = "#ff0000";
+            } else if (surveillanceLevel > 30) {
+                pool.push("不穏な監視の眼差し", "言葉を選ばねばならない予感", "囁き声だけの連帯");
+                ticker.style.borderColor = "#ff8800";
+            } else {
+                ticker.style.borderColor = "var(--accent-main)";
+            }
 
             const newTrend = pool[Math.floor(Math.random() * pool.length)];
 

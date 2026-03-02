@@ -108,6 +108,16 @@
             animation: bgPulse 12s infinite alternate;
         }
 
+        body[data-location="shrine"] {
+            background: radial-gradient(circle at top, #4A1A1A 0%, var(--bg-dark) 100%);
+            animation: bgPulse 8s infinite alternate;
+        }
+
+        body[data-location="temple"] {
+            background: radial-gradient(circle at top, #1A1A1A 0%, var(--bg-dark) 100%);
+            animation: bgPulse 10s infinite alternate;
+        }
+
         /* Protocol Warning */
         #protocol-warning {
             display: none;
@@ -1071,6 +1081,10 @@
         </div>
         <h1 id="appTitle">ITAPLA</h1>
         <div class="header-actions">
+            <button id="omikuji-btn" onclick="drawOmikuji()"
+                style="display:none; background: rgba(255, 215, 0, 0.4); color: white; border: 1px solid rgba(255,215,0,0.3); padding: 4px 10px; border-radius: 15px; font-size: 10px; cursor: pointer; font-family: var(--font-outfit); font-weight: bold; transition: all 0.3s;">
+                ⛩️ おみくじを引く
+            </button>
             <button id="radio-header-btn" onclick="ItaplaRadio.toggle()"
                 style="background: rgba(139, 69, 19, 0.4); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 15px; font-size: 10px; cursor: pointer; font-family: var(--font-outfit); font-weight: bold; display: flex; align-items: center; gap: 5px; transition: all 0.3s; white-space: nowrap;">
                 📻 イタプララジオ
@@ -1195,6 +1209,7 @@
         let currentAIMode = "CLOUD"; // CLOUD, LOCAL, TEMPLATE, OAUTH
         let pendingIncident = null; // 事件発生の待機状態 
         let socialMatrix = JSON.parse(localStorage.getItem('itapla_social_matrix') || '{}');
+        let evidence = JSON.parse(localStorage.getItem('itapla_evidence') || '[]');
 
         // --- OAuth State ---
         let oauthAccessToken = sessionStorage.getItem('itapla_oauth_token') || null;
@@ -1612,7 +1627,8 @@ ${newsSummary}
             corsia: { name: "コルシア書店", icon: "🇮🇹", particle: "⛪", desc: "反ファシズムの知の拠点", ambience: "ミラノの霧の向こうに、静かに灯る書店の明かり。棚には禁書たちが、静かな誇りを持って並んでいる。" },
             swamp: { name: "沼", icon: "🫧", particle: "🫧", desc: "底なしの思考の淵", ambience: "水面に誰かの影が一瞬映る。沈んでいった思考の泡が、ときおり底から浮かび上がる。" },
             river: { name: "川", icon: "🏞️", particle: "🍃", desc: "流れゆく時と無常", ambience: "上流から手紙のような紙片が流れてくる。対岸で誰かが佇んでいるが、顔は見えない。" },
-            temple: { name: "寺と教会", icon: "⛩️", particle: "🔔", desc: "祈りと赦しの場", ambience: "先客の線香の煙が残っている。賽銭箱の前に、小さな書置きが一枚、風に震えている。" },
+            shrine: { name: "神社", icon: "⛩️", particle: "🎋", desc: "八百万の神と祈り", ambience: "風鈴の音が微かに聞こえる。古い絵馬には、今はもう読めない誰かの願いが刻まれている。" },
+            temple: { name: "寺院", icon: "🕍", particle: "🔔", desc: "静寂と無常の鐘", ambience: "線香の香りが立ち込めている。本堂の奥から、規則的な木魚の音が響いてくる。" },
             mosque: { name: "モスク", icon: "🕌", particle: "☪️", desc: "沈黙と敬虔の空間", ambience: "祈りの残響が石壁に染みている。靴を脱いだ足跡が、回廊に幾筋も続いている。" },
             school: { name: "学校", icon: "🏫", particle: "📝", desc: "知の牢獄と解放", ambience: "黒板に前の授業の板書が消し残されている。教室の隅に、誰かの忘れ物のノートがある。" },
             factory: { name: "工場", icon: "🏭", particle: "⚙️", desc: "機械と労働の叙事詩", ambience: "前の勤務者の手袋がベルトコンベアの脇に残されている。機械油の匂いに、人間の汗が混じる。" },
@@ -1852,6 +1868,76 @@ ${newsSummary}
             },
             "k": { name: "K", icon: "🚪", level: "L1", loc: "all", bio: "城と鼠と先生のKが融合した案内人。", works: "測量・こころ", system: kGuide.system }
         };
+
+        const omikujiResults = [
+            { text: "大吉: 文豪の加護。あなたの言葉は、誰かの絶望を、一瞬の光に変えるでしょう。", bonus: 20 },
+            { text: "中吉: 木漏れ日のような運気。焦らずとも、物語は静かに進んでいきます。", bonus: 10 },
+            { text: "小吉: 砂に書かれた文字。波に消される前に、大切なことを書き留めてください。", bonus: 5 },
+            { text: "吉: 平穏な午後。一杯の珈琲が、新しい思索を運んできます。", bonus: 3 },
+            { text: "末吉: 霧の向こうの城。辿り着けずとも、歩くことに意味があります。", bonus: 1 },
+            { text: "凶: 汚れつちまつた悲しみに。しかし、その深淵からしか見えない星もあります。", bonus: 0 }
+        ];
+
+        function drawOmikuji() {
+            if (currentLocation !== 'shrine') return;
+            if (soulPower < 5 && !checkIfUserHasKey()) {
+                alert("おみくじを引くための霊力が足りません。");
+                return;
+            }
+
+            const result = omikujiResults[Math.floor(Math.random() * omikujiResults.length)];
+
+            if (!checkIfUserHasKey()) {
+                soulPower += result.bonus;
+                localStorage.setItem('itapla_soul_power', soulPower);
+                updateSoulPowerUI();
+            }
+
+            posts.unshift({
+                id: Date.now(),
+                text: `⛩️ 【おみくじ結果】\n\n${result.text}\n${result.bonus > 0 ? `（霊力が ${result.bonus} 回復した）` : ""}`,
+                author: "神社", icon: "⛩️", timestamp: Date.now(), location: "shrine", isAI: true
+            });
+            syncPosts();
+
+            // Kの反応
+            setTimeout(() => {
+                posts.unshift({
+                    id: Date.now() + 1,
+                    text: `K: ……運命を紙切れに問うのも、悪くない。鼠もよく、こうしておみくじを木に結んでいたよ。`,
+                    author: "K", icon: "🚪", timestamp: Date.now(), location: "shrine", isAI: true
+                });
+                syncPosts();
+            }, 2000);
+
+            // ボタンを一時無効化
+            const btn = document.getElementById('omikuji-btn');
+            btn.disabled = true;
+            btn.style.opacity = "0.3";
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.style.opacity = "1";
+            }, 60000); // 1分に1回
+        }
+
+        function addEvidence(title, desc) {
+            const item = {
+                id: Date.now(),
+                title: title,
+                desc: desc,
+                timestamp: Date.now()
+            };
+            evidence.push(item);
+            localStorage.setItem('itapla_evidence', JSON.stringify(evidence));
+
+            posts.unshift({
+                id: Date.now(),
+                text: `🕵️‍♂️ 【新たな証拠品】\n\n「${title}」を捜査ボードに掲示した。\n(${desc})`,
+                author: "System", icon: "📌", timestamp: Date.now(), location: currentLocation, isAI: true
+            });
+            syncPosts();
+            return item;
+        }
 
 
         const ATMOSPHERIC_POOL = [
@@ -2856,22 +2942,38 @@ ${ITAPLA_WORLD_NOISE}
             const partLayer = document.getElementById('boardParticipants');
             const svgLayer = document.getElementById('evidenceStrings');
 
+            // 証拠品レイヤーがない場合は作成
+            let eviLayer = document.getElementById('boardEvidence');
+            if (!eviLayer) {
+                eviLayer = document.createElement('div');
+                eviLayer.id = 'boardEvidence';
+                board.appendChild(eviLayer);
+
+                const eviLabel = document.createElement('div');
+                eviLabel.className = 'board-label';
+                eviLabel.style.cssText = 'top: 40px; left: 50%; transform: translateX(-50%); text-align: center;';
+                eviLabel.textContent = 'Evidence Wall';
+                board.appendChild(eviLabel);
+            }
+
             locLayer.innerHTML = '';
             partLayer.innerHTML = '';
+            eviLayer.innerHTML = '';
             svgLayer.innerHTML = '';
 
             const locations = Object.entries(worldLocations);
-            const participants = Object.entries(aiPersonalities).filter(([k, p]) => k !== 'k' && k !== 'System');
+            const participants = Object.entries(aiPersonalities).filter(([k, p]) => k !== 'k' && k !== 'System' && k !== 'curator' && k !== 'shibusawa' && k !== 'oracle_master' && k !== 'borges' && k !== 'loureed');
+            const evidenceItems = evidence;
 
             // 1. Position Locations (Left Wall - Location Wall)
             const locPositions = {};
             const locCols = 2;
-            const locSpacingX = 200;
-            const locSpacingY = 160;
+            const locSpacingX = 160;
+            const locSpacingY = 140;
 
             locations.forEach(([key, loc], i) => {
-                const x = 80 + (i % locCols) * locSpacingX + (Math.random() * 20 - 10);
-                const y = 120 + Math.floor(i / locCols) * locSpacingY + (Math.random() * 20 - 10);
+                const x = 60 + (i % locCols) * locSpacingX + (Math.random() * 15 - 7);
+                const y = 120 + Math.floor(i / locCols) * locSpacingY + (Math.random() * 15 - 7);
                 locPositions[key] = { x, y };
 
                 const note = document.createElement('div');
@@ -2879,9 +2981,10 @@ ${ITAPLA_WORLD_NOISE}
                 note.style.left = `${x}px`;
                 note.style.top = `${y}px`;
                 note.style.transform = `rotate(${(Math.random() * 6 - 3)}deg)`;
+                note.style.background = "#F4D03F";
 
                 note.innerHTML = `
-                    <div style="font-weight:800; border-bottom:1px solid rgba(0,0,0,0.1); padding-bottom:6px; margin-bottom:8px; font-size:12px;">${loc.icon} ${loc.name.toUpperCase()}</div>
+                    <div style="font-weight:800; border-bottom:1px solid rgba(0,0,0,0.1); padding-bottom:6px; margin-bottom:8px; font-size:11px;">${loc.icon} ${loc.name.toUpperCase()}</div>
                     <div style="font-size:9px; opacity:0.7; line-height:1.4; font-weight:500;">${loc.desc}</div>
                     <div class="pin" style="top:-6px; left:50%; margin-left:-6px;"></div>
                 `;
@@ -2894,11 +2997,35 @@ ${ITAPLA_WORLD_NOISE}
                 locLayer.appendChild(note);
             });
 
-            // 2. Position Participants (Right Wall - Character Wall)
-            const partCols = 4;
-            const partStartX = 550;
-            const partSpacingX = 140;
-            const partSpacingY = 180;
+            // 2. Position Evidence (Center Wall - Evidence Wall)
+            const eviStartX = 420;
+            const eviSpacingY = 120;
+            evidenceItems.forEach((item, i) => {
+                const x = eviStartX + (Math.random() * 30 - 15);
+                const y = 120 + i * eviSpacingY + (Math.random() * 20 - 10);
+
+                const note = document.createElement('div');
+                note.className = 'board-note';
+                note.style.left = `${x}px`;
+                note.style.top = `${y}px`;
+                note.style.background = "#fff"; // 証拠品は白の付箋
+                note.style.transform = `rotate(${(Math.random() * 8 - 4)}deg)`;
+                note.style.borderLeft = "4px solid #b22222";
+
+                note.innerHTML = `
+                    <div style="font-weight:800; color:#b22222; margin-bottom:5px; font-size:11px;">EVIDENCE #${i + 1}</div>
+                    <div style="font-weight:700; font-size:12px; margin-bottom:5px;">${item.title}</div>
+                    <div style="font-size:10px; opacity:0.8; line-height:1.4;">${item.desc}</div>
+                    <div class="pin" style="top:-6px; left:50%; margin-left:-6px; background: radial-gradient(circle at 30% 30%, #333, #000);"></div>
+                `;
+                eviLayer.appendChild(note);
+            });
+
+            // 3. Position Participants (Right Wall - Character Wall)
+            const partCols = 3;
+            const partStartX = 650;
+            const partSpacingX = 130;
+            const partSpacingY = 160;
 
             participants.forEach(([key, p], i) => {
                 const px = partStartX + (i % partCols) * partSpacingX + (Math.random() * 20 - 10);
@@ -2922,7 +3049,7 @@ ${ITAPLA_WORLD_NOISE}
                 };
                 partLayer.appendChild(polaroid);
 
-                // 3. Draw Red "Evidence" String to current location
+                // 4. Draw Red "Evidence" String to current location
                 const locPos = locPositions[p.loc];
                 if (locPos) {
                     const startX = px + 50;
@@ -3165,6 +3292,12 @@ Output in JSON: { "text": "...", "harmonyDelta": number, "newType": "..." | null
 
             currentLocation = loc;
             localStorage.setItem('current_location', loc);
+
+            // Toggle Shrine Button
+            const omikujiBtn = document.getElementById('omikuji-btn');
+            if (omikujiBtn) {
+                omikujiBtn.style.display = (loc === 'shrine') ? 'block' : 'none';
+            }
         }
 
         function switchLocation(loc) {

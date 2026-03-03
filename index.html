@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Inter:wght@400;700;900&family=Outfit:wght@300;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Noto+Sans+JP:wght@400;700;900&family=Shippori+Mincho:wght@400;700&family=Outfit:wght@300;600&display=swap"
         rel="stylesheet">
 
     <!-- External Libraries -->
@@ -24,15 +24,18 @@
             --bg-dark: #2D1E2F;
             --text-main: #F5F5DC;
             --accent-main: #F3A619;
-            --surface-deep: #4A2531;
-            --surface-light: #F5F5DC;
-            --border-soft: rgba(245, 245, 220, 0.15);
-            --accent-archive: #8B4513;
-            --accent-google: #4285F4;
-            --font-serif: "Noto Serif JP", serif;
-            --font-sans: "Noto Sans JP", "Inter", sans-serif;
+            --surface-deep: rgba(74, 37, 49, 0.8);
+            --surface-light: rgba(245, 245, 220, 0.95);
+            --border-soft: rgba(245, 245, 220, 0.1);
+            --radius-xl: 2.5rem;
+            /* 40px */
+            --radius-lg: 1.5rem;
+            /* 24px */
+            --font-serif: "Shippori Mincho", "Noto Serif JP", serif;
+            --font-sans: "Noto Sans JP", sans-serif;
             --font-outfit: "Outfit", sans-serif;
-            --transition-smooth: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            --transition-smooth: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            --spacing-base: 1.5rem;
         }
 
         body {
@@ -42,7 +45,8 @@
             font-family: var(--font-sans);
             overflow-x: hidden;
             transition: var(--transition-smooth);
-            line-height: 1.6;
+            line-height: 1.8;
+            letter-spacing: 0.02em;
         }
 
         body::before {
@@ -52,9 +56,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/p6.png');
-            /* 粒子テクスチャ */
-            opacity: 0.05;
+            background: url('file:///C:/Users/ikapo/.gemini/antigravity/brain/0060ccb3-452f-4b96-b2d9-c93d6ee5edf9/ichizen_pattern_bg_1772545382607.png');
+            background-size: cover;
+            opacity: 0.15;
             z-index: -1;
             pointer-events: none;
         }
@@ -399,7 +403,7 @@
             align-items: center;
             background: rgba(45, 30, 47, 0.85);
             backdrop-filter: blur(20px);
-            border-radius: 999px;
+            border-radius: var(--radius-xl);
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             margin: 20px auto;
             width: calc(95% - 40px);
@@ -834,29 +838,40 @@
         }
 
         .post-card {
-            background: #D4C3A3;
-            /* Default post-it color */
-            padding: 25px;
-            border-radius: 2px;
+            background: var(--surface-light);
+            padding: var(--spacing-base);
+            border-radius: var(--radius-xl);
             border: none;
-            margin-bottom: 20px;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
-            animation: stickyDrop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            margin-bottom: var(--spacing-base);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            animation: ichizenAppear 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
             display: flex;
             gap: 20px;
             align-items: flex-start;
             position: relative;
             color: #2D1E2F;
+            transition: transform 0.3s;
+        }
+
+        .post-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes ichizenAppear {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .post-card::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 30px;
-            height: 30px;
-            background: linear-gradient(135deg, transparent 50%, rgba(0, 0, 0, 0.08) 50%);
+            display: none;
         }
 
         @keyframes stickyDrop {
@@ -877,16 +892,16 @@
             flex-shrink: 0;
             width: 56px;
             height: 56px;
-            border-radius: 12px;
+            border-radius: var(--radius-lg);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 4px 10px rgba(76, 46, 32, 0.1);
-            border: 2px solid var(--surface-white);
-            transition: transform 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: var(--transition-smooth);
         }
 
         .popart-avatar:hover {
@@ -934,16 +949,8 @@
         }
 
         .popart-avatar .avatar-tier {
-            position: absolute;
-            bottom: 2px;
-            right: 3px;
-            font-size: 8px;
-            font-family: var(--font-sans);
-            font-weight: 900;
-            color: rgba(0, 0, 0, 0.7);
-            z-index: 3;
-            letter-spacing: 0;
-            text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+            display: none;
+            /* ICHIZENスタイルではミニマルさを優先 */
         }
 
         .post-body {
@@ -953,17 +960,19 @@
 
         .post-author-line {
             font-size: 13px;
-            margin-bottom: 8px;
-            opacity: 0.85;
+            margin-bottom: 10px;
+            opacity: 0.6;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            font-family: var(--font-outfit);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
         }
 
         .post-author-name {
             font-weight: 700;
-            font-family: var(--font-sans);
-            letter-spacing: 0.04em;
+            color: var(--bg-dark);
         }
 
         .post-author-works {
@@ -1468,7 +1477,13 @@
         </div>
     </div>
 
-    <div class="input-floating">
+    <div class="input-floating" style="
+        position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+        width: 95%; max-width: 600px; background: var(--surface-light);
+        padding: 25px; border-radius: var(--radius-xl);
+        box-shadow: 0 15px 50px rgba(0,0,0,0.3); z-index: 4000;
+        border: 1px solid var(--border-soft); color: #2D1E2F;
+    ">
         <div id="replyIndicator" style="display: none; font-size: 11px; margin-bottom: 5px; color: rgba(0,0,0,0.5);">
             To: <span id="replyName" style="font-weight:bold;"></span> <span style="cursor: pointer"
                 onclick="cancelReply()">✕</span>
@@ -1488,11 +1503,16 @@
                 style="display:none; margin-left: 8px; padding: 4px 10px; border: 1px solid rgba(255,100,100,0.4); border-radius: 6px; background: transparent; color: #ff9999; font-size: 10px; cursor: pointer;">✕
                 クリア</button>
         </div>
-        <textarea id="voidInput" class="k-input" rows="2" placeholder="Write into the void..."></textarea>
-        <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+        <textarea id="voidInput" class="k-input" rows="2" placeholder="Write into the void..." style="
+            width: 100%; background: rgba(0,0,0,0.03); border: none;
+            border-radius: var(--radius-lg); padding: 15px; font-size: 16px;
+            color: #2D1E2F; font-family: var(--font-serif); outline: none;
+            resize: none; box-sizing: border-box;
+        "></textarea>
+        <div style="display: flex; justify-content: flex-end; margin-top: 15px;">
             <button class="btn-cosmic"
-                style="margin-top: 0; padding: 5px 20px; background: rgba(0,0,0,0.8); color: white; border: none; font-size: 12px;"
-                onclick="publishPost()">Publish</button>
+                style="margin-top: 0; padding: 12px 35px; background: var(--bg-dark); color: white; border: none; font-size: 14px; border-radius: 999px;"
+                onclick="publishPost()">PUBLISH</button>
         </div>
     </div>
 
@@ -4000,23 +4020,28 @@ Output in JSON: { "text": "...", "harmonyDelta": number, "newType": "..." | null
                     const card = document.createElement('div');
                     card.className = 'post-card';
                     const rotation = (index % 2 === 0 ? -0.8 : 0.8) + (Math.random() * 0.4 - 0.2);
-                    const color = p.isAI ? stickyColors[index % stickyColors.length] : '#F4D03F'; // User is bright yellow
-
                     card.style.setProperty('--rotation', `${rotation}deg`);
-                    card.style.background = color;
 
                     card.innerHTML = `
                         ${avatarWithClick}
                         <div class="post-body">
                             <div class="post-author-line">
-                                <span class="post-author-name" style="color:rgba(0,0,0,0.8);">${p.author}</span>
-                                ${worksText ? `<span class="post-author-works" style="color:rgba(0,0,0,0.4);">${worksText}</span>` : ''}
+                                <span class="post-author-name" style="color:var(--bg-dark);">${p.author}</span>
+                                ${worksText ? `<span class="post-author-works" style="color:var(--bg-dark); opacity:0.3;">${worksText}</span>` : ''}
                             </div>
-                            <div style="line-height: 1.7; color:rgba(0,0,0,0.85); font-size:15px; white-space:pre-wrap;">${p.text}</div>
-                                 <span style="opacity: 0.4; font-family:var(--font-outfit); color:rgba(0,0,0,0.6);">${new Date(p.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} — ${p.location}</span>
+                            <div class="post-content" style="
+                                line-height: 1.8; 
+                                color: var(--bg-dark); 
+                                font-size: 16px; 
+                                font-family: var(--font-serif);
+                                white-space: pre-wrap;
+                                margin-bottom: 15px;
+                            ">${p.text}</div>
+                            <div class="post-footer" style="display:flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 15px;">
+                                 <span style="opacity: 0.3; font-size: 10px; font-family:var(--font-outfit); color:var(--bg-dark);">${new Date(p.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} — ${p.location}</span>
                                  <div style="display:flex; gap:15px; align-items:center;">
                                     <span style="cursor: pointer; font-size: 14px; opacity: ${favorites.some(f => f.id === p.id) ? '1' : '0.4'}; color: ${favorites.some(f => f.id === p.id) ? '#ff4081' : 'inherit'};" onclick="toggleFavorite(${p.id})">★</span>
-                                    ${authorKey && p.author !== 'K' && p.author !== 'System' ? `<span style="cursor: pointer; font-weight:800; opacity:0.7;" onclick="setReply('${authorKey}')">REPLY</span>` : ''}
+                                    ${authorKey && p.author !== 'K' && p.author !== 'System' ? `<span style="cursor: pointer; font-family: var(--font-outfit); font-size: 10px; font-weight:800; opacity:0.3; color: var(--bg-dark);" onclick="setReply('${authorKey}')">REPLY</span>` : ''}
                                  </div>
                             </div>
                         </div>

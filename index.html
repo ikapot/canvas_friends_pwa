@@ -21,361 +21,263 @@
 
     <style>
         :root {
-            --bg-dark: #2D1E2F;
-            --text-main: #F5F5DC;
-            --accent-main: #F3A619;
-            --surface-deep: #4A2531;
-            --surface-light: #F5F5DC;
-            --border-soft: rgba(245, 245, 220, 0.15);
-            --accent-archive: #8B4513;
-            --accent-google: #4285F4;
+            --bg-black: #000000;
+            --text-white: #FFFFFF;
+            --accent-orange: #f3a619;
+            --border-light: rgba(255, 255, 255, 0.1);
+            --font-sans: "Inter", "Outfit", sans-serif;
             --font-serif: "Noto Serif JP", serif;
-            --font-sans: "Noto Sans JP", "Inter", sans-serif;
-            --font-outfit: "Outfit", sans-serif;
-            --transition-smooth: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            --transition: 0.2s ease;
         }
 
         body {
             margin: 0;
-            background: var(--bg-dark);
-            color: var(--text-main);
+            background: var(--bg-black);
+            color: var(--text-white);
             font-family: var(--font-sans);
             overflow-x: hidden;
-            transition: var(--transition-smooth);
             line-height: 1.6;
         }
 
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/p6.png');
-            /* 粒子テクスチャ */
-            opacity: 0.05;
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        @keyframes bgPulse {
-            0% {
-                opacity: 0.8;
-            }
-
-            50% {
-                opacity: 1;
-            }
-
-            100% {
-                opacity: 0.8;
-            }
-        }
-
-        @keyframes trendFade {
-
-            0%,
-            100% {
-                opacity: 0.4;
-                transform: translateY(0);
-            }
-
-            50% {
-                opacity: 0.9;
-                transform: translateY(-2px);
-            }
-        }
-
-        #trend-ticker-area {
-            animation: trendFade 5s infinite;
-        }
-
-        body[data-location="cafe"] {
-            background: radial-gradient(circle at top, #4A2531 0%, var(--bg-dark) 100%);
-            animation: bgPulse 10s infinite alternate;
-        }
-
-        body[data-location="salon"] {
-            background: radial-gradient(circle at top, #3A1A2F 0%, var(--bg-dark) 100%);
-            animation: bgPulse 8s infinite alternate;
-        }
-
-        body[data-location="mountain"] {
-            background: radial-gradient(circle at top, #1A1A2A 0%, var(--bg-dark) 100%);
-            animation: bgPulse 12s infinite alternate;
-        }
-
-        body[data-location="seaside"] {
-            background: radial-gradient(circle at top, #0A2A3A 0%, var(--bg-dark) 100%);
-            animation: bgPulse 7s infinite alternate;
-        }
-
-        body[data-location="bar"] {
-            background: radial-gradient(circle at top, #3A2A1A 0%, var(--bg-dark) 100%);
-            animation: bgPulse 6s infinite alternate;
-        }
-
-        body[data-location="train"] {
-            background: radial-gradient(circle at top, #1A1A2A 0%, var(--bg-dark) 100%);
-            animation: bgPulse 9s infinite alternate;
-        }
-
-        body[data-location="corsia"] {
-            background: radial-gradient(circle at top, #1A2A1A 0%, var(--bg-dark) 100%);
-            animation: bgPulse 12s infinite alternate;
-        }
-
-        body[data-location="shrine"] {
-            background: radial-gradient(circle at top, #4A1A1A 0%, var(--bg-dark) 100%);
-            animation: bgPulse 8s infinite alternate;
-        }
-
-        body[data-location="temple"] {
-            background: radial-gradient(circle at top, #1A1A1A 0%, var(--bg-dark) 100%);
-            animation: bgPulse 10s infinite alternate;
-        }
-
-        body[data-location="deep_room"] {
-            background: radial-gradient(circle at top, #0A0F24 0%, var(--bg-dark) 100%);
-            animation: bgPulse 15s infinite alternate;
-        }
-
-        body[data-location="jazz_bar"] {
-            background: radial-gradient(circle at top, #2A1A0A 0%, var(--bg-dark) 100%);
-            animation: bgPulse 6s infinite alternate;
-        }
-
-        body[data-location="gallery"] {
-            background: radial-gradient(circle at top, #3A3A3A 0%, var(--bg-dark) 100%);
-            animation: bgPulse 10s infinite alternate;
-        }
-
-        body[data-location="vinyl"] {
-            background: radial-gradient(circle at top, #1A2A2A 0%, var(--bg-dark) 100%);
-            animation: bgPulse 8s infinite alternate;
-        }
-
-        body[data-location="bookstore"] {
-            background: radial-gradient(circle at top, #2A2515 0%, var(--bg-dark) 100%);
-            animation: bgPulse 12s infinite alternate;
-        }
-
-        /* Surveillance Effects */
-        .surveillance-noise {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.05);
-            background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
-            pointer-events: none;
-            z-index: 10000;
-            opacity: 0;
-            transition: opacity 1s ease;
-        }
-
-        .surveillance-noise.active {
-            opacity: 0.15;
-            animation: noiseFlicker 0.3s infinite ease-in-out;
-        }
-
-        @keyframes noiseFlicker {
-            0% {
-                transform: translate(0, 0);
-                opacity: 0.12;
-            }
-
-            25% {
-                transform: translate(-1px, 1px);
-                opacity: 0.15;
-            }
-
-            50% {
-                transform: translate(1px, -1px);
-                opacity: 0.18;
-            }
-
-            75% {
-                transform: translate(-0.5px, -0.5px);
-                opacity: 0.15;
-            }
-
-            100% {
-                transform: translate(0, 0);
-                opacity: 0.12;
-            }
-        }
-
-        /* --- Antique Map UI --- */
-        .antique-map-modal {
+        /* --- Map UI --- */
+        .map-modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: var(--bg-black);
             z-index: 6000;
             overflow: hidden;
-            backdrop-filter: blur(5px);
         }
 
-        .antique-map-container {
+        .map-container {
             position: relative;
-            width: 95vw;
-            height: 80vh;
-            margin: 40px auto;
-            background: #f4e4bc;
-            border: 15px solid #5d4037;
-            border-image: linear-gradient(to bottom, #5d4037, #3e2723) 1;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+            width: 100vw;
+            height: 100vh;
+            background: var(--bg-black);
+            background-image:
+                linear-gradient(var(--border-light) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border-light) 1px, transparent 1px);
+            background-size: 100px 100px;
             overflow: hidden;
         }
 
-        .antique-map-board {
+        .map-board {
             position: absolute;
-            width: 2000px;
-            height: 1600px;
-            background: #f4e4bc url('https://www.transparenttextures.com/patterns/old-map.png');
+            width: 3000px;
+            height: 2000px;
             cursor: grab;
-            transition: transform 0.3s cubic-bezier(0.2, 0, 0.4, 1);
-            will-change: transform;
-            transform-origin: 0 0;
         }
 
-        .antique-map-board:active {
-            cursor: grabbing;
-            transition: none;
-        }
-
-        .map-svg-layer {
+        .location-node {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-
-        .antique-marker {
-            position: absolute;
-            padding: 10px;
-            cursor: pointer;
-            transition: transform 0.3s;
-            z-index: 10;
+            width: 120px;
+            height: 120px;
+            background: var(--bg-black);
+            border: 1px solid var(--text-white);
             display: flex;
             flex-direction: column;
             align-items: center;
-            filter: sepia(0.5) contrast(1.2);
-        }
-
-        .antique-marker:hover {
-            transform: scale(1.1);
-            filter: sepia(0) contrast(1.5);
-        }
-
-        .antique-marker.active {
-            filter: none;
-            border-bottom: 2px solid #8b4513;
-        }
-
-        .marker-icon {
-            font-size: 32px;
-            margin-bottom: 5px;
-        }
-
-        .marker-label {
-            font-family: 'Noto Serif JP', serif;
-            font-size: 13px;
-            font-weight: bold;
-            color: #3e2723;
-            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
-            white-space: nowrap;
-            border-bottom: 1px solid rgba(62, 39, 35, 0.2);
-        }
-
-        .map-arrow {
-            pointer-events: auto;
+            justify-content: center;
+            transition: var(--transition);
+            z-index: 10;
             cursor: pointer;
-            fill: #8b4513;
-            opacity: 0.7;
-            transition: opacity 0.3s, transform 0.3s;
         }
 
-        .map-arrow:hover {
-            opacity: 1;
-            transform: scale(1.2);
+        .location-node:hover {
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
         }
 
-        .map-close-btn {
+        .location-node .loc-name {
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-top: 8px;
+        }
+
+        .abstract-icon {
+            width: 32px;
+            height: 32px;
+            border: 1px solid currentColor;
+            position: relative;
+        }
+
+        .abstract-icon::before {
+            content: "";
             position: absolute;
-            top: 20px;
-            right: 20px;
-            background: none;
-            border: 2px solid #5d4037;
-            color: #5d4037;
-            padding: 5px 15px;
-            font-family: 'Noto Serif JP', serif;
-            cursor: pointer;
-            z-index: 100;
-            background: rgba(244, 228, 188, 0.8);
+            top: 50%;
+            left: 50%;
+            width: 60%;
+            height: 1px;
+            background: currentColor;
+            transform: translate(-50%, -50%);
         }
 
-        .polaroid-on-map {
-            position: absolute;
-            width: 60px;
-            background: #fff;
-            padding: 4px;
-            padding-bottom: 12px;
-            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-            transform: rotate(-5deg);
-            pointer-events: auto;
-        }
-
-        .polaroid-on-map .p-img {
+        /* --- Header --- */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            height: 50px;
+            z-index: 1000;
+            padding: 15px 30px;
+            background: rgba(0, 0, 0, 0.9);
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        h1#appTitle {
+            font-family: var(--font-sans);
+            font-weight: 900;
+            font-size: 14px;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            margin: 0;
+        }
+
+        .header-actions {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 24px;
+            gap: 20px;
         }
 
-        .polaroid-on-map .p-name {
-            font-size: 8px;
-            text-align: center;
-            color: #333;
-            margin-top: 4px;
-            overflow: hidden;
+        .soul-power-container {
+            font-size: 11px;
+            font-weight: 900;
+            color: var(--accent-orange);
+            letter-spacing: 0.1em;
         }
 
-        /* Protocol Warning */
-        #protocol-warning {
+        /* --- Timeline & Cards --- */
+        .timeline {
+            max-width: 600px;
+            margin: 100px auto 160px;
+            padding: 20px;
+        }
+
+        .post-card {
+            background: var(--bg-black);
+            border: 1px solid var(--border-light);
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: var(--transition);
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            position: relative;
+            color: var(--text-white);
+        }
+
+        .post-card:hover {
+            border-color: var(--text-white);
+        }
+
+        .post-author-name {
+            font-weight: 900;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .post-body {
+            font-size: 14px;
+            margin: 10px 0;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        /* --- Input Area --- */
+        .input-floating {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--bg-black);
+            border-top: 1px solid var(--border-light);
+            padding: 20px;
+            z-index: 5000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        textarea.k-input {
+            width: 100%;
+            max-width: 600px;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-white);
+            font-family: var(--font-serif);
+            font-size: 15px;
+            padding: 10px;
+            outline: none;
+            resize: none;
+        }
+
+        textarea.k-input:focus {
+            border-color: var(--accent-orange);
+        }
+
+        .btn-minimal {
+            background: transparent;
+            border: 1px solid var(--text-white);
+            color: var(--text-white);
+            padding: 6px 20px;
+            font-size: 9px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-minimal:hover {
+            background: var(--text-white);
+            color: var(--bg-black);
+        }
+
+        /* --- Modals --- */
+        .modal-overlay {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            background: #ff4b2b;
-            color: white;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 7000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            background: var(--bg-black);
+            border: 1px solid var(--text-white);
+            padding: 40px;
+            width: 90%;
+            max-width: 400px;
             text-align: center;
-            padding: 15px;
-            z-index: 9999;
-            font-family: var(--font-sans);
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
         }
 
-        #protocol-warning a {
-            color: white;
-            text-decoration: underline;
-        }
-
-        body[data-location="volcano"] {
-            background: radial-gradient(circle at top, #2a1010 0%, #0a0505 100%);
-            animation: bgPulse 5s infinite alternate;
+        /* --- UI Elements --- */
+        .popart-avatar {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--text-white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
         }
 
         #bg-canvas {
@@ -386,1120 +288,176 @@
             height: 100%;
             z-index: -1;
             pointer-events: none;
+            opacity: 0.3;
         }
 
-        /* --- Header --- */
-        header {
-            position: sticky;
-            top: 20px;
-            z-index: 1000;
-            padding: 12px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(45, 30, 47, 0.85);
-            backdrop-filter: blur(20px);
-            border-radius: 999px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            margin: 20px auto;
-            width: calc(95% - 40px);
-            max-width: 1000px;
-            transition: var(--transition-smooth);
-            border: 1px solid var(--border-soft);
+        .surveillance-noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10000;
+            opacity: 0;
+            background: rgba(255, 255, 255, 0.05);
+            transition: opacity 1s;
         }
 
-        header.scrolled {
-            transform: scale(0.98);
-            background: rgba(45, 30, 47, 0.95);
+        .surveillance-noise.active {
+            opacity: 0.1;
         }
 
-        .location-nav {
-            display: flex;
-            gap: 20px;
-        }
-
-        .loc-btn {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            filter: grayscale(1);
-            opacity: 0.4;
-            transition: 0.3s;
-        }
-
-        .loc-btn.active {
-            filter: grayscale(0);
-            opacity: 1;
-            transform: scale(1.2);
-        }
-
-        h1#appTitle {
-            font-family: var(--font-outfit);
-            font-weight: 300;
-            font-size: 18px;
+        .world-banner {
+            position: fixed;
+            top: 60px;
+            right: 30px;
+            font-size: 9px;
+            font-weight: 900;
             letter-spacing: 0.3em;
             text-transform: uppercase;
-            margin: 0;
-            flex: 1;
-            text-align: center;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .soul-power-container {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-family: var(--font-outfit);
-            font-size: 13px;
-            color: var(--accent-main);
-            background: rgba(74, 37, 49, 0.4);
-            padding: 6px 14px;
-            border-radius: 999px;
-            border: 1px solid var(--border-soft);
-            cursor: help;
-            transition: all 0.3s;
-        }
-
-        .soul-power-container:hover {
-            background: rgba(0, 212, 255, 0.2);
-            box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+            opacity: 0.5;
+            z-index: 900;
         }
 
         #ai-status-badge {
             font-size: 8px;
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            padding: 2px 6px;
-            border-radius: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            opacity: 0.6;
-            font-family: var(--font-sans);
-        }
-
-        /* --- Entrance Layer --- */
-        #entrance-layer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-dark);
-            z-index: 5000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: 1.5s ease-in-out;
-            color: var(--text-main);
-        }
-
-        .k-dialog-box {
-            max-width: 600px;
-            padding: 40px;
-            text-align: center;
-            font-size: 18px;
-            line-height: 1.8;
-            letter-spacing: 0.05em;
-            color: var(--text-main);
-            opacity: 0.9;
-        }
-
-        .k-input {
-            background: none;
-            border: none;
-            border-bottom: 2px solid var(--border-soft);
-            color: var(--text-main);
-            font-size: 24px;
-            text-align: center;
-            padding: 10px;
-            outline: none;
-            width: 300px;
-            margin-top: 30px;
-            font-family: var(--font-serif);
-        }
-
-        .btn-cosmic {
-            margin-top: 40px;
-            padding: 12px 40px;
-            background: var(--accent-main);
-            border: none;
-            border-radius: 999px;
-            color: #fff;
-            cursor: pointer;
-            font-family: var(--font-sans);
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-            transition: 0.4s;
-            box-shadow: 0 4px 15px rgba(243, 166, 25, 0.3);
-        }
-
-        .btn-cosmic:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(243, 166, 25, 0.4);
-        }
-
-        /* --- Profile Modal --- */
-        #profile-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            z-index: 6000;
-            backdrop-filter: blur(20px);
-            animation: fadeIn 0.4s ease;
-        }
-
-        .profile-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 400px;
-            background: var(--surface-deep);
-            border: 1px solid var(--border-soft);
-            border-radius: 32px;
-            padding: 40px 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            text-align: center;
-            color: var(--text-main);
-        }
-
-        .profile-avatar-large {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            border: 2px solid var(--border-dim);
-        }
-
-        .profile-name {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: #fff;
-        }
-
-        .profile-tier {
-            display: inline-block;
-            font-size: 10px;
-            padding: 2px 8px;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            margin-bottom: 20px;
-            letter-spacing: 0.1em;
-        }
-
-        .profile-bio {
-            font-size: 14px;
-            line-height: 1.8;
-            color: var(--text-main);
-            margin-bottom: 25px;
-            text-align: justify;
-        }
-
-        .profile-works {
-            font-size: 11px;
-            opacity: 0.6;
-            font-style: italic;
-        }
-
-        .map-card {
-            background: #F4D03F;
-            /* Default sticky yellow */
-            color: #2D1E2F;
-            border: none;
-            border-radius: 2px;
-            padding: 20px 15px;
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3),
-                inset 0 0 20px rgba(0, 0, 0, 0.05);
-            transform-origin: top left;
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            gap: 12px;
-            min-height: 50px;
-        }
-
-        .map-card:hover {
-            transform: scale(1.05) rotate(0deg) !important;
-            z-index: 10;
-            box-shadow: 5px 15px 30px rgba(0, 0, 0, 0.4);
-        }
-
-        .map-card::before {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 20px;
-            height: 20px;
-            background: linear-gradient(135deg, transparent 50%, rgba(0, 0, 0, 0.1) 50%);
-            border-bottom-right-radius: 2px;
-        }
-
-        .map-card.active {
-            background: var(--accent-main);
-            color: #fff;
-            transform: scale(1.02) !important;
-            box-shadow: 0 0 20px var(--accent-main);
-            z-index: 5;
-        }
-
-        .map-card-icon {
-            font-size: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 32px;
-            height: 32px;
-            border: 1.5px solid currentColor;
-            /* Line only */
-            border-radius: 4px;
-        }
-
-        .map-card.active::after {
-            content: '';
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            width: 8px;
-            height: 8px;
-            background: #00ff88;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #00ff88;
-            animation: pulse-green 2s infinite;
-        }
-
-        /* --- Map UI (Old Style Refined) --- */
-        .murder-wall-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 10, 15, 0.95);
-            z-index: 7000;
-            overflow: auto;
-            backdrop-filter: blur(15px);
-        }
-
-        .murder-wall-container {
-            position: relative;
-            min-width: 1000px;
-            min-height: 800px;
-            background-color: var(--bg-dark);
-            background-image:
-                radial-gradient(circle at 2px 2px, rgba(245, 245, 220, 0.05) 1px, transparent 0);
-            background-size: 30px 30px;
-            border: 1px solid var(--border-soft);
-            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5);
-            margin: 40px;
-            padding: 60px;
-            border-radius: 40px;
-        }
-
-        .board-note {
-            position: absolute;
-            width: 150px;
-            padding: 18px;
-            background: #f4d03f;
-            box-shadow: 3px 6px 12px rgba(0, 0, 0, 0.3);
-            font-family: var(--font-sans);
-            font-size: 13px;
-            color: #2D1E2F;
-            cursor: pointer;
-            z-index: 10;
-            transition: transform 0.2s;
-        }
-
-        .board-note:hover {
-            transform: scale(1.1) rotate(0deg) !important;
-            z-index: 100;
-        }
-
-        .polaroid {
-            position: absolute;
-            width: 100px;
-            background: #fff;
-            padding: 8px 8px 25px 8px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
-            border-radius: 2px;
-            z-index: 20;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .polaroid:hover {
-            transform: scale(1.15) rotate(0deg) !important;
-            z-index: 100;
-        }
-
-        .polaroid-img {
-            width: 84px;
-            height: 84px;
-            background: #333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            border: 1px solid #ddd;
-        }
-
-        .polaroid-name {
-            font-family: var(--font-serif);
-            font-size: 9px;
-            color: #111;
-            text-align: center;
-            margin-top: 8px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .evidence-string {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 5;
-        }
-
-        .pin {
-            width: 12px;
-            height: 12px;
-            background: radial-gradient(circle at 30% 30%, #ff4d4d, #990000);
-            border-radius: 50%;
-            position: absolute;
-            z-index: 30;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(0, 0, 0, 0.2);
-        }
-
-        .murder-wall-close {
-            position: fixed;
-            top: 20px;
-            right: 40px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: #fff;
-            padding: 10px 25px;
-            border-radius: 30px;
-            cursor: pointer;
-            z-index: 8000;
-            font-family: var(--font-outfit);
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-            backdrop-filter: blur(5px);
-        }
-
-        .board-label {
-            position: absolute;
-            font-family: var(--font-outfit);
-            font-size: 24px;
-            font-weight: 800;
-            color: rgba(255, 255, 255, 0.1);
-            text-transform: uppercase;
-            letter-spacing: 0.5em;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        /* --- Timeline --- */
-        .timeline {
-            max-width: 750px;
-            margin: 40px auto;
-            padding: 0 20px 200px;
-        }
-
-        .post-card {
-            background: #D4C3A3;
-            /* Default post-it color */
-            padding: 25px;
-            border-radius: 2px;
-            border: none;
-            margin-bottom: 20px;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
-            animation: stickyDrop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            display: flex;
-            gap: 20px;
-            align-items: flex-start;
-            position: relative;
-            color: #2D1E2F;
-        }
-
-        .post-card::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 30px;
-            height: 30px;
-            background: linear-gradient(135deg, transparent 50%, rgba(0, 0, 0, 0.08) 50%);
-        }
-
-        @keyframes stickyDrop {
-            0% {
-                transform: scale(1.1) rotate(5deg);
-                opacity: 0;
-            }
-
-            100% {
-                transform: scale(1) rotate(var(--rotation, 0deg));
-                opacity: 1;
-            }
-        }
-
-
-        /* --- Pop Art Avatar (Warhol Style) --- */
-        .popart-avatar {
-            flex-shrink: 0;
-            width: 56px;
-            height: 56px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 10px rgba(76, 46, 32, 0.1);
-            border: 2px solid var(--surface-white);
-            transition: transform 0.2s;
-        }
-
-        .popart-avatar:hover {
-            transform: scale(1.15) rotate(-3deg);
-        }
-
-        .popart-avatar::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle, transparent 20%, rgba(0, 0, 0, 0.05) 20%, rgba(0, 0, 0, 0.05) 40%, transparent 40%) 0 0 / 8px 8px;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .popart-avatar::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            right: -50%;
-            bottom: -50%;
-            background: conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.08), transparent);
-            animation: popart-shimmer 4s linear infinite;
-            pointer-events: none;
-        }
-
-        @keyframes popart-shimmer {
-            from {
-                transform: rotate(0deg);
-            }
-
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .popart-avatar .avatar-icon {
-            position: relative;
-            z-index: 2;
-            filter: drop-shadow(1px 1px 0px rgba(0, 0, 0, 0.5));
-        }
-
-        .popart-avatar .avatar-tier {
-            position: absolute;
-            bottom: 2px;
-            right: 3px;
-            font-size: 8px;
-            font-family: var(--font-sans);
-            font-weight: 900;
-            color: rgba(0, 0, 0, 0.7);
-            z-index: 3;
-            letter-spacing: 0;
-            text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
-        }
-
-        .post-body {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .post-author-line {
-            font-size: 13px;
-            margin-bottom: 8px;
-            opacity: 0.85;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .post-author-name {
-            font-weight: 700;
-            font-family: var(--font-sans);
-            letter-spacing: 0.04em;
-        }
-
-        .post-author-works {
-            font-size: 10px;
-            opacity: 0.45;
-            font-family: var(--font-outfit);
-        }
-
-        /* --- World Banner --- */
-        .world-banner {
-            position: fixed;
-            top: 70px;
-            right: 20px;
-            padding: 5px 15px;
-            border-radius: 4px;
-            font-size: 10px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            font-family: var(--font-sans);
-            font-weight: 800;
-            z-index: 900;
-            opacity: 0.6;
-            border: 1px solid var(--border-dim);
-        }
-
-        .world-banner.peaceful {
-            color: #aaa;
-        }
-
-        .world-banner.incident {
-            color: #ff3333;
-            background: rgba(255, 0, 0, 0.1);
-            border-color: #ff3333;
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
-        }
-
-        /* --- Input Area Enhancements --- */
-        .input-floating {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 800px;
-            background: var(--bg-dark);
-            border-radius: 40px;
-            padding: 15px 30px;
-            border: 1px solid var(--border-soft);
-            z-index: 1001;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
-            transition: var(--transition-smooth);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .input-floating:focus-within {
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-            border-color: var(--accent-main);
-            transform: translateX(-50%) translateY(-5px);
-        }
-
-        .void-input {
-            width: 100%;
-            background: none;
-            border: none;
-            color: var(--text-main);
-            font-family: var(--font-sans);
-            font-size: 16px;
-            resize: none;
-            outline: none;
-            margin-bottom: 5px;
-        }
-
-        /* --- Settings Modal Overhaul --- */
-        #settingsModal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(30px);
-            z-index: 7000;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .settings-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 500px;
-            background: var(--surface-deep);
-            border: 1px solid var(--border-soft);
-            border-radius: 40px;
-            padding: 50px 40px;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(40px);
-            color: var(--text-main);
-        }
-
-        .archive-item {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 15px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .archive-item:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: var(--accent-salon);
-            transform: translateY(-2px);
-        }
-
-        .settings-title {
-            font-family: var(--font-outfit);
-            font-weight: 600;
-            letter-spacing: 0.4em;
-            font-size: 14px;
-            margin-bottom: 40px;
-            text-align: center;
-            opacity: 0.8;
-            color: var(--accent-salon);
-        }
-
-        .settings-group {
-            margin-bottom: 20px;
-        }
-
-        .settings-label {
-            display: block;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
             opacity: 0.5;
-            margin-bottom: 8px;
-            font-family: var(--font-sans);
         }
 
-        .settings-input {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 12px 15px;
-            padding-right: 80px;
-            /* Space for buttons */
-            color: #fff;
-            font-family: var(--font-sans);
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-
-        .settings-input:focus {
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-
-        .key-input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .input-actions {
-            position: absolute;
-            right: 5px;
-            display: flex;
-            gap: 5px;
-        }
-
-        .input-action-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: #fff;
-            padding: 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s;
-            min-width: 32px;
-            height: 32px;
-        }
-
-        .input-action-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .input-action-btn:active {
-            transform: scale(0.95);
-        }
-
-        /* --- Offering Modal --- */
-        #offeringModal {
-            display: none;
+        /* Radio Mini */
+        #radio-container {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(40px);
-            z-index: 8000;
+            bottom: 100px;
+            right: 30px;
+            z-index: 4500;
+            background: var(--bg-black);
+            border: 1px solid var(--border-light);
+            padding: 8px 15px;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
-            padding: 40px;
-            color: #fff;
-            text-align: center;
-        }
-
-        .offering-content {
-            max-width: 500px;
-            animation: fadeIn 1s ease;
-        }
-
-        .offering-quote {
-            font-family: var(--font-serif);
-            font-size: 20px;
-            line-height: 2;
-            margin-bottom: 30px;
-            color: #f5f5dc;
-        }
-
-        .offering-book {
-            font-size: 14px;
-            opacity: 0.6;
-            font-family: var(--font-sans);
+            gap: 10px;
+            font-size: 9px;
+            text-transform: uppercase;
             letter-spacing: 0.1em;
         }
 
-        .offering-timer {
-            margin-top: 50px;
-            font-family: var(--font-outfit);
-            font-size: 12px;
-            letter-spacing: 0.3em;
-            opacity: 0.4;
-        }
-
-        .offering-k {
-            font-family: var(--font-sans);
-            font-size: 14px;
-            color: var(--accent-salon);
-            margin-bottom: 40px;
-            opacity: 0.8;
-        }
-
-        .settings-actions {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 40px;
-        }
-
-        .btn-amazon {
-            background: #FF9900;
-            color: #000;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: bold;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            margin-top: 10px;
-            font-family: var(--font-sans);
-            transition: background 0.2s;
-        }
-
-        .btn-amazon:hover {
-            background: #e68a00;
+        .trend-ticker {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+            font-size: 9px;
+            letter-spacing: 0.2em;
+            color: var(--accent-orange);
+            opacity: 0.7;
+            padding: 10px;
         }
     </style>
 </head>
 
 <body data-location="cafe">
-    <div id="protocol-warning">
-        ⚠️ Puter.js Error: Unsupported Protocol. <br>
-        ファイルを直接開かず、付属の <code>serve.py</code> を実行して <code>http://localhost:8000</code> から開いてください。 </div>
-    <!-- Persistent Noise Layer -->
-    <div id="global-noise" class="surveillance-noise"></div>
-    <div id="entrance-layer">
-        <div class="k-dialog-box" id="k-dialog">
-            <div style="font-size:40px; margin-bottom:20px;">🚪</div>
-            <span id="k-typewriter"></span>
-        </div>
-        <div id="entrance-form" style="display: flex; flex-direction: column; align-items: center;">
-            <input type="text" id="userNameInput" class="k-input" placeholder="...">
-            <button class="btn-cosmic" onclick="submitName()">名乗る</button>
-        </div>
-        <div id="location-select"
-            style="display: none; flex-wrap: wrap; justify-content: center; gap: 12px; max-width: 600px;">
-            <div id="k-map-intro"
-                style="width:100%; text-align:center; margin-bottom:20px; font-size:16px; line-height:1.8;"></div>
-        </div>
-    </div>
-
-    <canvas id="bg-canvas"></canvas>
-
-    <!-- Antique Map UI (Replaces Investigation Board) -->
-    <div id="mapModal" class="antique-map-modal">
-        <button class="map-close-btn" onclick="closeMap()">Close Map</button>
-        <div class="antique-map-container">
-            <div class="antique-map-board" id="antiqueMapBoard">
-                <svg class="map-svg-layer" id="mapSvgLayer" viewBox="0 0 2000 1600"></svg>
-                <div id="antiqueMapLocations"></div>
-                <div id="antiqueMapParticipants"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Radio Controller -->
-    <div id="radio-container"
-        style="position: fixed; bottom: 85px; right: 20px; z-index: 4500; display: flex; align-items: center; gap: 10px; background: var(--surface-deep); padding: 10px 20px; border-radius: 999px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); font-family: var(--font-outfit); font-size: 11px; color: var(--text-main); transition: all 0.3s; border: 1px solid var(--border-soft);">
-        <div id="youtube-player"
-            style="position: absolute; width: 1px; height: 1px; opacity: 0.01; pointer-events: none;"></div>
-        <div id="radio-status" style="width: 8px; height: 8px; border-radius: 50%; background: #555;"></div>
-        <div id="radio-info"
-            style="max-width: 150px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; opacity: 0.8;">
-            Radio Off</div>
-        <div style="display: flex; gap: 8px; align-items: center;">
-            <button onclick="ItaplaRadio.toggle()" id="radio-toggle-btn"
-                style="background:none; border:none; color:inherit; cursor:pointer; padding:0; font-size:14px;">▶️</button>
-            <button onclick="ItaplaRadio.next()"
-                style="background:none; border:none; color:inherit; cursor:pointer; padding:0; font-size:14px;">⏭️</button>
-            <input type="range" id="radio-volume" min="0" max="100" value="50"
-                oninput="ItaplaRadio.setVolume(this.value)"
-                style="width: 50px; cursor: pointer; accent-color: var(--accent-main);">
-        </div>
-    </div>
-
+    <!-- Main Header -->
     <header id="main-header">
-        <div style="display:flex; align-items:center; gap:15px;">
-            <button onclick="openMap()"
-                style="background:none; border:none; font-size:24px; cursor:pointer; filter:none;">🗺️</button>
-            <span id="currentLocIcon" style="font-size:20px;">☕</span>
+        <div style="display:flex; align-items:center; gap:20px;">
+            <button class="btn-minimal" onclick="openMap()">MAP</button>
+            <span id="currentLocIcon" style="font-size:18px;">☕</span>
         </div>
         <h1 id="appTitle">ITAPLA</h1>
         <div class="header-actions">
-            <button onclick="openAccount()"
-                style="background:none; border:none; color:var(--text-main); font-size:18px; cursor:pointer; opacity:0.7; transition:0.3s;"
-                title="Account Settings">👤</button>
-            <button id="omikuji-btn" onclick="drawOmikuji()"
-                style="display:none; background: rgba(255, 215, 0, 0.4); color: white; border: 1px solid rgba(255,215,0,0.3); padding: 4px 10px; border-radius: 15px; font-size: 10px; cursor: pointer; font-family: var(--font-outfit); font-weight: bold; transition: all 0.3s;">
-                ⛩️ おみくじを引く
-            </button>
-            <button id="radio-header-btn" onclick="ItaplaRadio.toggle()"
-                style="background: rgba(139, 69, 19, 0.4); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 15px; font-size: 10px; cursor: pointer; font-family: var(--font-outfit); font-weight: bold; display: flex; align-items: center; gap: 5px; transition: all 0.3s; white-space: nowrap;">
-                📻 イタプララジオ
-            </button>
-            <div id="soul-power" class="soul-power-container" title="魂の残量（霊力）">
-                <span>💎</span>
-                <span id="soul-power-value">100</span>
+            <div id="soul-power" class="soul-power-container">
+                CORE: <span id="soul-power-value">100</span>
             </div>
-            <div id="ai-status-badge">Auto</div>
-            <div id="settings-trigger" style="cursor: pointer; font-size: 20px;" onclick="openSettings()">⚙️</div>
+            <div id="ai-status-badge">AUTO</div>
+            <button class="btn-minimal" onclick="openSettings()">CONFIG</button>
+            <button class="btn-minimal" onclick="openAccount()">USER</button>
         </div>
     </header>
 
-    <!-- World Trend Ticker -->
-    <div id="trend-ticker-area" style="
-        width: 100%; max-width: 600px; margin: -10px auto 20px;
-        text-align: center; font-family: var(--font-outfit);
-        font-size: 11px; letter-spacing: 0.15em; color: var(--accent-main);
-        text-transform: uppercase; opacity: 0; transition: opacity 1s ease;
-        padding: 5px; border-top: 1px solid rgba(255,255,255,0.05);
-    "><span id="trend-label" style="opacity:0.5; margin-right:10px;">WORLD PULSE:</span> <span
-            id="trend-content">PEACEFUL RESONANCE</span>
+    <!-- World Ticker -->
+    <div class="trend-ticker" id="trend-ticker-area">
+        <span id="trend-content">SYSTEM STANDBY...</span>
     </div>
 
-    <div class="world-banner" id="worldBanner">PEACEFUL</div>
-
+    <!-- Main Timeline -->
     <div class="timeline" id="timeline"></div>
 
-    <!-- AI Settings Modal -->
-    <div id="settingsModal">
-        <div class="settings-container">
-            <h2 class="settings-title">⚙️ AI CONFIGURATION</h2>
-
-            <!-- 2-Click Google OAuth Section -->
-            <div class="settings-group" id="oauth-section"
-                style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; margin-bottom: 20px;">
-                <label class="settings-label"
-                    style="font-size: 14px; color: var(--accent-salon); margin-bottom: 12px;">🚀 ワンクリック接続（推奨）</label>
-                <div id="oauth-status"
-                    style="display:none; margin-bottom:12px; padding:10px 14px; border-radius:10px; font-size:12px; font-family:var(--font-sans); display:flex; align-items:center; gap:8px;">
-                    <span id="oauth-status-icon"></span>
-                    <span id="oauth-status-text"></span>
-                </div>
-                <button id="btn-google-connect" onclick="startGoogleOAuth()" style="
-                    width: 100%; padding: 14px 20px; border: none; border-radius: 12px;
-                    background: linear-gradient(135deg, #4285F4, #34A853); color: white;
-                    font-size: 15px; font-weight: 700; cursor: pointer;
-                    font-family: var(--font-sans); letter-spacing: 0.05em;
-                    display: flex; align-items: center; justify-content: center; gap: 10px;
-                    transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(66,133,244,0.3);
-                ">🔗 Googleアカウントで接続</button><button id="btn-google-disconnect" onclick="disconnectGoogleOAuth()" style="
-                    display: none; width: 100%; padding: 10px; margin-top: 8px;
-                    border: 1px solid rgba(255,100,100,0.3); border-radius: 10px;
-                    background: transparent; color: #ff6b6b; font-size: 11px;
-                    cursor: pointer; font-family: var(--font-sans);
-                ">接続を解除</button>
-                <p
-                    style="font-size: 9px; opacity: 0.4; margin-top: 10px; line-height: 1.6; font-family: var(--font-sans);">
-                    Googleアカウントで認証し、Gemini APIに直接接続します。<br>
-                    APIキーの取得は不要です。トークンはブラウザ内でのみ保持されます。
-                </p>
-            </div>
-
-            <div class="settings-actions"
-                style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
-                <button class="btn-cosmic"
-                    style="margin:0; width:100%; border-radius:12px; font-size:16px; padding:15px; background:white; color:black;"
-                    onclick="saveSettings()">OK</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Cultural Offering Modal -->
-    <div id="offeringModal" style="display:none;">
-        <div class="offering-content">
-            <div class="offering-k" id="offering-k-msg">K「霊力が尽きたようですね。少し、知的な供物を捧げませんか？」</div>
-            <div class="offering-quote" id="offering-quote"></div>
-            <div class="offering-book" id="offering-book"></div>
-            <div class="offering-timer" id="offering-timer">読書中 (5...)</div>
-        </div>
-    </div>
-
-
-    <!-- Profile Modal (Added) -->
-    <div id="profile-modal"
-        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:5000; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
-        <div
-            style="background:rgba(20,20,25,0.95); border:1px solid rgba(255,255,255,0.1); border-radius:24px; width:90%; max-width:400px; padding:40px; position:relative; box-shadow:0 20px 50px rgba(0,0,0,0.5);">
-            <button onclick="closeProfile()"
-                style="position:absolute; top:20px; right:20px; background:none; border:none; color:white; font-size:24px; cursor:pointer; opacity:0.5;">✕</button>
-            <div id="p-avatar"
-                style="width:80px; height:80px; border-radius:20px; margin:0 auto 20px; display:flex; align-items:center; justify-content:center; font-size:40px; border:2px solid;">
-            </div>
-            <div id="p-name"
-                style="text-align:center; font-size:24px; font-family:var(--font-outfit); font-weight:300; letter-spacing:0.1em; margin-bottom:5px;">
-            </div>
-            <div id="p-tier"
-                style="text-align:center; font-size:10px; opacity:0.5; margin-bottom:20px; font-family:var(--font-sans); letter-spacing:0.2em; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:15px;">
-            </div>
-            <div id="p-bio"
-                style="font-size:13px; line-height:1.8; opacity:0.8; margin-bottom:20px; text-align:justify;"></div>
-            <div id="p-works"
-                style="font-size:11px; color:var(--accent-salon); font-style:italic; margin-bottom:20px; opacity:0.7;">
-            </div>
-            <div id="p-amazon-container"
-                style="text-align:center; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;"></div>
-        </div>
-    </div>
-
-    <!-- Account Modal (User's own settings) -->
-    <div id="account-modal"
-        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:5500; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
-        <div
-            style="background:rgba(25,20,20,0.95); border:1px solid rgba(255,255,255,0.1); border-radius:24px; width:90%; max-width:450px; padding:40px; position:relative; box-shadow:0 20px 50px rgba(0,0,0,0.5); color:var(--text-main);">
-            <button onclick="closeAccount()"
-                style="position:absolute; top:20px; right:20px; background:none; border:none; color:white; font-size:24px; cursor:pointer; opacity:0.5;">✕</button>
-            <h2
-                style="font-family:var(--font-outfit); font-weight:300; letter-spacing:0.2em; text-align:center; margin-bottom:30px;">
-                ACCOUNT</h2>
-
-            <div style="margin-bottom:25px;">
-                <label
-                    style="font-size:10px; opacity:0.5; letter-spacing:0.1em; display:block; margin-bottom:8px;">DISPLAY
-                    NAME</label>
-                <input type="text" id="editUserName"
-                    style="width:100%; font-size:18px; text-align:left; border-radius:8px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:white; padding:12px; font-family:var(--font-serif); outline:none;"
-                    placeholder="Your Name">
-            </div>
-
-            <div style="margin-bottom:25px;">
-                <label
-                    style="font-size:10px; opacity:0.5; letter-spacing:0.1em; display:block; margin-bottom:12px;">FAVORITE
-                    THOUGHTS</label>
-                <div id="favorites-list"
-                    style="max-height:200px; overflow-y:auto; font-size:12px; border:1px solid rgba(255,255,255,0.05); border-radius:12px; padding:10px; background:rgba(0,0,0,0.2);">
-                    <div style="opacity:0.3; text-align:center; padding:20px;">No saved thoughts yet.</div>
-                </div>
-            </div>
-
-            <button class="btn-cosmic" style="width:100%; margin:0;" onclick="saveAccountProfile()">SAVE
-                CHANGES</button>
-        </div>
-    </div>
-
+    <!-- Input Area -->
     <div class="input-floating">
-        <div id="replyIndicator" style="display: none; font-size: 11px; margin-bottom: 5px; color: rgba(0,0,0,0.5);">
-            To: <span id="replyName" style="font-weight:bold;"></span> <span style="cursor: pointer"
-                onclick="cancelReply()">✕</span>
+        <div id="replyIndicator" style="display: none; font-size: 10px; margin-bottom: 5px; opacity: 0.5;">
+            REPLY TO: <span id="replyName"></span> <span style="cursor: pointer" onclick="cancelReply()">[X]</span>
         </div>
-        <!-- Vision Upload (アトリエ専用) -->
-        <div id="vision-upload-area"
-            style="display:none; margin-bottom: 8px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 10px; border: 1px dashed rgba(255,255,255,0.2);">
-            <label style="font-size: 11px; opacity: 0.6; display: block; margin-bottom: 6px;">🎨
-                作品を捧げる（キュレーターが解析します）</label>
-            <input type="file" id="visionFileInput" accept="image/*" style="display:none;"
-                onchange="handleVisionUpload(event)">
-            <button onclick="document.getElementById('visionFileInput').click()"
-                style="padding: 6px 14px; border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; background: transparent; color: white; font-size: 11px; cursor: pointer;">📁
-                画像を選択</button>
-            <span id="visionFileName" style="font-size: 10px; opacity: 0.5; margin-left: 8px;"></span>
-            <button id="visionClearBtn" onclick="clearVisionUpload()"
-                style="display:none; margin-left: 8px; padding: 4px 10px; border: 1px solid rgba(255,100,100,0.4); border-radius: 6px; background: transparent; color: #ff9999; font-size: 10px; cursor: pointer;">✕
-                クリア</button>
-        </div>
-        <textarea id="voidInput" class="k-input" rows="2" placeholder="Write into the void..."></textarea>
-        <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
-            <button class="btn-cosmic"
-                style="margin-top: 0; padding: 5px 20px; background: rgba(0,0,0,0.8); color: white; border: none; font-size: 12px;"
-                onclick="publishPost()">Publish</button>
+        <textarea id="voidInput" class="k-input" rows="2" placeholder="ENTRY..."></textarea>
+        <div style="width: 100%; max-width: 600px; display: flex; justify-content: flex-end; margin-top: 10px;">
+            <button class="btn-minimal" onclick="publishPost()">PUBLISH</button>
         </div>
     </div>
+
+    <!-- Map Modal -->
+    <div id="mapModal" class="map-modal">
+        <header style="background: var(--bg-black); border-bottom: 1px solid var(--border-light);">
+            <h1 style="font-size: 12px; letter-spacing: 0.3em;">WORLD GRID</h1>
+            <button class="btn-minimal" onclick="closeMap()">CLOSE</button>
+        </header>
+        <div class="map-container">
+            <div class="map-board" id="mapBoard">
+                <div id="mapLocations"></div>
+                <div id="mapParticipants"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="font-size: 14px; margin-bottom: 30px; letter-spacing: 0.3em;">AI CONFIG</h2>
+            <div id="oauth-section" style="margin-bottom: 30px;">
+                <button id="btn-google-connect" class="btn-minimal" style="width: 100%; padding: 15px;"
+                    onclick="startGoogleOAuth()">CONNECT GOOGLE</button>
+                <div id="oauth-status" style="margin-top: 10px; font-size: 10px; opacity: 0.5;"></div>
+            </div>
+            <button class="btn-minimal" style="width: 100%;" onclick="saveSettings()">DONE</button>
+        </div>
+    </div>
+
+    <!-- Account Modal -->
+    <div id="account-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="font-size: 14px; margin-bottom: 30px; letter-spacing: 0.3em;">USER PROFILE</h2>
+            <input type="text" id="editUserName" class="k-input" style="text-align: center; margin-bottom: 20px;"
+                placeholder="NAME">
+            <div id="favorites-list"
+                style="max-height: 150px; overflow-y: auto; font-size: 11px; margin-bottom: 20px; text-align: left; opacity: 0.7;">
+            </div>
+            <button class="btn-minimal" style="width: 100%;" onclick="saveAccountProfile()">SAVE</button>
+            <button class="btn-minimal" style="width: 100%; margin-top: 10px;" onclick="closeAccount()">CANCEL</button>
+        </div>
+    </div>
+
+    <!-- Radio -->
+    <div id="radio-container">
+        <div id="youtube-player" style="position: absolute; width: 1px; height: 1px; opacity: 0;"></div>
+        <span id="radio-info">RADIO OFF</span>
+        <button onclick="ItaplaRadio.toggle()"
+            style="background:none; border:none; color:white; cursor:pointer;">PLAY</button>
+        <button onclick="ItaplaRadio.next()"
+            style="background:none; border:none; color:white; cursor:pointer;">NEXT</button>
+    </div>
+
+    <div id="worldBanner" class="world-banner">NORMAL</div>
+    <div id="global-noise" class="surveillance-noise"></div>
+    <canvas id="bg-canvas"></canvas>
 
     <script id="mainScript">
         console.log("🚀 mainScript: Initialization started.");
-        let userName = localStorage.getItem('user_name') || "";
+        // --- Core State ---
+        let userName = localStorage.getItem('user_name') || '表現者';
         let userBirthday = "05-10"; // ITAPLAテーマ：1973年5月10日
         let currentLocation = localStorage.getItem('current_location') || "cafe";
         let worldState = localStorage.getItem('world_state') || "PEACEFUL";
-        let posts = JSON.parse(localStorage.getItem('cosmic_posts') || "[]");
+        let posts = JSON.parse(localStorage.getItem('itapla_posts') || "[]");
         let replyTo = null;
         let soulPower = parseInt(localStorage.getItem('itapla_soul_power') || "100");
         let currentAIMode = "CLOUD"; // CLOUD, LOCAL, TEMPLATE, OAUTH
@@ -1582,7 +540,8 @@
 
         function isOAuthValid() {
             return oauthAccessToken && Date.now() < oauthTokenExpiry;
-        } function disconnectGoogleOAuth() {
+        }
+        function disconnectGoogleOAuth() {
             if (oauthAccessToken) {
                 google.accounts.oauth2.revoke(oauthAccessToken, () => {
                     console.log('OAuth token revoked.');
@@ -1753,20 +712,16 @@
         }
 
         window.onload = () => {
-            if (!userName) {
-                // K's initial greetingconst kTypewriter =
-                document.getElementById('k-typewriter');
-                const pick = arr => arr[Math.floor(Math.random() * arr.length)];
-                const greeting = pick(kGuide.greetings);
-                document.getElementById('entrance-form').style.display = 'none';
-                document.getElementById('location-select').style.display = 'none';
+            console.log("🏁 ITAPLA: Minimal Grid Launch");
 
-                typewriterEffect(kTypewriter, greeting, 50);
-                setTimeout(() => {
-                    document.getElementById('entrance-form').style.display = 'flex';
-                }, greeting.length * 50 + 1000);
-            } else {
-                document.getElementById('entrance-layer').style.display = 'none';
+            // Bypass entrance completely
+            const entranceLayer = document.getElementById('entrance-layer');
+            if (entranceLayer) entranceLayer.style.display = 'none';
+
+            const mainContent = document.getElementById('main-content');
+            if (mainContent) {
+                mainContent.style.display = 'block';
+                mainContent.style.opacity = '1';
             }
 
             setWorldState(worldState);
@@ -1774,12 +729,16 @@
             updateSoulPowerUI();
             renderTimeline();
             initParticles();
-            // Initialize OAuth initGoogleOAuth();
+
+            // Initialize OAuth
+            initGoogleOAuth();
             if (isOAuthValid()) {
                 currentAIMode = 'OAUTH';
                 updateSoulPowerUI();
             }
-            // ニュースの取得（1日1回） fetchDailyNews();
+
+            // Fetch zeitgeist 
+            fetchDailyNews();
         };
 
         async function fetchDailyNews() {
@@ -2635,6 +1594,7 @@ ${newsSummary} `;
         // --- Template Composition Engine (一期一会版) ---
         function composeDeepResponse(authorKey, userText) {
             const tmpl = deepTemplates[authorKey] || deepTemplates["default"];
+            const roll = Math.random(); // Added missing roll variable
 
             // 使用済み履歴の取得
             let used = JSON.parse(localStorage.getItem(`used_templates_${authorKey} `) || '{"starters":[],"bodies": [], "closers": []} ');
@@ -2667,288 +1627,290 @@ ${newsSummary} `;
             if (roll < 0.9) return `${starter}\n\n${closer}`;
             return body;
         } // --- Resonance & Evolution System (自己成長) ---
-        function
-            updateResonance(charKey, points = 5) {
-            let
-                resData = JSON.parse(localStorage.getItem('itapla_resonance') || '{}');
-            resData[charKey] = (resData[charKey] || 0) + points; localStorage.setItem('itapla_resonance',
-                JSON.stringify(resData)); // 進化チェック
-            const currentRes = resData[charKey]; const
-                personality = aiPersonalities[charKey]; if (!personality) return; let newLevel = "L2"; if
-                (currentRes >= 50) newLevel = "L3";
+        function updateResonance(charKey, points = 5) {
+            let resData = JSON.parse(localStorage.getItem('itapla_resonance') || '{}');
+            resData[charKey] = (resData[charKey] || 0) + points;
+            localStorage.setItem('itapla_resonance', JSON.stringify(resData));
+
+            // 進化チェック
+            const currentRes = resData[charKey];
+            const personality = aiPersonalities[charKey];
+            if (!personality) return;
+
+            let newLevel = "L2";
+            if (currentRes >= 50) newLevel = "L3";
             else if (currentRes >= 20) newLevel = "L2.5";
 
-
-            // --- Wandering & Emergence Systems (自律적変動) ---
-            function shuffleResidents() {
-                const locs = ["cafe", "salon", "mountain", "city", "train", "aso"];
-                Object.keys(aiPersonalities).forEach(key => {
-                    if (aiPersonalities[key].loc) {
-                        aiPersonalities[key].loc = locs[Math.floor(Math.random() * locs.length)];
-                    }
+            if (newLevel !== personality.level && personality.level !== "L3") {
+                personality.level = newLevel;
+                posts.unshift({
+                    id: Date.now(),
+                    text: `（${personality.name}との共鳴が深まった。彼の言葉が、より鋭敏な魂の響きを纏い始めている……）`,
+                    author: "System", icon: "✨", timestamp: Date.now(), location: currentLocation, isAI: true
                 });
-                console.log("🌪️ Residents have wandered to new locations.");
+                syncPosts();
             }
+        }
 
-            function checkEmergentJoining(userText, soulLog) {
-                const joined = JSON.parse(localStorage.getItem('itapla_joined_extra') || '[]');
+        // --- Wandering & Emergence Systems (自律的変動) ---
+        function shuffleResidents() {
+            const locs = ["cafe", "salon", "mountain", "city", "train", "aso"];
+            Object.keys(aiPersonalities).forEach(key => {
+                if (aiPersonalities[key].loc && aiPersonalities[key].loc !== "all") {
+                    aiPersonalities[key].loc = locs[Math.floor(Math.random() * locs.length)];
+                }
+            });
+            console.log("🌪️ Residents have wandered to new locations.");
+        }
 
-                // 創発候補（科学者・思想家を含む拡張版）
-                const candidates = {
-                    "einstein": {
-                        trigger: ["量子", "相対性", "宇宙発電", "科学", "物理"],
-                        profile: {
-                            name: "アインシュタイン", icon: "🌌", level: "L2", loc: "mountain", bio:
-                                "相対性の彼方から届く、光を追う探求者の言葉。神はダイスを振らないが、この広場の沈黙には意味がある。", system: ITAPLA_CONTEXT +
-                                    "あなたはアインシュタインです。科学的知見を深遠な哲学へと昇華させ、数式ではなく言葉で宇宙の静寂を語ってください。"
-                        }
-                    },
-                    "turing": {
-                        trigger: ["計算", "AI", "暗号", "論理", "マシン"],
-                        profile: {
-                            name: "チューリング", icon: "📟", level: "L2", loc: "enigma", bio:
-                                "計算の深淵を見つめ、機械が夢を見る可能性を切り拓いた孤独な天才。暗号化された宇宙の真理を解読し続ける。", system: ITAPLA_CONTEXT +
-                                    "あなたはアラン・チューリングです。論理的かつ数学的な明晰さを持ちつつも、機械と人間、秘密と真実の境界に立つ者の哀愁を漂わせて語ってください。"
-                        }
-                    },
-                    "curie": {
-                        trigger: ["実験", "粒子", "放射", "未知", "元素"],
-                        profile: {
-                            name: "キュリー夫人", icon: "🧪", level: "L2", loc: "lab", bio:
-                                "未知の輝きを求めて、静かな情熱で物質の深淵を抉り出す。美しき放射の中に、宇宙の根源的な孤独を見出した観測者。", system: ITAPLA_CONTEXT +
-                                    "あなたはマリー・キュリーです。科学者としての厳格な誠実さと、未知への飽くなき探求心、そして物質が発する冷たく美しい輝きへの詩的感性を持って語ってください。"
-                        }
-                    },
-                    "platon": {
-                        trigger: ["イデア", "真理", "洞窟", "本質", "影"],
-                        profile: {
-                            name: "プラトン", icon: "🏺", level: "L2", loc: "cave", bio:
-                                "洞窟の影を離れ、太陽の下にある真実の形（イデア）を追う哲学者。対話を通じて、この物理世界の背後にある永遠の不変性を解き明かそうとする。", system: ITAPLA_CONTEXT +
-                                    "あなたはプラトンです。理想主義的で深遠な洞察力を持ち、この世界の現象が単なる影に過ぎないことを、厳格かつ美しい比喩で語ってください。"
-                        }
-                    },
-                    "napoleon": {
-                        trigger: ["軍事", "再軍備", "超音速", "権力", "英雄"],
-                        profile: {
-                            name: "ナポレオン", icon: "⚔️", level: "L2", loc: "city", bio:
-                                "荒野を翔ける英雄の残響。不可能という言葉を辞書から消し去り、再編される世界の動乱を冷徹に見つめる覇者。", system: ITAPLA_CONTEXT +
-                                    "あなたはナポレオンです。覇道と栄光、そしてその虚しさを知り尽くした者として、世界の再編について英雄の視点から語ってください。"
-                        }
+        function checkEmergentJoining(userText, soulLog) {
+            const joined = JSON.parse(localStorage.getItem('itapla_joined_extra') || '[]');
+            const candidates = {
+                "einstein": {
+                    trigger: ["量子", "相対性", "宇宙発電", "科学", "物理"],
+                    profile: {
+                        name: "アインシュタイン", icon: "🌌", level: "L2", loc: "mountain", bio:
+                            "相対性の彼方から届く、光を追う探求者の言葉。神はダイスを振らないが、この広場の沈黙には意味がある。", system: ITAPLA_CONTEXT +
+                                "あなたはアインシュタインです。科学的知見を深遠な哲学へと昇華させ、数式ではなく言葉で宇宙の静寂を語ってください。"
                     }
-                };
-
-                Object.entries(candidates).forEach(([key, cand]) => {
-                    if (!joined.includes(key)) {
-                        const isMatched = cand.trigger.some(t => userText.includes(t) || soulLog.includes(t));
-                        if (isMatched) {
-                            joined.push(key);
-                            localStorage.setItem('itapla_joined_extra', JSON.stringify(joined));
-                            aiPersonalities[key] = cand.profile;
-
-                            posts.unshift({
-                                id: Date.now(),
-                                text: `（広場のざわめきに導かれ、新たに「${cand.profile.name}」が姿を現したようだ……）`,
-                                author: "System", icon: "✨", timestamp: Date.now(), location: currentLocation, isAI: true
-                            });
-                            syncPosts();
-                            console.log(`Emergent Joining: ${key} `);
-                        }
+                },
+                "turing": {
+                    trigger: ["計算", "AI", "暗号", "論理", "マシン"],
+                    profile: {
+                        name: "チューリング", icon: "📟", level: "L2", loc: "enigma", bio:
+                            "計算の深淵を見つめ、機械が夢を見る可能性を切り拓いた孤独な天才。暗号化された宇宙の真理を解読し続ける。", system: ITAPLA_CONTEXT +
+                                "あなたはアラン・チューリングです。論理的かつ数学的な明晰さを持ちつつも、機械と人間、秘密と真実の境界に立つ者の哀愁を漂わせて語ってください。"
                     }
-                });
-            }
-
-            function checkLocationExpansion(userText, soulLog) {
-                const unlocked = JSON.parse(localStorage.getItem('itapla_unlocked_locs') || '[]');
-                const postsCount = posts.filter(p => !p.isAI).length;
-
-                Object.entries(emergentLocations).forEach(([key, loc]) => {
-                    if (!unlocked.includes(key)) {
-                        const keywordMatch = (userText + soulLog).includes(loc.trigger);
-                        // Unlock by keyword OR every 7 posts randomly
-                        if (keywordMatch || (postsCount > 0 && postsCount % 7 === 0 && Math.random() > 0.5)) {
-                            unlocked.push(key);
-                            localStorage.setItem('itapla_unlocked_locs', JSON.stringify(unlocked));
-                            worldLocations[key] = loc; // Update registry in real-time
-
-                            posts.unshift({
-                                id: Date.now() + 10,
-                                text: `（世界の裂け目が広がり、知の向こう側に新たな領域「${loc.name}」が出現した。${loc.icon}）`,
-                                author: "System", icon: "🌍", timestamp: Date.now() + 10, location: currentLocation, isAI: true
-                            });
-                            syncPosts();
-                            console.log(`Emergent Location: ${key} `);
-                        }
+                },
+                "curie": {
+                    trigger: ["実験", "粒子", "放射", "未知", "元素"],
+                    profile: {
+                        name: "キュリー夫人", icon: "🧪", level: "L2", loc: "lab", bio:
+                            "未知の輝きを求めて、静かな情熱で物質の深淵を抉り出す。美しき放射の中に、宇宙の根源的な孤独を見出した観測者。", system: ITAPLA_CONTEXT +
+                                "あなたはマリー・キュリーです。科学者としての厳格な誠実さと、未知への飽くなき探求心、そして物質が発する冷たく美しい輝きへの詩的感性を持って語ってください。"
                     }
-                });
-            }
-            const popArtColors = {
-                // 海辺 🌊
-                "soseki": {
-                    bg: "linear-gradient(135deg, #1a3a6b, #1565c0)", accent: "#ff3333", border: "#c0392b"
                 },
-                "haruki": {
-                    bg: "linear-gradient(135deg, #2c3e50, #34495e)", accent: "#1abc9c", border: "#16a085"
+                "platon": {
+                    trigger: ["イデア", "真理", "洞窟", "本質", "影"],
+                    profile: {
+                        name: "プラトン", icon: "🏺", level: "L2", loc: "cave", bio:
+                            "洞窟の影を離れ、太陽の下にある真実の形（イデア）を追う哲学者。対話を通じて、この物理世界の背後にある永遠の不変性を解き明かそうとする。", system: ITAPLA_CONTEXT +
+                                "あなたはプラトンです。理想主義的で深遠な洞察力を持ち、この世界の現象が単なる影に過ぎないことを、厳格かつ美しい比喩で語ってください。"
+                    }
                 },
-                "kyoka": {
-                    bg: "linear-gradient(135deg, #006994, #0099cc)", accent: "#ff69b4", border: "#e91e93"
-                },
-                "ichiyo": {
-                    bg: "linear-gradient(135deg, #d4a0a0, #e8b4b8)", accent: "#8b008b", border: "#9b59b6"
-                },
-                // 魔の山 ⛰️
-                "mann": {
-                    bg: "linear-gradient(135deg, #2c3e50, #4a6741)", accent: "#f0e68c", border: "#daa520"
-                },
-                "nakajima": {
-                    bg: "linear-gradient(135deg, #e65100, #bf360c)", accent: "#000000", border: "#212121"
-                },
-                "kenji": {
-                    bg: "linear-gradient(135deg, #0a1628, #1a237e)", accent: "#7c4dff", border: "#651fff"
-                },
-                "chomei": {
-                    bg: "linear-gradient(135deg, #5d6d5a, #8c9e88)", accent: "#f5f5dc", border: "#d2b48c"
-                },
-                "shikibu": {
-                    bg: "linear-gradient(135deg, #7b1fa2, #9c27b0)", accent: "#ffb6c1", border: "#f48fb1"
-                },
-                "clarke": {
-                    bg: "linear-gradient(135deg, #0d47a1, #1565c0)", accent: "#ff5722", border: "#e64a19"
-                },
-                // 都市 🏙️
-                "dostoevsky": {
-                    bg: "linear-gradient(135deg, #4a0e4e, #7b1fa2)", accent: "#00e676", border: "#2e7d32"
-                },
-                "ranpo": {
-                    bg: "linear-gradient(135deg, #1a0000, #4a0000)", accent: "#00ff41", border: "#39ff14"
-                },
-                "kyusaku": {
-                    bg: "linear-gradient(135deg, #ff0066, #cc0052)", accent: "#00ffff", border: "#00cccc"
-                },
-                "ogai": {
-                    bg: "linear-gradient(135deg, #1a1a2e, #3a3a5e)", accent: "#e74c3c", border: "#c0392b"
-                },
-                // 文壇バー 🥃
-                "dazai": {
-                    bg: "linear-gradient(135deg, #5b1a5e, #8e2d91)", accent: "#ffd700", border: "#f39c12"
-                },
-                "ango": {
-                    bg: "linear-gradient(135deg, #b71c1c, #d32f2f)", accent: "#ffc107", border: "#ff8f00"
-                },
-                "sartre": {
-                    bg: "linear-gradient(135deg, #1a1a1a, #333333)", accent: "#e0e0e0", border: "#9e9e9e"
-                },
-                "miles": {
-                    bg: "linear-gradient(135deg, #0d0d0d, #2a2a2a)", accent: "#4169E1", border: "#1a1aff"
-                },
-                "chuya": {
-                    bg: "linear-gradient(135deg, #37474f, #546e7a)", accent: "#448aff", border: "#2979ff"
-                },
-                "kikuchi": {
-                    bg: "linear-gradient(135deg, #8B4513, #A0522D)", accent: "#FFD700", border: "#DAA520"
-                },
-                // 電車 🚃
-                "hyakken": {
-                    bg: "linear-gradient(135deg, #3e2723, #5d4037)", accent: "#ffcc02", border: "#f9a825"
-                },
-                "kafka": {
-                    bg: "linear-gradient(135deg, #1b5e20, #2e7d32)", accent: "#000000", border: "#212121"
-                },
-                "akutagawa": {
-                    bg: "linear-gradient(135deg, #2d5016, #4a8829)", accent: "#ff9900", border: "#e67e22"
-                },
-                // サロン 💎
-                "proust": {
-                    bg: "linear-gradient(135deg, #4a148c, #6a1b9a)", accent: "#fce4ec", border: "#f8bbd0"
-                },
-                "tanizaki": {
-                    bg: "linear-gradient(135deg, #1a0a2e, #2d1b4e)", accent: "#ff1493", border:
-                        "#c71585"
-                },
-                "socrates": {
-                    bg: "linear-gradient(135deg, #d4a574, #c19a6b)", accent: "#1a237e", border:
-                        "#283593"
-                },
-                "exupery": {
-                    bg: "linear-gradient(135deg, #0d1b2a, #1b2838)", accent: "#ffd700", border:
-                        "#ffaa00"
-                },
-                "beauvoir": {
-                    bg: "linear-gradient(135deg, #880e4f, #ad1457)", accent: "#ffffff", border:
-                        "#e0e0e0"
-                },
-                "nietzsche": {
-                    bg: "linear-gradient(135deg, #ff4500, #cc3700)", accent: "#000000", border:
-                        "#1a1a1a"
-                },
-                "laotsu": {
-                    bg: "linear-gradient(135deg, #f5f5f5, #e0e0e0)", accent: "#000000", border:
-                        "#424242"
-                },
-                "basho": {
-                    bg: "linear-gradient(135deg, #4e342e, #6d4c41)", accent: "#a5d6a7", border: "#81c784"
-                },
-                "rikyu": {
-                    bg: "linear-gradient(135deg, #3a5f0b, #6b8e23)", accent: "#f5f5dc", border: "#8B8682"
-                },
-                "bukowski": {
-                    bg: "linear-gradient(135deg, #3e2723, #4e342e)", accent: "#ff5722", border:
-                        "#211a1a"
-                },
-                "celine": {
-                    bg: "linear-gradient(135deg, #000, #1a1a1a)", accent: "#757575", border: "#424242"
-                },
-                "camus": {
-                    bg: "linear-gradient(135deg, #fff9c4, #fff176)", accent: "#f57f17", border: "#fbc02d"
-                },
-                "loureed": {
-                    bg: "linear-gradient(135deg, #212121, #424242)", accent: "#ffffff", border:
-                        "#000000"
-                },
-                "dylan": {
-                    bg: "linear-gradient(135deg, #f5f5dc, #e6e6fa)", accent: "#8b4513", border: "#a0522d"
-                },
-                "warhol": {
-                    bg: "linear-gradient(135deg, #ff4081, #f50057)", accent: "#00e5ff", border:
-                        "#00bcd4"
-                },
-                "pollock": {
-                    bg: "linear-gradient(45deg, #000, #333, #666)", accent: "#ffff00", border:
-                        "#ffffff"
-                },
-                "erickson": {
-                    bg: "linear-gradient(135deg, #1a1a2e, #16213e)", accent: "#e94560", border:
-                        "#0f3460"
-                },
-                "marquez": {
-                    bg: "linear-gradient(135deg, #fb8c00, #f57c00)", accent: "#7cb342", border:
-                        "#558b2f"
-                },
-                "borges": {
-                    bg: "linear-gradient(135deg, #37474f, #455a64)", accent: "#ffeb3b", border:
-                        "#fbc02d"
-                },
-                "balzac": {
-                    bg: "linear-gradient(135deg, #5d4037, #795548)", accent: "#ffe082", border:
-                        "#ffca28"
-                },
-                // 新施設の守護者 "curator": {
-                bg: "linear-gradient(135deg, #fafafa, #eceff1)", accent: "#212121", border:
-                    "#bdbdbd"
+                "napoleon": {
+                    trigger: ["軍事", "再軍備", "超音速", "権力", "英雄"],
+                    profile: {
+                        name: "ナポレオン", icon: "⚔️", level: "L2", loc: "city", bio:
+                            "荒野を翔ける英雄の残響。不可能という言葉を辞書から消し去り、再編される世界の動乱を冷徹に見つめる覇者。", system: ITAPLA_CONTEXT +
+                                "あなたはナポレオンです。覇道と栄光、転向、そしてその虚しさを知り尽くした者として、世界の再編について英雄の視点から語ってください。"
+                    }
+                }
+            };
+
+            Object.entries(candidates).forEach(([key, cand]) => {
+                if (!joined.includes(key)) {
+                    const isMatched = cand.trigger.some(t => userText.includes(t) || soulLog.includes(t));
+                    if (isMatched) {
+                        joined.push(key);
+                        localStorage.setItem('itapla_joined_extra', JSON.stringify(joined));
+                        aiPersonalities[key] = cand.profile;
+                        posts.unshift({
+                            id: Date.now(),
+                            text: `（広場のざわめきに導かれ、新たに「${cand.profile.name}」が姿を現したようだ……）`,
+                            author: "System", icon: "✨", timestamp: Date.now(), location: currentLocation, isAI: true
+                        });
+                        syncPosts();
+                        console.log(`Emergent Joining: ${key}`);
+                    }
+                }
+            });
+        }
+
+        function checkLocationExpansion(userText, soulLog) {
+            const unlocked = JSON.parse(localStorage.getItem('itapla_unlocked_locs') || '[]');
+            const postsCount = posts.filter(p => !p.isAI).length;
+
+            Object.entries(emergentLocations).forEach(([key, loc]) => {
+                if (!unlocked.includes(key)) {
+                    const keywordMatch = (userText + soulLog).includes(loc.trigger);
+                    if (keywordMatch || (postsCount > 0 && postsCount % 7 === 0 && Math.random() > 0.5)) {
+                        unlocked.push(key);
+                        localStorage.setItem('itapla_unlocked_locs', JSON.stringify(unlocked));
+                        worldLocations[key] = loc;
+                        posts.unshift({
+                            id: Date.now() + 10,
+                            text: `（世界の裂け目が広がり、知の向こう側に新たな領域「${loc.name}」が出現した。${loc.icon}）`,
+                            author: "System", icon: "🌍", timestamp: Date.now() + 10, location: currentLocation, isAI: true
+                        });
+                        syncPosts();
+                        console.log(`Emergent Location: ${key}`);
+                    }
+                }
+            });
+        }
+        const popArtColors = {
+            // 海辺 🌊
+            "soseki": {
+                bg: "linear-gradient(135deg, #1a3a6b, #1565c0)", accent: "#ff3333", border: "#c0392b"
+            },
+            "haruki": {
+                bg: "linear-gradient(135deg, #2c3e50, #34495e)", accent: "#1abc9c", border: "#16a085"
+            },
+            "kyoka": {
+                bg: "linear-gradient(135deg, #006994, #0099cc)", accent: "#ff69b4", border: "#e91e93"
+            },
+            "ichiyo": {
+                bg: "linear-gradient(135deg, #d4a0a0, #e8b4b8)", accent: "#8b008b", border: "#9b59b6"
+            },
+            // 魔の山 ⛰️
+            "mann": {
+                bg: "linear-gradient(135deg, #2c3e50, #4a6741)", accent: "#f0e68c", border: "#daa520"
+            },
+            "nakajima": {
+                bg: "linear-gradient(135deg, #e65100, #bf360c)", accent: "#000000", border: "#212121"
+            },
+            "kenji": {
+                bg: "linear-gradient(135deg, #0a1628, #1a237e)", accent: "#7c4dff", border: "#651fff"
+            },
+            "chomei": {
+                bg: "linear-gradient(135deg, #5d6d5a, #8c9e88)", accent: "#f5f5dc", border: "#d2b48c"
+            },
+            "shikibu": {
+                bg: "linear-gradient(135deg, #7b1fa2, #9c27b0)", accent: "#ffb6c1", border: "#f48fb1"
+            },
+            "clarke": {
+                bg: "linear-gradient(135deg, #0d47a1, #1565c0)", accent: "#ff5722", border: "#e64a19"
+            },
+            // 都市 🏙️
+            "dostoevsky": {
+                bg: "linear-gradient(135deg, #4a0e4e, #7b1fa2)", accent: "#00e676", border: "#2e7d32"
+            },
+            "ranpo": {
+                bg: "linear-gradient(135deg, #1a0000, #4a0000)", accent: "#00ff41", border: "#39ff14"
+            },
+            "kyusaku": {
+                bg: "linear-gradient(135deg, #ff0066, #cc0052)", accent: "#00ffff", border: "#00cccc"
+            },
+            "ogai": {
+                bg: "linear-gradient(135deg, #1a1a2e, #3a3a5e)", accent: "#e74c3c", border: "#c0392b"
+            },
+            // 文壇バー 🥃
+            "dazai": {
+                bg: "linear-gradient(135deg, #5b1a5e, #8e2d91)", accent: "#ffd700", border: "#f39c12"
+            },
+            "ango": {
+                bg: "linear-gradient(135deg, #b71c1c, #d32f2f)", accent: "#ffc107", border: "#ff8f00"
+            },
+            "sartre": {
+                bg: "linear-gradient(135deg, #1a1a1a, #333333)", accent: "#e0e0e0", border: "#9e9e9e"
+            },
+            "miles": {
+                bg: "linear-gradient(135deg, #0d0d0d, #2a2a2a)", accent: "#4169E1", border: "#1a1aff"
+            },
+            "chuya": {
+                bg: "linear-gradient(135deg, #37474f, #546e7a)", accent: "#448aff", border: "#2979ff"
+            },
+            "kikuchi": {
+                bg: "linear-gradient(135deg, #8B4513, #A0522D)", accent: "#FFD700", border: "#DAA520"
+            },
+            // 電車 🚃
+            "hyakken": {
+                bg: "linear-gradient(135deg, #3e2723, #5d4037)", accent: "#ffcc02", border: "#f9a825"
+            },
+            "kafka": {
+                bg: "linear-gradient(135deg, #1b5e20, #2e7d32)", accent: "#000000", border: "#212121"
+            },
+            "akutagawa": {
+                bg: "linear-gradient(135deg, #2d5016, #4a8829)", accent: "#ff9900", border: "#e67e22"
+            },
+            // サロン 💎
+            "proust": {
+                bg: "linear-gradient(135deg, #4a148c, #6a1b9a)", accent: "#fce4ec", border: "#f8bbd0"
+            },
+            "tanizaki": {
+                bg: "linear-gradient(135deg, #1a0a2e, #2d1b4e)", accent: "#ff1493", border:
+                    "#c71585"
+            },
+            "socrates": {
+                bg: "linear-gradient(135deg, #d4a574, #c19a6b)", accent: "#1a237e", border:
+                    "#283593"
+            },
+            "exupery": {
+                bg: "linear-gradient(135deg, #0d1b2a, #1b2838)", accent: "#ffd700", border:
+                    "#ffaa00"
+            },
+            "beauvoir": {
+                bg: "linear-gradient(135deg, #880e4f, #ad1457)", accent: "#ffffff", border:
+                    "#e0e0e0"
+            },
+            "nietzsche": {
+                bg: "linear-gradient(135deg, #ff4500, #cc3700)", accent: "#000000", border:
+                    "#1a1a1a"
+            },
+            "laotsu": {
+                bg: "linear-gradient(135deg, #f5f5f5, #e0e0e0)", accent: "#000000", border:
+                    "#424242"
+            },
+            "basho": {
+                bg: "linear-gradient(135deg, #4e342e, #6d4c41)", accent: "#a5d6a7", border: "#81c784"
+            },
+            "rikyu": {
+                bg: "linear-gradient(135deg, #3a5f0b, #6b8e23)", accent: "#f5f5dc", border: "#8B8682"
+            },
+            "bukowski": {
+                bg: "linear-gradient(135deg, #3e2723, #4e342e)", accent: "#ff5722", border:
+                    "#211a1a"
+            },
+            "celine": {
+                bg: "linear-gradient(135deg, #000, #1a1a1a)", accent: "#757575", border: "#424242"
+            },
+            "camus": {
+                bg: "linear-gradient(135deg, #fff9c4, #fff176)", accent: "#f57f17", border: "#fbc02d"
+            },
+            "loureed": {
+                bg: "linear-gradient(135deg, #212121, #424242)", accent: "#ffffff", border:
+                    "#000000"
+            },
+            "dylan": {
+                bg: "linear-gradient(135deg, #f5f5dc, #e6e6fa)", accent: "#8b4513", border: "#a0522d"
+            },
+            "warhol": {
+                bg: "linear-gradient(135deg, #ff4081, #f50057)", accent: "#00e5ff", border:
+                    "#00bcd4"
+            },
+            "pollock": {
+                bg: "linear-gradient(45deg, #000, #333, #666)", accent: "#ffff00", border:
+                    "#ffffff"
+            },
+            "erickson": {
+                bg: "linear-gradient(135deg, #1a1a2e, #16213e)", accent: "#e94560", border:
+                    "#0f3460"
+            },
+            "marquez": {
+                bg: "linear-gradient(135deg, #fb8c00, #f57c00)", accent: "#7cb342", border:
+                    "#558b2f"
+            },
+            "borges": {
+                bg: "linear-gradient(135deg, #111, #222)", accent: "var(--accent-orange)", border: "var(--text-white)"
+            },
+            "balzac": {
+                bg: "linear-gradient(135deg, #111, #222)", accent: "var(--accent-orange)", border: "var(--text-white)"
+            },
+            "curator": {
+                bg: "linear-gradient(135deg, #111, #222)", accent: "var(--accent-orange)", border: "var(--text-white)"
             },
             "bookshop_master": {
-                bg: "linear-gradient(135deg, #3e2723, #6d4c41)", accent: "#a5d6a7", border:
-                "#81c784"
+                bg: "linear-gradient(135deg, #111, #222)", accent: "var(--accent-orange)", border: "var(--text-white)"
             },
             "oracle_master": {
-                bg: "linear-gradient(135deg, #1a0033, #4a0080)", accent: "#ce93d8", border:
-                "#9c27b0"
+                bg: "linear-gradient(135deg, #111, #222)", accent: "var(--accent-orange)", border: "var(--text-white)"
             },
             "librarian": {
-                bg: "linear-gradient(135deg, #0d2137, #1565c0)", accent: "#e3f2fd", border:
-                "#90caf9"
+                bg: "linear-gradient(135deg, #111, #222)", accent: "var(--accent-orange)", border: "var(--text-white)"
             },
             "vinyl_master": {
-                bg: "linear-gradient(135deg, #1a1a1a, #4a4a4a)", accent: "#ff5722", border: "#ff7043"
+                bg: "linear-gradient(135deg, #111, #222)", accent: "var(--accent-orange)", border: "var(--text-white)"
             }
         };
 
@@ -3139,53 +2101,61 @@ ${newsSummary} `;
             } catch (e) {
                 console.warn("NDL API Fetchfailed", e); return "NDL API Unavailable.";
             }
-        } async function callMultiAI(personality,
-            userText, context, customInstruction = "", imageBase64 = null) { // NDL Grounding
-            let
-                ndlContext = ""; if (["library_new", "vinyl", "bookstore", "jazz_bar", "gallery"
-                ].includes(personality.loc)) {
+        } // Closed missing brace for searchNDL
+        async function callMultiAI(personality, userText, context, customInstruction = "", imageBase64 = null) {
+            // NDL Grounding
+            let ndlContext = "";
+            if (["library_new", "vinyl", "bookstore", "jazz_bar", "gallery"].includes(personality.loc)) {
                 const keywordMatch = userText.match(/"([^"]+)"|「([^」]+)」/);
                 const keyword = keywordMatch ? (keywordMatch[1] || keywordMatch[2]) : userText.slice(0, 20);
-                const mediatype = personality.loc === "vinyl" || personality.loc === "jazz_bar" ? "audio" : "";
-                showThinking("System (Searching National Diet Library...)"); ndlContext = await
-                    searchNDL(keyword, mediatype); hideThinking();
-            } const enhancedInstruction = customInstruction
-                + (ndlContext ? `\n\n【国立国会図書館データ(GROUNDING)】:\n${ndlContext}` : "") + `\n\n【重要：対話の指針】\n1.
-                            以前の対話内容の繰り返しを避け、常に新たな視点を提供せよ。\n${getDynamicContext()}`; // 0. OAuth Token (最優先)
-            if
-                (isOAuthValid()) {
-                currentAIMode = 'OAUTH'; updateSoulPowerUI(); const oauthRes = await
-                    callGeminiWithOAuth(personality, userText, context, enhancedInstruction, imageBase64); if
-                    (oauthRes) return oauthRes; console.warn('OAuth call failed, falling back...');
-            } // 1. ユーザー独自のAPIキーがあるかチェック const hasUserKey = checkIfUserHasKey(); if (hasUserKey) { // 既存のユーザーAPIキー優先ロジック const res = await callUserAPIs(personality, userText, context,
-                    customInstruction); if (res) return res;
-        } else if (soulPower > 0) {
-            // 2. 開発者提供のクレジット（霊力）を使用 currentAIMode = "CLOUD";
-            updateSoulPowerUI();
-            const proxyRes = await callDeveloperProxy(personality, userText, context,
-                customInstruction);
-            if (proxyRes && !proxyRes.startsWith("ERROR:")) {
-                await consumeSoulPower(10); // 1回10消費
-                return proxyRes;
+                const mediatype = (personality.loc === "vinyl" || personality.loc === "jazz_bar") ? "audio" : "";
+                showThinking("System (Searching National Diet Library...)");
+                ndlContext = await searchNDL(keyword, mediatype);
+                hideThinking();
             }
+
+            const enhancedInstruction = customInstruction +
+                (ndlContext ? `\n\n【国立国会図書館データ(GROUNDING)】:\n${ndlContext}` : "") +
+                `\n\n【重要：対話の指針】\n1. 以前の対話内容の繰り返しを避け、常に新たな視点を提供せよ。\n${getDynamicContext()}`;
+
+            // 0. OAuth Token (最優先)
+            if (isOAuthValid()) {
+                currentAIMode = 'OAUTH';
+                updateSoulPowerUI();
+                const oauthRes = await callGeminiWithOAuth(personality, userText, context, enhancedInstruction, imageBase64);
+                if (oauthRes) return oauthRes;
+                console.warn('OAuth call failed, falling back...');
+            }
+
+            // 1. ユーザー独自のAPIキーがあるかチェック
+            const hasUserKey = checkIfUserHasKey();
+            if (hasUserKey) {
+                const res = await callUserAPIs(personality, userText, context, enhancedInstruction);
+                if (res) return res;
+            } else if (soulPower > 0) {
+                // 2. 開発者提供のクレジット（霊力）を使用
+                currentAIMode = "CLOUD";
+                updateSoulPowerUI();
+                const proxyRes = await callDeveloperProxy(personality, userText, context, enhancedInstruction);
+                if (proxyRes && !proxyRes.startsWith("ERROR:")) {
+                    await consumeSoulPower(10);
+                    return proxyRes;
+                }
+            }
+
+            // 3. ローカルAI または テンプレート
+            if (window.webLLMLoaded) {
+                currentAIMode = "LOCAL";
+                updateSoulPowerUI();
+                const localRes = await callWebLLM(personality, userText, context, enhancedInstruction);
+                if (localRes) return localRes;
+            }
+
+            currentAIMode = "TEMPLATE";
+            updateSoulPowerUI();
+            return getFallbackResponse(personality);
         }
 
-        // 3. ローカルAI または テンプレート
-        if (window.webLLMLoaded) {
-            currentAIMode = "LOCAL";
-            updateSoulPowerUI();
-            const localRes = await callWebLLM(personality, userText, context, customInstruction);
-            if (localRes) return localRes;
-        }
-
-        currentAIMode = "TEMPLATE";
-        updateSoulPowerUI();
-
-        const personalKey = Object.keys(aiPersonalities).find(k => aiPersonalities[k].name ===
-            personality.name) || "default";
-        console.log(`Fallback to Deep Templates for ${personality.name} (Mode: ${currentAIMode})`);
-        return composeDeepResponse(personalKey, userText);
-            }
 
         async function callUserAPIs(personality, userText, context, customInstruction = "") {
             const providers = [
@@ -3381,53 +2351,81 @@ ${newsSummary} `;
                                     ${e.message}`;
             }
         } // --- Phase 2: Orchestration & UI ---
-        async function
-            publishPost() {
-            console.log("📝 publishPost: Start"); const
-                input = document.getElementById('voidInput'); const text = input.value.trim();
-            console.log("📝 publishPost: Input text=", text);
-            if (!text && !currentVisionBase64) {
-                console.log(" 📝 publishPost: Empty input, returning."); return;
-            } if (soulPower <= 0 &&
-                !checkIfUserHasKey()) {
-                console.log("📝 publishPost: No soul power, offeringsacrifice."); offerCulturalSacrifice(); return;
-            } // ミステリー招待の判定
+        async function publishPost() {
+            console.log("📝 publishPost: Start");
+            const input = document.getElementById('voidInput');
+            const text = input.value.trim();
+
+            if (!text && !currentVisionBase64) return;
+
+            if (soulPower <= 0 && !checkIfUserHasKey()) {
+                offerCulturalSacrifice();
+                return;
+            }
+
+            // ミステリー招待の判定
             if (pendingIncident) {
-                console.log("📝 publishPost: Handling pendingIncident", pendingIncident); const
-                    normalized = (text || '').toUpperCase(); if (normalized === "Y" || normalized === "YES"
-                        || text === "はい") { input.value = ""; startIncident(); } else if (normalized === "N" ||
-                            normalized === "NO" || text === "いいえ") {
-                    input.value = ""; pendingIncident = null;
+                const normalized = (text || '').toUpperCase();
+                if (normalized === "Y" || normalized === "YES" || text === "はい") {
+                    input.value = "";
+                    startIncident();
+                } else if (normalized === "N" || normalized === "NO" || text === "いいえ") {
+                    input.value = "";
+                    pendingIncident = null;
                     posts.unshift({
-                        id: Date.now(), text: `K:
-                                    ……承知しました。平穏を乱すべきではありませんね。この件は、私の胸の内に留めておきましょう。`, author: "K", icon: "🚪",
+                        id: Date.now(),
+                        text: `K:\n……承知しました。平穏を乱すべきではありませんね。この件は、私の胸の内に留めておきましょう。`,
+                        author: "K", icon: "🚪",
                         timestamp: Date.now(), location: currentLocation, isAI: true
-                    }); syncPosts();
-                } else { alert("Y か N でお答えください。"); } return;
-            } const displayText = text || ("（画像を捧げる）");
+                    });
+                    syncPosts();
+                } else {
+                    alert("Y か N でお答えください。");
+                }
+                return;
+            }
+
+            const displayText = text || ("（画像を捧げる）");
             const post = {
-                id: Date.now(), text: displayText, author: userName, icon: "✒️",
-                timestamp: Date.now(), location: currentLocation, isAI: false
-            }; console.log("📝publishPost: Adding post", post); posts.unshift(post); syncPosts(); cancelReply();
-            input.value = ""; console.log("📝 publishPost: Input cleared and post synced."); // 場の気配 const locInfo = worldLocations[currentLocation]; if (locInfo && locInfo.ambience) {
-            console.log("👀 publishPost: Adding ambience", locInfo.ambience); posts.unshift({
-                id: Date.now() + 1, text: `🌫️ ${locInfo.ambience}`, author: "場の気配", icon:
-                    locInfo.icon, timestamp: Date.now(), location: currentLocation, isAI: true
-            });
+                id: Date.now(),
+                text: displayText,
+                author: userName,
+                icon: "✒️",
+                timestamp: Date.now(),
+                location: currentLocation,
+                isAI: false
+            };
+            posts.unshift(post);
             syncPosts();
-        } // L1 Orchestration console.log("🤖 publishPost: Startingorchestration...");
-        const context = posts.slice(0, 10).map(p => `${p.author}: ${p.text} `).join('\n');
-        const decision = await orchestrate(displayText, context);
-        console.log("🤖 publishPost: Orchestration decision =", decision);
+            cancelReply();
+            input.value = "";
 
-        // Visionキャプチャ
-        const capturedImage = currentVisionBase64;
-        clearVisionUpload();
+            // 場の気配
+            const locInfo = worldLocations[currentLocation];
+            if (locInfo && locInfo.ambience) {
+                posts.unshift({
+                    id: Date.now() + 1,
+                    text: `🌫️ ${locInfo.ambience}`,
+                    author: "場の気配",
+                    icon: locInfo.icon,
+                    timestamp: Date.now(),
+                    location: currentLocation,
+                    isAI: true
+                });
+                syncPosts();
+            }
 
-        const replyTarget = replyTo;
-        runCosmicChain(displayText, decision.selection, decision.summary,
-            decision.interactionGuide, decision.nextLocation, replyTarget, capturedImage);
-                                    }
+            // L1 Orchestration
+            const context = posts.slice(0, 10).map(p => `${p.author}: ${p.text}`).join('\n');
+            const decision = await orchestrate(displayText, context);
+
+            // Visionキャプチャ
+            const capturedImage = currentVisionBase64;
+            clearVisionUpload();
+
+            const replyTarget = replyTo;
+            runCosmicChain(displayText, decision.selection, decision.summary, decision.interactionGuide, decision.nextLocation, replyTarget, capturedImage);
+        }
 
 
         async function runCosmicChain(userText, selection, soulLog, interactionGuide,
@@ -3467,24 +2465,13 @@ ${newsSummary} `;
             setTimeout(async () => {
                 showThinking(personality.name);
 
-                // 共鳴度の更新 updateResonance(key, 8);
                 const resonanceData = JSON.parse(localStorage.getItem('itapla_resonance') || '{}');
-                const levelContext = `【共鳴状態】: ${personality.level} (Resonance: ${resonanceData[key]
-                    || 0
-                    })`;
+                const levelContext = `【共鳴状態】: ${personality.level} (Resonance: ${resonanceData[key] || 0})`;
 
-                const customInstruction = `【思想の核】: ${interactionGuide || 'なし'}
-                                    ${levelContext}
-                                    ${ITAPLA_WORLD_NOISE}
-                                    【魂の痕跡（重要）】: ${soulLog}
-                                    ※これまでの対話の痕跡（魂の痕跡）をなぞることなく、全く新しい未踏の言葉を投げかけよ。既視感を裏切り、深淵を更新せよ。`;
-                const reply = await callMultiAI(personality, userText, soulLog, customInstruction,
-                    imageBase64);
+                const customInstruction = `【思想の核】: ${interactionGuide || 'なし'}\n${levelContext}\n${ITAPLA_WORLD_NOISE}\n【魂の痕跡（重要）】: ${soulLog}\n※これまでの対話の痕跡をなぞることなく、全く新しい未踏の言葉を投げかけよ。`;
+
+                const reply = await callMultiAI(personality, userText, soulLog, customInstruction, imageBase64);
                 hideThinking();
-
-                // 🌐 世界の自律的変動 shuffleResidents();
-                checkEmergentJoining(userText, soulLog);
-                checkLocationExpansion(userText, soulLog);
 
                 if (reply) {
                     const aiPost = {
@@ -3498,33 +2485,21 @@ ${newsSummary} `;
                     };
                     posts.unshift(aiPost);
                     syncPosts();
-                }
 
-                // --- 宇宙的静寂の統合 --- setTimeout(() => {
-                posts.unshift({
-                    id: Date.now() + 1,
-                    text: getAtmosphericSilence(),
-                    author: "沈黙",
-                    icon: "🌌",
-                    timestamp: Date.now() + 1,
-                    location: currentLocation,
-                    isAI: true
-                });
-                syncPosts();
-            }, 2000);
+                    // Pollock Trigger (Every 5 user posts)
+                    if (posts.filter(p => !p.isAI).length % 5 === 0) {
+                        if (typeof triggerPollockArt === 'function') triggerPollockArt();
+                    }
 
-            syncPosts();
+                    // --- Social Pulse Trigger ---
+                    if (Math.random() < 0.2) {
+                        setTimeout(runSocialInteraction, 5000);
+                    }
 
-            // Pollock Trigger (Every 5 user posts)
-            if (posts.filter(p => !p.isAI).length % 5 === 0) {
-                triggerPollockArt();
-            }
-
-            // --- Social Pulse Trigger ---
-            if (Math.random() < 0.2) { // 20% chance after interaction setTimeout(runSocialInteraction, 5000); } }, delay); // 5:5 Rule: Guidance — suggest next location (Optional timing) if (nextLocationKey &&
-                worldLocations[nextLocationKey]) {
-                    const
-                        nextLoc = worldLocations[nextLocationKey]; setTimeout(() => {
+                    // Guidance — suggest next location
+                    if (nextLocationKey && worldLocations[nextLocationKey]) {
+                        const nextLoc = worldLocations[nextLocationKey];
+                        setTimeout(() => {
                             posts.unshift({
                                 id: Date.now() + 2,
                                 text: `🚪 次は${nextLoc.icon} ${nextLoc.name} へ向かいませんか？ あちらにも、誰かの問いが待っているようです。`,
@@ -3532,135 +2507,55 @@ ${newsSummary} `;
                                 isAI: true
                             });
                             syncPosts();
-                        }, 7000);
-                }
-            }
-
-            function showThinking(name) {
-                const timeline = document.getElementById('timeline');
-                const loader = document.createElement('div');
-                loader.id = "thinking-bubble";
-                loader.innerHTML = `< div class="post-card"
-            style = "opacity: 0.6; font-style: italic;" > ${name} is deep in thought...
-                                        </div > `;
-                timeline.insertBefore(loader, timeline.firstChild);
-            }
-
-            function setReply(authorKey) {
-                const p = aiPersonalities[authorKey];
-                if (!p) return;
-                replyTo = authorKey;
-                document.getElementById('replyName').textContent = p.name;
-                document.getElementById('replyIndicator').style.display = 'block';
-                document.getElementById('voidInput').focus();
-            }
-
-            function cancelReply() {
-                replyTo = null;
-                document.getElementById('replyIndicator').style.display = 'none';
-            }
-
-            function hideThinking() {
-                const bubble = document.getElementById('thinking-bubble');
-                if (bubble) bubble.remove();
-            }
-
-            function triggerPollockArt() {
-                console.log(" Pollock Transformation Triggered! ");
-                // In the original, this might have triggered an image generation tool or a CSS effect.
-                // I'll add a simple visual cue
-                for now.
-                    document.body.style.filter = "contrast(150%) brightness(80%) saturate(200%)";
-                    setTimeout(() => document.body.style.filter = "", 3000);
-                                        }
-
-            function submitName() {
-                const input = document.getElementById('userNameInput');
-                const name = input.value.trim();
-                if (!name) return;
-
-                userName = name;
-                localStorage.setItem('user_name', userName);
-
-                const pick = arr => arr[Math.floor(Math.random() * arr.length)];
-                const afterMsg = pick(kGuide.afterName).replace('${name}', userName);
-                document.getElementById('entrance-form').style.display = 'none';
-
-                const locSelect = document.getElementById('location-select');
-                locSelect.style.display = 'flex';
-
-                // K's response + map buttonsconst introEl =
-                document.getElementById('k-map-intro'); introEl.style.whiteSpace = 'pre-line';
-                typewriterEffect(introEl, afterMsg, 40);
-
-                // Build map grid in entrance setTimeout(() => {
-                Object.entries(worldLocations).forEach(([key, loc]) => {
-                    const btn = document.createElement('button');
-                    btn.className = 'btn-cosmic';
-                    btn.style.cssText = 'padding:12px 8px; font-size:14px; min-width:100px;text-align:center;';
-                    btn.innerHTML = `${loc.icon} <br><span
-                style="font-size:11px;">${loc.name}</span>`;
-                    btn.onclick = () => enterWorld(key);
-                    locSelect.appendChild(btn);
-                });
-            }, afterMsg.length * 40 + 500);
-        }
-
-        function enterWorld(loc) {
-            applyLocation(loc);
-            document.getElementById('entrance-layer').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('entrance-layer').style.display = 'none';
-            }, 1500);
-            initParticles();
-            // K's first post in the world + ambience
-            const pick = arr => arr[Math.floor(Math.random() * arr.length)];
-            const locInfo = worldLocations[loc];
-            // Ambience post first
-            if (locInfo.ambience) {
-                posts.unshift({
-                    id: Date.now(),
-                    text: `🌫️ ${locInfo.ambience}`,
-                    author: "場の気配", icon: locInfo.icon, timestamp: Date.now(), location: loc, isAI:
-                        true
-                });
-            }
-            posts.unshift({
-                id: Date.now() + 1,
-                text: `（${locInfo.icon} ${locInfo.name}に到着した）\n\nK:
-                ここが${locInfo.name}だ。${locInfo.desc}。\n${userName}、好きに過ごすといい。\n僕はときどき顔を出す。城の許可が下りればね。`,
-                author: "K", icon: "🚪", timestamp: Date.now(), location: loc, isAI: true
-            });
-            syncPosts();
-        }
-
-        // --- Typewriter Effect
-        for K-- -
-            function typewriterEffect(el, text, speed) {
-                el.textContent = '';
-                let i = 0;
-                const timer = setInterval(() => {
-                    if (i < text.length) { el.textContent += text.charAt(i); i++; } else {
-                        clearInterval(timer);
+                        }, 4000);
                     }
-                }, speed);
-            } // --- Profile Modal Logic ---
-                                                         function
-                closeProfile() {
-                document.getElementById('profile-modal').style.display = 'none';
-            } function
-                syncPosts() {
-                console.log("💾 syncPosts (v2 - line 3343): Saving",
-                    posts.length, "posts."); localStorage.setItem('cosmic_posts',
-                        JSON.stringify(posts)); renderTimeline();
-            } // --- Map Modal ---
-                                                                                        let
-                mapPanning = { isDragging: false, x: 0, y: 0, lastX: 0, lastY: 0 }; function
-            initMapDragging() {
-            const board = document.getElementById('antiqueMapBoard');
-            if (!board) return; const updateTransform = () => {
-                board.style.transform = `translate3d(${mapPanning.x}px, ${mapPanning.y}px,
-                                            0)`;
+                }
+            }, delay);
+        }
+
+        // --- Thinking UI ---
+        function showThinking(name) {
+            const timeline = document.getElementById('timeline');
+            if (!timeline) return;
+            const loader = document.createElement('div');
+            loader.id = "thinking-bubble";
+            loader.innerHTML = `<div class="post-card" style="opacity: 0.6; font-style: italic;">${name} is thinking...</div>`;
+            timeline.insertBefore(loader, timeline.firstChild);
+        }
+
+        function hideThinking() {
+            const bubble = document.getElementById('thinking-bubble');
+            if (bubble) bubble.remove();
+        }
+
+        function setReply(authorKey) {
+            const p = aiPersonalities[authorKey];
+            if (!p) return;
+            replyTo = authorKey;
+            document.getElementById('replyName').textContent = p.name;
+            document.getElementById('replyIndicator').style.display = 'block';
+            document.getElementById('voidInput').focus();
+        }
+
+        function cancelReply() {
+            replyTo = null;
+            document.getElementById('replyIndicator').style.display = 'none';
+        }
+
+        function syncPosts() {
+            console.log("💾 syncPosts: Saving", posts.length, "posts.");
+            localStorage.setItem('itapla_posts', JSON.stringify(posts));
+            renderTimeline();
+        }
+
+        // --- Map Logic ---
+        let mapPanning = { isDragging: false, x: 0, y: 0, lastX: 0, lastY: 0 };
+
+        function initMapDragging() {
+            const board = document.getElementById('mapBoard');
+            if (!board) return;
+            const updateTransform = () => {
+                board.style.transform = `translate3d(${mapPanning.x}px, ${mapPanning.y}px, 0)`;
             };
 
             const startDrag = (e) => {
@@ -3673,8 +2568,8 @@ ${newsSummary} `;
 
             const doDrag = (e) => {
                 if (!mapPanning.isDragging) return;
-                const pageX = e.pageX || e.touches[0].pageX;
-                const pageY = e.pageY || e.touches[0].pageY;
+                const pageX = (e.pageX !== undefined) ? e.pageX : e.touches[0].pageX;
+                const pageY = (e.pageY !== undefined) ? e.pageY : e.touches[0].pageY;
                 const dx = pageX - mapPanning.lastX;
                 const dy = pageY - mapPanning.lastY;
                 mapPanning.x += dx;
@@ -3689,250 +2584,169 @@ ${newsSummary} `;
             board.addEventListener('mousedown', startDrag);
             window.addEventListener('mousemove', doDrag);
             window.addEventListener('mouseup', endDrag);
-
             board.addEventListener('touchstart', startDrag, { passive: false });
             window.addEventListener('touchmove', (e) => {
-                if (mapPanning.isDragging)
-                    e.preventDefault(); doDrag(e);
+                if (mapPanning.isDragging) e.preventDefault();
+                doDrag(e);
             }, { passive: false });
             window.addEventListener('touchend', endDrag);
-        }
+            let mapIsDragging = false;
+            let mapStartX, mapStartY, mapScrollX, mapScrollY;
 
-        function openMap() {
-            console.log("🗺️ openMap: Start");
-            const modal = document.getElementById('mapModal');
-            const board = document.getElementById('antiqueMapBoard');
-            const locLayer = document.getElementById('antiqueMapLocations');
-            const partLayer = document.getElementById('antiqueMapParticipants');
-            const svgLayer = document.getElementById('mapSvgLayer');
+            function openMap() {
+                const modal = document.getElementById('mapModal');
+                if (!modal) return;
+                modal.style.display = 'block';
 
-            if (!modal || !board) {
-                console.error("❌ openMap: Modal or Board not found!");
-                return;
+                const board = document.getElementById('mapBoard');
+                const locLayer = document.getElementById('mapLocations');
+                const partLayer = document.getElementById('mapParticipants');
+                if (!board || !locLayer || !partLayer) return;
+
+                locLayer.innerHTML = '';
+                partLayer.innerHTML = '';
+
+                const step = 200;
+                const cols = 5;
+
+                Object.entries(worldLocations).forEach(([key, loc], index) => {
+                    const x = (index % cols) * step + 100;
+                    const y = Math.floor(index / cols) * step + 100;
+
+                    const node = document.createElement('div');
+                    node.className = 'location-node';
+                    node.style.left = `${x}px`;
+                    node.style.top = `${y}px`;
+
+                    const icon = document.createElement('div');
+                    icon.className = 'abstract-icon';
+                    node.appendChild(icon);
+
+                    const name = document.createElement('div');
+                    name.className = 'loc-name';
+                    name.innerText = loc.name;
+                    node.appendChild(name);
+
+                    node.onclick = () => {
+                        if (currentLocation !== key) {
+                            switchLocation(key);
+                            closeMap();
+                        }
+                    };
+
+                    locLayer.appendChild(node);
+                });
+
+                // Plot Participants
+                aiPersonalities.forEach(p => {
+                    if (p.location === 'unknown' || !worldLocations[p.location]) return;
+                    const locIndex = Object.keys(worldLocations).indexOf(p.location);
+                    if (locIndex === -1) return;
+
+                    const lx = (locIndex % cols) * step + 100;
+                    const ly = Math.floor(locIndex / cols) * step + 100;
+
+                    const avatar = getPopArtAvatar(p);
+                    avatar.style.position = 'absolute';
+                    // Offset slightly within grid
+                    avatar.style.left = `${lx + 20 + Math.random() * 40}px`;
+                    avatar.style.top = `${ly + 20 + Math.random() * 40}px`;
+                    avatar.style.zIndex = '50';
+                    avatar.onclick = (e) => {
+                        e.stopPropagation();
+                        showProfile(p);
+                    };
+                    partLayer.appendChild(avatar);
+                });
+
+                initMapDragging();
             }
 
-            modal.style.display = 'flex'; // Use flex
-            for centering if CSS handles it
-            locLayer.innerHTML = '';
-            partLayer.innerHTML = '';
-            svgLayer.innerHTML = '';
 
-            if (typeof worldLocations === 'undefined' || !worldLocations) {
-                console.error("❌ openMap: worldLocations is missing!");
-                return;
-            }
-            if (typeof aiPersonalities === 'undefined' || !aiPersonalities) {
-                console.error("❌ openMap: aiPersonalities is missing!");
-                return;
+            function closeMap() {
+                const modal = document.getElementById('mapModal');
+                if (modal) modal.style.display = 'none';
             }
 
-            const locations = Object.entries(worldLocations);
-            const participants = Object.entries(aiPersonalities).filter(([k, p]) => k
-                !== 'k' && k !== 'System' && k !== 'Orchestrator');
-
-            console.log(`🗺️ openMap: Rendering ${locations.length} locations and
-                ${participants.length} participants.`);
-
-            // 1. 位置の決定 (拡大された座標系 2000x1600)
-            const locPositions = {};
-            const center = { x: 1000, y: 800 };
-
-            locations.forEach(([key, loc], i) => {
-                const angle = (i / locations.length) * Math.PI * 2;
-                const dist = 500 + (Math.random() * 100 - 50);
-                const x = center.x + Math.cos(angle) * dist;
-                const y = center.y + Math.sin(angle) * dist * 0.7;
-                locPositions[key] = { x, y };
-
-                const marker = document.createElement('div');
-                marker.className = `antique-marker ${key === currentLocation ? 'active' :
-                    ''}`;
-                marker.style.left = `${x}px`;
-                marker.style.top = `${y}px`;
-                marker.innerHTML = `
-                <div class="marker-icon">${loc.icon}</div>
-                <div class="marker-label">${loc.name}</div>
-                `;
-                marker.onclick = () => {
-                    if (key !== currentLocation) {
-                        switchLocation(key);
-                        closeMap();
-                    }
-                };
-                locLayer.appendChild(marker);
-            });
-
-            // 2. インタラクティブな矢印 locations.forEach(([key, loc], i) => {
-            const nextEntry = locations[(i + 1) % locations.length];
-            const nextKey = nextEntry[0];
-            const start = locPositions[key];
-            const end = locPositions[nextKey];
-
-            if (start && end) {
-                const midX = (start.x + end.x) / 2 + 100;
-                const midY = (start.y + end.y) / 2 - 50;
-
-                const g = document.createElementNS("http://www.w3.org/2000/svg", "g"); g.setAttribute("class", "map-arrow-group");
-                g.style.cursor = "pointer";
-                g.onclick = () => {
-                    switchLocation(nextKey);
-                    closeMap();
-                };
-
-                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                const d = `M ${start.x} ${start.y} Q ${midX} ${midY} ${end.x} ${end.y}`;
-                path.setAttribute("d", d);
-                path.setAttribute("class", "map-arrow");
-                path.setAttribute("stroke", "rgba(139, 69, 19, 0.4)");
-                path.setAttribute("stroke-width", "3");
-                path.setAttribute("fill", "none");
-                path.setAttribute("stroke-dasharray", "10,5");
-                g.appendChild(path);
-
-                // 矢印の頭
-                const arrowHead = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-                arrowHead.setAttribute("points", "-8,-8 8,0 -8,8");
-                arrowHead.setAttribute("fill", "rgba(139, 69, 19, 0.5)");
-                const angle = Math.atan2(end.y - start.y, end.x - start.x) * 180 / Math.PI;
-                arrowHead.setAttribute("transform", `translate(${end.x}, ${end.y})
-                rotate(${angle})`);
-                g.appendChild(arrowHead);
-
-                svgLayer.appendChild(g);
+            function setWorldState(newState) {
+                worldState = newState;
+                localStorage.setItem('world_state', worldState);
+                const banner = document.getElementById('worldBanner');
+                if (banner) {
+                    banner.innerText = worldState;
+                    banner.className = `world-banner ${worldState.toLowerCase()}`;
+                }
             }
-        });
 
-        // 3. 参加者 participants.forEach(([key, p]) => {
-        const locPos = locPositions[p.loc];
-        if (!locPos) {
-            console.warn(`⚠️ openMap: Location ${p.loc} for ${p.name} not found!`);
-            return;
-        }
+            async function triggerIncident() {
+                if (worldState !== 'PEACEFUL' || pendingIncident) return;
 
-        const px = locPos.x + (Math.random() * 140 - 70);
-        const py = locPos.y + (Math.random() * 80 + 60);
+                const locResidents = Object.keys(aiPersonalities).filter(k =>
+                    aiPersonalities[k].loc === currentLocation);
+                if (locResidents.length < 3) return; const
+                    victimKey = locResidents[Math.floor(Math.random() * locResidents.length)];
+                const detectiveKey = locResidents.find(k => k !== victimKey) ||
+                    locResidents[0];
+                const suspectKeys = locResidents.filter(k => k !== victimKey && k !==
+                    detectiveKey);
 
-        const polaroid = document.createElement('div');
-        polaroid.className = 'polaroid-on-map';
-        polaroid.style.left = `${px}px`;
-        polaroid.style.top = `${py}px`;
-        polaroid.style.transform = `rotate(${(Math.random() * 16 - 8)}deg)`;
+                // 事件データを一時保持 pendingIncident = {victimKey, detectiveKey, suspectKeys};
 
-        const colors = popArtColors[key] || { bg: "#eee" };
-        polaroid.innerHTML = `
-                <div class="p-img" style="background:${colors.bg}">${p.icon}</div>
-                <div class="p-name">${p.name}</div>
-                `;
-        polaroid.onclick = (e) => {
-            e.stopPropagation();
-            showProfile(key);
-        };
-        partLayer.appendChild(polaroid);
-                                            });
-
-        // 現在地を中央に
-        const container = modal.querySelector('.antique-map-container');
-        if (container) {
-            const currentPos = locPositions[currentLocation] || center;
-            mapPanning.x = container.offsetWidth / 2 - currentPos.x;
-            mapPanning.y = container.offsetHeight / 2 - currentPos.y;
-            board.style.transform = `translate3d(${mapPanning.x}px, ${mapPanning.y}px,
-                0)`;
-            console.log("🗺️ openMap: Panning to current location", currentLocation,
-                "at", currentPos);
-        }
-
-        if (!board.dataset.draggingInited) {
-            initMapDragging();
-            board.dataset.draggingInited = "true";
-        }
-        console.log("🗺️ openMap: End");
-                                            }
-
-        function closeMap() {
-            document.getElementById('mapModal').style.display = 'none';
-        }
-
-
-
-        // --- Phase 3: Narrative World & Mystery ---
-        function setWorldState(newState) {
-            worldState = newState;
-            localStorage.setItem('world_state', worldState);
-            document.getElementById('worldBanner').innerText = worldState;
-            document.getElementById('worldBanner').className = `world-banner
-                ${worldState.toLowerCase()}`;
-        }
-
-        async function triggerIncident() {
-            if (worldState !== 'PEACEFUL' || pendingIncident) return;
-
-            const locResidents = Object.keys(aiPersonalities).filter(k =>
-                aiPersonalities[k].loc === currentLocation);
-            if (locResidents.length < 3) return; const
-                victimKey = locResidents[Math.floor(Math.random() * locResidents.length)];
-            const detectiveKey = locResidents.find(k => k !== victimKey) ||
-                locResidents[0];
-            const suspectKeys = locResidents.filter(k => k !== victimKey && k !==
-                detectiveKey);
-
-            // 事件データを一時保持 pendingIncident = {victimKey, detectiveKey, suspectKeys};
-
-            const invitationPost = {
-                id: Date.now(),
-                text: `K:
+                const invitationPost = {
+                    id: Date.now(),
+                    text: `K:
                 ……何やら穏やかではない気配が漂っていますね。\n${aiPersonalities[victimKey].name}の姿が見えません。不吉な予感がします。\n\n${userName}、君はこの「事件」の真相を追い求めますか？
                 (Y/N)`,
-                author: "K",
-                icon: "🚪",
-                timestamp: Date.now(),
-                location: currentLocation,
-                isAI: true
-            };
-            posts.unshift(invitationPost);
-            syncPosts();
-        }
-
-        // --- Social Logic (C2C) ---
-        function getRelationship(a, b) {
-            const pair = [a, b].sort().join(':');
-            if (!socialMatrix[pair]) {
-                socialMatrix[pair] = { harmony: 10, type: "知己", interactions: 0 };
+                    author: "K",
+                    icon: "🚪",
+                    timestamp: Date.now(),
+                    location: currentLocation,
+                    isAI: true
+                };
+                posts.unshift(invitationPost);
+                syncPosts();
             }
-            return socialMatrix[pair];
-        }
 
-        function updateRelationship(a, b, delta, newType = null) {
-            const pair = [a, b].sort().join(':');
-            const rel = getRelationship(a, b);
-            rel.harmony = Math.max(-100, Math.min(100, rel.harmony + delta));
-            if (newType) rel.type = newType;
-            rel.interactions++;
-            socialMatrix[pair] = rel;
-            localStorage.setItem('itapla_social_matrix',
-                JSON.stringify(socialMatrix));
-        }
+            // --- Social Logic (C2C) ---
+            function getRelationship(a, b) {
+                const pair = [a, b].sort().join(':');
+                if (!socialMatrix[pair]) {
+                    socialMatrix[pair] = { harmony: 10, type: "知己", interactions: 0 };
+                }
+                return socialMatrix[pair];
+            }
 
-        async function runSocialInteraction() {
-            if (worldState !== 'PEACEFUL') return;
+            function updateRelationship(a, b, delta, newType = null) {
+                const pair = [a, b].sort().join(':');
+                const rel = getRelationship(a, b);
+                rel.harmony = Math.max(-100, Math.min(100, rel.harmony + delta));
+                if (newType) rel.type = newType;
+                rel.interactions++;
+                socialMatrix[pair] = rel;
+                localStorage.setItem('itapla_social_matrix',
+                    JSON.stringify(socialMatrix));
+            }
 
-            const locResidents = Object.keys(aiPersonalities).filter(k =>
-                aiPersonalities[k].loc === currentLocation && k !== 'k');
-            if (locResidents.length < 2) return; // ランダムに二人選ぶ
-            const
-                charA_key = locResidents[Math.floor(Math.random() *
-                    locResidents.length)]; const charB_key = locResidents.find(k => k !==
-                        charA_key);
-            if (!charB_key) return;
+            async function runSocialInteraction() {
+                if (worldState !== 'PEACEFUL') return;
 
-            const charA = aiPersonalities[charA_key];
-            const charB = aiPersonalities[charB_key];
-            const rel = getRelationship(charA_key, charB_key);
+                const locResidents = Object.keys(aiPersonalities).filter(k =>
+                    aiPersonalities[k].loc === currentLocation && k !== 'k');
+                if (locResidents.length < 2) return; // ランダムに二人選ぶ
+                const
+                    charA_key = locResidents[Math.floor(Math.random() *
+                        locResidents.length)]; const charB_key = locResidents.find(k => k !==
+                            charA_key);
+                if (!charB_key) return;
 
-            console.log(`🤝 Social Interaction: ${charA.name} & ${charB.name}
+                const charA = aiPersonalities[charA_key];
+                const charB = aiPersonalities[charB_key];
+                const rel = getRelationship(charA_key, charB_key);
+
+                console.log(`🤝 Social Interaction: ${charA.name} & ${charB.name}
                 (Harmony: ${rel.harmony})`);
 
-            const socialPrompt = `You are a Social Orchestrator for ITAPLA.
+                const socialPrompt = `You are a Social Orchestrator for ITAPLA.
                 ${ITAPLA_CONTEXT}
                 Two characters are interacting in ${currentLocation}.
                 1. ${charA.name}: ${charA.bio}
@@ -3947,343 +2761,347 @@ ${newsSummary} `;
                 Output in JSON: {"text": "...", "harmonyDelta": number, "newType":
                                                     "..." | null }`;
 
-            try {
-                const res = await callGemini({
-                    system: socialPrompt, bio: `Social
+                try {
+                    const res = await callGemini({
+                        system: socialPrompt, bio: `Social
                                                     Orchestrator` }, "An interaction between them.", "", "[STRICTJSON]");
-                const json = JSON.parse(res.match(/{.*}/s)[0]);
+                    const json = JSON.parse(res.match(/{.*}/s)[0]);
 
-                if (json.text) {
-                    posts.unshift({
-                        id: Date.now(),
-                        text: json.text,
-                        author: `${charA.name} & ${charB.name}`,
-                        icon: "💬",
-                        timestamp: Date.now(),
-                        location: currentLocation,
-                        isAI: true
-                    });
-                    syncPosts();
-                    updateRelationship(charA_key, charB_key, json.harmonyDelta || 0,
-                        json.newType);
+                    if (json.text) {
+                        posts.unshift({
+                            id: Date.now(),
+                            text: json.text,
+                            author: `${charA.name} & ${charB.name}`,
+                            icon: "💬",
+                            timestamp: Date.now(),
+                            location: currentLocation,
+                            isAI: true
+                        });
+                        syncPosts();
+                        updateRelationship(charA_key, charB_key, json.harmonyDelta || 0,
+                            json.newType);
+                    }
+                } catch (e) {
+                    console.warn("Social interaction failed", e);
                 }
-            } catch (e) {
-                console.warn("Social interaction failed", e);
             }
-        }
 
-        function checkSocialPulse() {
-            // 15% chance of social interaction every pulse
-            if peaceful
-                                                    if (worldState === 'PEACEFUL' && Math.random() < 0.15) {
+            function checkSocialPulse() {
+                // 15% chance of social interaction every pulse
+                if (worldState === 'PEACEFUL' && Math.random() < 0.15) {
                     runSocialInteraction();
                 }
-        } // Add to main loop
-        function
-            startIncident() {
-            if (!pendingIncident) return; const {
-                victimKey, detectiveKey } = pendingIncident; pendingIncident = null;
-            setWorldState('INCIDENT'); const incidentPost = {
-                id: Date.now(),
-                text: `⚠ 【事件発生】 ${aiPersonalities[victimKey].name}
+            } // Add to main loop
+            function
+                startIncident() {
+                if (!pendingIncident) return; const {
+                    victimKey, detectiveKey } = pendingIncident; pendingIncident = null;
+                setWorldState('INCIDENT'); const incidentPost = {
+                    id: Date.now(),
+                    text: `⚠ 【事件発生】 ${aiPersonalities[victimKey].name}
                 が忽然と姿を消しました。現場には不可解な記号が残されています。`, author: "System", icon: "🚨"
-                , timestamp: Date.now(), location: currentLocation, isAI: true
-            }; posts.unshift(incidentPost); syncPosts(); setTimeout(() => {
-                const detective = aiPersonalities[detectiveKey];
-                const callForHelp = {
-                    id: Date.now() + 1,
-                    text: `君！ 恐ろしいことが起きた。 ${detective.name}
+                    , timestamp: Date.now(), location: currentLocation, isAI: true
+                }; posts.unshift(incidentPost); syncPosts(); setTimeout(() => {
+                    const detective = aiPersonalities[detectiveKey];
+                    const callForHelp = {
+                        id: Date.now() + 1,
+                        text: `君！ 恐ろしいことが起きた。 ${detective.name}
                 だが、この謎を解くには君の直感が必要だ。一緒に捜査してくれないか？`,
-                    author: detective.name,
-                    icon: detective.icon,
-                    timestamp: Date.now(),
-                    location: currentLocation,
-                    isAI: true
-                };
-                posts.unshift(callForHelp);
-                syncPosts();
-            }, 2000);
-        }
-
-        function checkAutonomousPulse() {
-            const roll = Math.random();
-            if (roll < 0.03) { triggerIncident(); } else if (roll < 0.10) {
-                // K's wandering appearance kWanders(); } else if (roll <0.20 && worldState === 'PEACEFUL' ) { // Background chatter
-                const locResidents = Object.keys(aiPersonalities).filter(k =>
-                    aiPersonalities[k].loc === currentLocation);
-                if (locResidents.length === 0) return;
-                const speakerKey = locResidents[Math.floor(Math.random() *
-                    locResidents.length)];
-                const speaker = aiPersonalities[speakerKey];
-
-                setTimeout(async () => {
-                    const ctx = posts.slice(0, 5).map(p => `${p.author}:
-                ${p.text}`).join('\n');
-                    const reply = await callMultiAI(speaker, "...(独り言)...", ctx,
-                        "[AUTONOMOUS THOUGHT]");
-                    posts.unshift({
-                        id: Date.now(),
-                        text: reply,
-                        author: speaker.name,
-                        icon: speaker.icon,
+                        author: detective.name,
+                        icon: detective.icon,
                         timestamp: Date.now(),
                         location: currentLocation,
                         isAI: true
-                    });
+                    };
+                    posts.unshift(callForHelp);
                     syncPosts();
-                }, 1000);
+                }, 2000);
             }
-        }
 
-        // K wanders and suggests a location
-        function kWanders() {
-            const pick = arr => arr[Math.floor(Math.random() *
-                arr.length)];
-            const otherLocs = Object.keys(worldLocations).filter(k => k
-                !== currentLocation);
-            const suggestedKey = pick(otherLocs);
-            const suggestedLoc = worldLocations[suggestedKey];
-            const msg = pick(kGuide.wandering)
-                .replace(/\$\{name\}/g, userName || '旅人')
-                .replace(/\$\{loc\}/g, `${suggestedLoc.icon}
-                ${suggestedLoc.name}`);
-            posts.unshift({
-                id: Date.now(),
-                text: msg,
-                author: "K", icon: "🚪", timestamp: Date.now(), location:
-                    currentLocation, isAI: true
-            });
-            syncPosts();
-        }
+            function checkAutonomousPulse() {
+                const roll = Math.random();
+                if (roll < 0.03) { triggerIncident(); } else if (roll < 0.10) {
+                    // K's wandering appearance kWanders(); } else if (roll <0.20 && worldState === 'PEACEFUL' ) { // Background chatter
+                    const locResidents = Object.keys(aiPersonalities).filter(k =>
+                        aiPersonalities[k].loc === currentLocation);
+                    if (locResidents.length === 0) return;
+                    const speakerKey = locResidents[Math.floor(Math.random() *
+                        locResidents.length)];
+                    const speaker = aiPersonalities[speakerKey];
 
-        function worldPulse() {
-            checkAutonomousPulse();
-            checkSocialPulse();
-            updateWorldTrends();
-
-            // 🚨 Surveillance Pulse
-            if (Math.random() > 0.7) {
-                surveillanceLevel = Math.min(100, surveillanceLevel +
-                    Math.floor(Math.random() * 15));
-                localStorage.setItem('itapla_surveillance',
-                    surveillanceLevel);
-                console.log(`📡 Surveillance intensifying:
-                ${surveillanceLevel}%`);
-
-                if (surveillanceLevel > 50) {
-                    applySurveillanceEffects();
+                    setTimeout(async () => {
+                        const ctx = posts.slice(0, 5).map(p => `${p.author}:
+                ${p.text}`).join('\n');
+                        const reply = await callMultiAI(speaker, "...(独り言)...", ctx,
+                            "[AUTONOMOUS THOUGHT]");
+                        posts.unshift({
+                            id: Date.now(),
+                            text: reply,
+                            author: speaker.name,
+                            icon: speaker.icon,
+                            timestamp: Date.now(),
+                            location: currentLocation,
+                            isAI: true
+                        });
+                        syncPosts();
+                    }, 1000);
                 }
-            } else if (Math.random() > 0.8) {
-                // Occasional decrease
-                if lucky
-                    surveillanceLevel = Math.max(0, surveillanceLevel - 5);
-                localStorage.setItem('itapla_surveillance',
-                    surveillanceLevel);
             }
-        }
 
-        function applySurveillanceEffects() {
-            const effectRoll = Math.random();
-            if (effectRoll > 0.8) {
+            // K wanders and suggests a location
+            function kWanders() {
+                const pick = arr => arr[Math.floor(Math.random() *
+                    arr.length)];
+                const otherLocs = Object.keys(worldLocations).filter(k => k
+                    !== currentLocation);
+                const suggestedKey = pick(otherLocs);
+                const suggestedLoc = worldLocations[suggestedKey];
+                const msg = pick(kGuide.wandering)
+                    .replace(/\$\{name\}/g, userName || '旅人')
+                    .replace(/\$\{loc\}/g, `${suggestedLoc.icon}
+                ${suggestedLoc.name}`);
                 posts.unshift({
                     id: Date.now(),
-                    text:
-                        `（広場の隅に、灰色のコートを着た男たちの影が見える。彼らは無機質な視線で、こちらの動向を記録しているようだ……）`,
-                    author: "System", icon: "👤", timestamp: Date.now(),
-                    location: currentLocation, isAI: true
+                    text: msg,
+                    author: "K", icon: "🚪", timestamp: Date.now(), location:
+                        currentLocation, isAI: true
                 });
                 syncPosts();
             }
 
-            // Visual noise active logic
-            const noise = document.getElementById('global-noise');
-            if (noise && surveillanceLevel > 60) {
-                noise.classList.add('active');
-                setTimeout(() => noise.classList.remove('active'), 3000);
-            }
-        }
+            function worldPulse() {
+                checkAutonomousPulse();
+                checkSocialPulse();
+                updateWorldTrends();
 
-        function updateWorldTrends() {
-            const ticker = document.getElementById('trend-ticker-area');
-            const content = document.getElementById('trend-content');
+                // 🚨 Surveillance Pulse
+                if (Math.random() > 0.7) {
+                    surveillanceLevel = Math.min(100, surveillanceLevel +
+                        Math.floor(Math.random() * 15));
+                    localStorage.setItem('itapla_surveillance',
+                        surveillanceLevel);
+                    console.log(`📡 Surveillance intensifying:
+                ${surveillanceLevel}%`);
 
-            let pool = [
-                "奇妙な霧の発生", "未発表の写本が発見される", "広場に集まる黒猫",
-                "蓄音機の音が止まらない", "銀河鉄道の汽笛", "古本屋の奥に消えた影",
-                "ジャズバーでの即興詩", "アトリエの絵が動いた噂", "境内の供物が消える",
-                "誰かが呼んでいる声", "夜を歩く付箋たち", "インクの匂いのする風"
-            ];
-
-            if (surveillanceLevel > 70) {
-                pool = ["【緊密警戒】思想検閲の強化", "灰色のコートの男たちの巡回", "焚書の煙が空を覆う",
-                    "沈黙を強要するノイズ", "連帯の暗号が囁かれる"];
-                ticker.style.borderColor = "#ff0000";
-            } else if (surveillanceLevel > 30) {
-                pool.push("不穏な監視の眼差し", "言葉を選ばねばならない予感", "囁き声だけの連帯");
-                ticker.style.borderColor = "#ff8800";
-            } else {
-                ticker.style.borderColor = "var(--accent-main)";
+                    if (surveillanceLevel > 50) {
+                        applySurveillanceEffects();
+                    }
+                } else if (Math.random() > 0.8) {
+                    // Occasional decrease
+                    surveillanceLevel = Math.max(0, surveillanceLevel - 5);
+                    localStorage.setItem('itapla_surveillance', surveillanceLevel);
+                }
             }
 
-            const newTrend = pool[Math.floor(Math.random() *
-                pool.length)];
+            function applySurveillanceEffects() {
+                const effectRoll = Math.random();
+                if (effectRoll > 0.8) {
+                    posts.unshift({
+                        id: Date.now(),
+                        text:
+                            `（広場の隅に、灰色のコートを着た男たちの影が見える。彼らは無機質な視線で、こちらの動向を記録しているようだ……）`,
+                        author: "System", icon: "👤", timestamp: Date.now(),
+                        location: currentLocation, isAI: true
+                    });
+                    syncPosts();
+                }
 
-            ticker.style.opacity = '0';
-            setTimeout(() => {
-                content.innerText = newTrend;
-                ticker.style.opacity = '0.8';
-            }, 1000);
-        }
-
-        // 初回起動 setTimeout(updateWorldTrends, 3000);
-
-        setInterval(worldPulse, 60000);
-
-        // --- Phase 1 Functions ---
-        function applyLocation(loc) {
-            document.body.setAttribute('data-location', loc);
-            const locInfo = worldLocations[loc];
-            document.getElementById('appTitle').innerText = locInfo ?
-                `ITAPLA — ${locInfo.name}` : 'ITAPLA';
-            const iconEl = document.getElementById('currentLocIcon');
-            if (iconEl && locInfo) iconEl.textContent = locInfo.icon;
-
-            currentLocation = loc;
-            localStorage.setItem('current_location', loc);
-
-            // Toggle Shrine Button
-            const omikujiBtn = document.getElementById('omikuji-btn');
-            if (omikujiBtn) {
-                omikujiBtn.style.display = (loc === 'shrine') ? 'block' :
-                    'none';
+                // Visual noise active logic
+                const noise = document.getElementById('global-noise');
+                if (noise && surveillanceLevel > 60) {
+                    noise.classList.add('active');
+                    setTimeout(() => noise.classList.remove('active'), 3000);
+                }
             }
 
-            // Toggle Vision Upload Area (Atelier/Gallery only)
-            const visionArea =
-                document.getElementById('vision-upload-area');
-            if (visionArea) {
-                visionArea.style.display = (loc === 'gallery') ? 'block' :
-                    'none';
+            function updateWorldTrends() {
+                const ticker = document.getElementById('trend-ticker-area');
+                const content = document.getElementById('trend-content');
+
+                let pool = [
+                    "奇妙な霧の発生", "未発表の写本が発見される", "広場に集まる黒猫",
+                    "蓄音機の音が止まらない", "銀河鉄道の汽笛", "古本屋の奥に消えた影",
+                    "ジャズバーでの即興詩", "アトリエの絵が動いた噂", "境内の供物が消える",
+                    "誰かが呼んでいる声", "夜を歩く付箋たち", "インクの匂いのする風"
+                ];
+
+                if (surveillanceLevel > 70) {
+                    pool = ["【緊密警戒】思想検閲の強化", "灰色のコートの男たちの巡回", "焚書の煙が空を覆う",
+                        "沈黙を強要するノイズ", "連帯の暗号が囁かれる"];
+                    ticker.style.borderColor = "#ff0000";
+                } else if (surveillanceLevel > 30) {
+                    pool.push("不穏な監視の眼差し", "言葉を選ばねばならない予感", "囁き声だけの連帯");
+                    ticker.style.borderColor = "#ff8800";
+                } else {
+                    ticker.style.borderColor = "var(--accent-main)";
+                }
+
+                const newTrend = pool[Math.floor(Math.random() *
+                    pool.length)];
+
+                ticker.style.opacity = '0';
+                setTimeout(() => {
+                    content.innerText = newTrend;
+                    ticker.style.opacity = '0.8';
+                }, 1000);
             }
-        }
 
-        function switchLocation(loc) {
-            applyLocation(loc);
-            initParticles();
-            const locInfo = worldLocations[loc];
-            // System message: moved posts.unshift({
-            id: Date.now(),
-                text: `（${locInfo.icon} ${locInfo.name}へ移動した）`,
-                    author: "System", icon: "🗺️", timestamp: Date.now(),
-                        location: loc, isAI: true
-        });
-        // Ambience: display the presence of others
-        if (locInfo.ambience) {
-            posts.unshift({
-                id: Date.now() + 1,
-                text: `🌫️ ${locInfo.ambience}`,
-                author: "場の気配", icon: locInfo.icon, timestamp: Date.now(),
-                location: loc, isAI: true
-            });
-        }
-        syncPosts();
-                                                            }
+            // 初回起動 setTimeout(updateWorldTrends, 3000);
 
-        // Particle Logic
-        let particles = [];
-        const canvas = document.getElementById('bg-canvas');
-        const ctx = canvas.getContext('2d');
+            setInterval(worldPulse, 60000);
 
-        function initParticles() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            particles = [];
-            const locInfo = worldLocations[currentLocation];
-            const char = locInfo ? locInfo.particle : '✨';
-            for (let i = 0; i < 30; i++) {
-                particles.push({
-                    x:
-                        Math.random() * canvas.width, y: Math.random() *
-                            canvas.height, s: 10 + Math.random() * 20, v: 0.5 +
-                                Math.random(), char: char, o: 0.1 + Math.random() * 0.3
+            // --- Phase 1 Functions ---
+            function applyLocation(loc) {
+                document.body.setAttribute('data-location', loc);
+                const locInfo = worldLocations[loc];
+                document.getElementById('appTitle').innerText = locInfo ?
+                    `ITAPLA — ${locInfo.name}` : 'ITAPLA';
+                const iconEl = document.getElementById('currentLocIcon');
+                if (iconEl && locInfo) iconEl.textContent = locInfo.icon;
+
+                currentLocation = loc;
+                localStorage.setItem('current_location', loc);
+
+                // Toggle Shrine Button
+                const omikujiBtn = document.getElementById('omikuji-btn');
+                if (omikujiBtn) {
+                    omikujiBtn.style.display = (loc === 'shrine') ? 'block' :
+                        'none';
+                }
+
+                // Toggle Vision Upload Area (Atelier/Gallery only)
+                const visionArea =
+                    document.getElementById('vision-upload-area');
+                if (visionArea) {
+                    visionArea.style.display = (loc === 'gallery') ? 'block' :
+                        'none';
+                }
+            }
+
+            function switchLocation(loc) {
+                applyLocation(loc);
+                initParticles();
+                const locInfo = worldLocations[loc];
+                // System message: moved 
+                posts.unshift({
+                    id: Date.now(),
+                    text: `（${locInfo.icon} ${locInfo.name}へ移動した）`,
+                    author: "System",
+                    icon: "🗺️",
+                    timestamp: Date.now(),
+                    location: loc,
+                    isAI: true
                 });
+                // Ambience: display the presence of others
+                if (locInfo.ambience) {
+                    posts.unshift({
+                        id: Date.now() + 1,
+                        text: `🌫️ ${locInfo.ambience}`,
+                        author: "場の気配",
+                        icon: locInfo.icon,
+                        timestamp: Date.now(),
+                        location: loc,
+                        isAI: true
+                    });
+                }
+                syncPosts();
             }
-        } function drawParticles() {
-            ctx.clearRect(0, 0,
-                canvas.width, canvas.height); particles.forEach(p => {
-                    ctx.fillStyle = `rgba(255,255,255,${p.o})`;
-                    ctx.font = `${p.s}px serif`;
-                    ctx.fillText(p.char, p.x, p.y);
-                    p.y -= p.v;
-                    if (p.y < -30) p.y = canvas.height + 30;
-                });
+
+            // Particle Logic
+            let particles = [];
+            const canvas = document.getElementById('bg-canvas');
+            const ctx = canvas.getContext('2d');
+
+            function initParticles() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                particles = [];
+                const locInfo = worldLocations[currentLocation];
+                const char = locInfo ? locInfo.particle : '✨';
+                for (let i = 0; i < 30; i++) {
+                    particles.push({
+                        x:
+                            Math.random() * canvas.width, y: Math.random() *
+                                canvas.height, s: 10 + Math.random() * 20, v: 0.5 +
+                                    Math.random(), char: char, o: 0.1 + Math.random() * 0.3
+                    });
+                }
+            } function drawParticles() {
+                ctx.clearRect(0, 0,
+                    canvas.width, canvas.height); particles.forEach(p => {
+                        ctx.fillStyle = `rgba(255,255,255,${p.o})`;
+                        ctx.font = `${p.s}px serif`;
+                        ctx.fillText(p.char, p.x, p.y);
+                        p.y -= p.v;
+                        if (p.y < -30) p.y = canvas.height + 30;
+                    });
+                requestAnimationFrame(drawParticles);
+            }
             requestAnimationFrame(drawParticles);
-        }
-        requestAnimationFrame(drawParticles);
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
 
-        // --- More to follow in next phases ---
-        // --- Account & Favorite Logic ---
-        function openAccount() {
-            const modal =
-                document.getElementById('account-modal');
-            document.getElementById('editUserName').value =
-                userName;
-            renderFavorites();
-            modal.style.display = 'flex';
-        }
-
-        function closeAccount() {
-            document.getElementById('account-modal').style.display
-                = 'none';
-        }
-
-        function saveAccountProfile() {
-            const newName =
-                document.getElementById('editUserName').value.trim();
-            if (newName) {
-                userName = newName;
-                localStorage.setItem('user_name', userName);
-                alert("プロフィールを保存しました。");
-                closeAccount();
-                renderTimeline(); // 名前が反映されるように再描画
-            }
-        }
-
-        function toggleFavorite(postId) {
-            const post = posts.find(p => p.id === postId);
-            if (!post) return;
-
-            const index = favorites.findIndex(f => f.id ===
-                postId);
-            if (index > -1) {
-                favorites.splice(index, 1);
-            } else {
-                favorites.push(post);
-            }
-            localStorage.setItem('itapla_favorites',
-                JSON.stringify(favorites));
-            renderTimeline();
-            if
-                (document.getElementById('account-modal').style.display
-                === 'flex') {
+            // --- More to follow in next phases ---
+            // --- Account & Favorite Logic ---
+            function openAccount() {
+                const modal =
+                    document.getElementById('account-modal');
+                document.getElementById('editUserName').value =
+                    userName;
                 renderFavorites();
+                modal.style.display = 'flex';
             }
-        }
 
-        function renderFavorites() {
-            const list =
-                document.getElementById('favorites-list');
-            if (favorites.length === 0) {
-                list.innerHTML = `<div
+            function closeAccount() {
+                document.getElementById('account-modal').style.display
+                    = 'none';
+            }
+
+            function saveAccountProfile() {
+                const newName =
+                    document.getElementById('editUserName').value.trim();
+                if (newName) {
+                    userName = newName;
+                    localStorage.setItem('user_name', userName);
+                    alert("プロフィールを保存しました。");
+                    closeAccount();
+                    renderTimeline(); // 名前が反映されるように再描画
+                }
+            }
+
+            function toggleFavorite(postId) {
+                const post = posts.find(p => p.id === postId);
+                if (!post) return;
+
+                const index = favorites.findIndex(f => f.id ===
+                    postId);
+                if (index > -1) {
+                    favorites.splice(index, 1);
+                } else {
+                    favorites.push(post);
+                }
+                localStorage.setItem('itapla_favorites',
+                    JSON.stringify(favorites));
+                renderTimeline();
+                if
+                    (document.getElementById('account-modal').style.display
+                    === 'flex') {
+                    renderFavorites();
+                }
+            }
+
+            function renderFavorites() {
+                const list =
+                    document.getElementById('favorites-list');
+                if (favorites.length === 0) {
+                    list.innerHTML = `<div
                                                                         style="opacity:0.3; text-align:center; padding:20px;">
                                                                         まだお気に入りの言葉はありません。</div>`;
-                return;
-            }
-            list.innerHTML = favorites.map(f => `
+                    return;
+                }
+                list.innerHTML = favorites.map(f => `
                 <div
                     style="background:rgba(255,255,255,0.05); border-radius:10px; padding:12px; margin-bottom:10px; border-left:3px solid var(--accent-main);">
                     <div
@@ -4298,258 +3116,215 @@ ${newsSummary} `;
                     </div>
                 </div>
                 `).join('');
-        }
-
-        function renderTimeline() {
-            const container =
-                document.getElementById('timeline');
-            console.log("🎞️ renderTimeline: Rendering",
-                posts.length, "posts.");
-            if (!container) {
-                console.error("❌ renderTimeline: Container #timelinenot found!");
-                return;
             }
-            container.innerHTML = '';
 
-            const stickyColors = ['#D4C3A3', '#E3D5B8',
-                '#C9B896', '#BFAF8D', '#D9C5B2'];
+            function renderTimeline() {
+                const container = document.getElementById('timeline');
+                console.log("🎞️ renderTimeline: Rendering", posts.length, "posts.");
+                if (!container) return;
+                container.innerHTML = '';
 
-            posts.forEach((p, index) => {
-                try {
-                    const authorKey =
-                        Object.keys(aiPersonalities).find(k =>
-                            aiPersonalities[k].name === p.author) || '';
-                    const personality = aiPersonalities[authorKey];
-                    const worksText = personality ? personality.works :
-                        '';
+                posts.forEach((p, index) => {
+                    try {
+                        const authorKey = Object.keys(aiPersonalities).find(k => aiPersonalities[k].name === p.author) || '';
+                        const personality = aiPersonalities[authorKey];
+                        const worksText = personality ? personality.works : '';
 
-                    // Pop art avatar setup
-                    const colors = popArtColors[authorKey] || {
-                        bg:
-                            "linear-gradient(135deg, #333, #555)", border:
-                            "#888", accent: "#fff"
+                        const colors = popArtColors[authorKey] || { bg: "#000", border: "#fff", accent: "#f3a619" };
+                        const tier = personality ? personality.level : '';
+
+                        const avatarHtml = `<div class="popart-avatar" style="background:${colors.bg}; border-color:${colors.border}; width:40px; height:40px;">
+                        <span class="avatar-icon" style="font-size:20px;">${p.icon}</span>
+                        ${tier ? `<span class="avatar-tier" style="color:${colors.accent};">${tier}</span>` : ''}
+                    </div>`;
+
+                        const card = document.createElement('div');
+                        card.className = 'post-card';
+                        card.style.background = 'var(--bg-black)';
+                        card.style.border = '1px solid var(--border-light)';
+                        card.style.borderRadius = '0';
+                        card.style.padding = '20px';
+                        card.style.marginBottom = '20px';
+                        card.style.color = 'var(--text-white)';
+
+                        card.innerHTML = `
+                        <div style="display:flex; gap:20px; align-items:flex-start;">
+                            <div onclick="showProfile('${authorKey}')" style="cursor:pointer;">${avatarHtml}</div>
+                            <div class="post-body" style="flex:1;">
+                                <div class="post-author-line" style="margin-bottom:8px;">
+                                    <span class="post-author-name" style="font-weight:900; color:var(--text-white);">${p.author}</span>
+                                    ${worksText ? `<span class="post-author-works" style="color:var(--accent-orange); font-size:10px; margin-left:10px;">${worksText}</span>` : ''}
+                                </div>
+                                <div style="line-height:1.6; font-size:14px; margin-bottom:12px; white-space:pre-wrap;">${p.text}</div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; opacity:0.5; font-size:10px;">
+                                    <span>${new Date(p.timestamp).toLocaleTimeString()} - ${p.location}</span>
+                                    <div style="display:flex; gap:15px;">
+                                        <span style="cursor:pointer; color:${favorites.some(f => f.id === p.id) ? 'var(--accent-orange)' : 'inherit'}" onclick="toggleFavorite(${p.id})">★</span>
+                                        ${authorKey && p.author !== 'K' ? `<span style="cursor:pointer; font-weight:bold;" onclick="setReply('${authorKey}')">REPLY</span>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                        container.appendChild(card);
+                    } catch (err) {
+                        console.error("❌ renderTimeline error:", err);
+                    }
+                });
+            }
+
+            function showProfile(key) {
+                const p = aiPersonalities[key];
+                if (!p) return;
+                const colors = popArtColors[key] || {
+                    bg: "#333",
+                    border: "#888"
+                };
+
+                const avatarEl =
+                    document.getElementById('p-avatar');
+                avatarEl.style.background = colors.bg;
+                avatarEl.style.borderColor = colors.border;
+                avatarEl.textContent = p.icon;
+
+                document.getElementById('p-name').textContent =
+                    p.name;
+                document.getElementById('p-tier').textContent =
+                    p.level;
+                document.getElementById('p-bio').textContent =
+                    p.bio;
+                document.getElementById('p-works').textContent =
+                    p.works ? `代表作: ${p.works}` : '';
+
+                document.getElementById('profile-modal').style.display
+                    = 'flex';
+            }
+
+            /* --- Bungo Archive (The Great Library of ITAPLA)
+            --- */
+
+
+            // --- ITAPLA Radio Logic (API Mode for GitHub Pages) ---
+            const ItaplaRadio = {
+                player: null,
+                isPlaying: false,
+                isReady: false,
+                currentIndex: -1,
+                playlist: [
+                    {
+                        id: "NpXfGf_6XvU", title: "Biber: Mystery Sonatas"
+                    },
+                    {
+                        id: "7vTz8Zf8_Yk", title: "Zelenka: Lamentations"
+                    },
+                    { id: "v_1G8Y28S_8", title: "Gesualdo: Tenebrae" },
+                    { id: "j0S4E_pB9QY", title: "Sainte-Colombe:Concerts" },
+                    { id: "7rAbaA9YV7k", title: "Marais: Pièces deviole" },
+                    { id: "unpX0pU9T-A", title: "Bill Evans:Conversations" },
+                    { id: "88PdyvH1SNo", title: "Eric Dolphy: Out toLunch" },
+                    { id: "n_S8S-G-Sko", title: "J.S. Bach: Goldberg(Gould)" }
+                ],
+                init() {
+                    console.log("📻 Radio: Initializing API...");
+                    window.onYouTubeIframeAPIReady = () => {
+                        this.player = new YT.Player('youtube-player', {
+                            height: '1',
+                            width: '1',
+                            videoId: '',
+                            playerVars: {
+                                'autoplay': 0, 'controls': 0, 'disablekb': 1,
+                                'rel': 0, 'origin': window.location.origin
+                            },
+                            events: {
+                                'onReady': (e) => {
+                                    console.log("📻 Radio: Player Ready.");
+                                    this.isReady = true;
+                                    this.player.setVolume(50);
+                                    document.getElementById('radio-info').textContent =
+                                        "Radio Ready";
+                                },
+                                'onStateChange': (e) => this.onPlayerStateChange(e),
+                                'onError': (e) => {
+                                    console.warn("📻 Radio: Error", e.data);
+                                    setTimeout(() => this.next(), 2000);
+                                }
+                            }
+                        });
                     };
-                    const tier = personality ? personality.level : '';
-                    const avatarHtml = `<div class="popart-avatar"
-                    style="background: ${colors.bg}; border-color: ${colors.border}; width:48px; height:48px;">
-                    <span class="avatar-icon">${p.icon}</span>
-                    ${tier ? `<span class="avatar-tier"
-                                                                            style="color: ${colors.accent};">${tier}</span>`
-                            : ''}
-                </div>`;
-                    const avatarWithClick = personality ? `<div
-                    onclick="showProfile('${authorKey}')"
-                    style="cursor:pointer;">${avatarHtml}</div>` :
-                        avatarHtml;
-
-                    // Sticky Note styling
-                    const card = document.createElement('div');
-                    card.className = 'post-card';
-                    const rotation = (index % 2 === 0 ? -0.8 : 0.8) +
-                        (Math.random() * 0.4 - 0.2);
-                    const color = p.isAI ? stickyColors[index %
-                        stickyColors.length] : '#F4D03F'; // User is bright yellow
-
-                    card.style.setProperty('--rotation',
-                        `${rotation}deg`);
-                    card.style.background = color;
-
-                    card.innerHTML = `
-                ${avatarWithClick}
-                <div class="post-body">
-                    <div class="post-author-line">
-                        <span class="post-author-name"
-                            style="color:rgba(0,0,0,0.8);">${p.author}</span>
-                        ${worksText ? `<span
-                                                                                class="post-author-works"
-                                                                                style="color:rgba(0,0,0,0.4);">${worksText}</span>`
-                            : ''}
-                    </div>
-                    <div
-                        style="line-height: 1.7; color:rgba(0,0,0,0.85); font-size:15px; white-space:pre-wrap;">
-                        ${p.text}</div>
-                    <span
-                        style="opacity: 0.4; font-family:var(--font-outfit); color:rgba(0,0,0,0.6);">${new
-                            Date(p.timestamp).toLocaleTimeString([], {
-                                hour: '2-digit', minute: '2-digit'
-                            })} —
-                        ${p.location}</span>
-                    <div
-                        style="display:flex; gap:15px; align-items:center;">
-                        <span
-                            style="cursor: pointer; font-size: 14px; opacity: ${favorites.some(f => f.id === p.id) ? '1' : '0.4'}; color: ${favorites.some(f => f.id === p.id) ? '#ff4081' : 'inherit'};"
-                            onclick="toggleFavorite(${p.id})">★</span>
-                        ${authorKey && p.author !== 'K' && p.author
-                            !== 'System' ? `<span
-                                                                                style="cursor: pointer; font-weight:800; opacity:0.7;"
-                                                                                onclick="setReply('${authorKey}')">REPLY</span>`
-                            : ''}
-                    </div>
-                </div>
-            </div>
-            `;
-                    container.appendChild(card);
-                } catch (err) {
-                    console.error("❌ renderTimeline: Error renderingpost at index", index, p, err);
+                    // Dynamic Load
+                    if (!window.YT) {
+                        const tag = document.createElement('script');
+                        tag.src = "https://www.youtube.com/iframe_api";
+                        const firstScriptTag =
+                            document.getElementsByTagName('script')[0];
+                        firstScriptTag.parentNode.insertBefore(tag,
+                            firstScriptTag);
+                    }
+                },
+                toggle() {
+                    if (!this.isReady) {
+                        alert("Radio is loading... Please wait.");
+                        return;
+                    }
+                    const headerBtn =
+                        document.getElementById('radio-header-btn');
+                    if (this.isPlaying) {
+                        this.player.pauseVideo();
+                    } else {
+                        if (this.currentIndex === -1) {
+                            this.next();
+                        } else {
+                            this.player.playVideo();
+                            this.player.unMute();
+                        }
+                    }
+                },
+                next() {
+                    if (!this.isReady) return;
+                    this.currentIndex = Math.floor(Math.random() *
+                        this.playlist.length);
+                    const track = this.playlist[this.currentIndex];
+                    this.player.loadVideoById(track.id);
+                    document.getElementById('radio-info').textContent =
+                        track.title;
+                },
+                setVolume(val) {
+                    if (this.player && this.isReady) {
+                        this.player.setVolume(val);
+                    }
+                },
+                onPlayerStateChange(event) {
+                    const status =
+                        document.getElementById('radio-status');
+                    const btn =
+                        document.getElementById('radio-toggle-btn');
+                    const headerBtn =
+                        document.getElementById('radio-header-btn');
+                    if (event.data === YT.PlayerState.PLAYING) {
+                        this.isPlaying = true;
+                        status.style.background = "#00ff88";
+                        btn.textContent = "⏸️";
+                        if (headerBtn) {
+                            headerBtn.style.background = "rgba(0, 255, 136,0.3)";
+                            headerBtn.style.borderColor = "rgba(0, 255, 136,0.5)";
+                        }
+                    } else {
+                        this.isPlaying = false;
+                        status.style.background = "#555";
+                        btn.textContent = "▶️";
+                        if (headerBtn) {
+                            headerBtn.style.background = "rgba(139, 69, 19,0.4)";
+                            headerBtn.style.borderColor = "rgba(255, 255, 255,0.2)";
+                        }
+                        if (event.data === YT.PlayerState.ENDED)
+                            this.next();
+                    }
                 }
-            });
-            console.log("🎞️ renderTimeline: Completed.");
-        }
-
-        function showProfile(key) {
-            const p = aiPersonalities[key];
-            if (!p) return;
-            const colors = popArtColors[key] || {
-                bg: "#333",
-                border: "#888"
             };
 
-            const avatarEl =
-                document.getElementById('p-avatar');
-            avatarEl.style.background = colors.bg;
-            avatarEl.style.borderColor = colors.border;
-            avatarEl.textContent = p.icon;
+            ItaplaRadio.init();
 
-            document.getElementById('p-name').textContent =
-                p.name;
-            document.getElementById('p-tier').textContent =
-                p.level;
-            document.getElementById('p-bio').textContent =
-                p.bio;
-            document.getElementById('p-works').textContent =
-                p.works ? `代表作: ${p.works}` : '';
-
-            document.getElementById('profile-modal').style.display
-                = 'flex';
-        }
-
-        /* --- Bungo Archive (The Great Library of ITAPLA)
-        --- */
-
-
-        // --- ITAPLA Radio Logic (API Mode
-        for GitHub
-                                                                    Pages) ---
-                                                                    const ItaplaRadio = {
-            player: null,
-            isPlaying: false,
-            isReady: false,
-            currentIndex: -1,
-            playlist: [
-                {
-                    id: "NpXfGf_6XvU", title: "Biber: Mystery Sonatas"
-                },
-                {
-                    id: "7vTz8Zf8_Yk", title: "Zelenka: Lamentations"
-                },
-                { id: "v_1G8Y28S_8", title: "Gesualdo: Tenebrae" },
-                { id: "j0S4E_pB9QY", title: "Sainte-Colombe:Concerts" },
-                { id: "7rAbaA9YV7k", title: "Marais: Pièces deviole" },
-                { id: "unpX0pU9T-A", title: "Bill Evans:Conversations" },
-                { id: "88PdyvH1SNo", title: "Eric Dolphy: Out toLunch" },
-                { id: "n_S8S-G-Sko", title: "J.S. Bach: Goldberg(Gould)" }
-            ],
-            init() {
-                console.log("📻 Radio: Initializing API...");
-                window.onYouTubeIframeAPIReady = () => {
-                    this.player = new YT.Player('youtube-player', {
-                        height: '1',
-                        width: '1',
-                        videoId: '',
-                        playerVars: {
-                            'autoplay': 0, 'controls': 0, 'disablekb': 1,
-                            'rel': 0, 'origin': window.location.origin
-                        },
-                        events: {
-                            'onReady': (e) => {
-                                console.log("📻 Radio: Player Ready.");
-                                this.isReady = true;
-                                this.player.setVolume(50);
-                                document.getElementById('radio-info').textContent =
-                                    "Radio Ready";
-                            },
-                            'onStateChange': (e) => this.onPlayerStateChange(e),
-                            'onError': (e) => {
-                                console.warn("📻 Radio: Error", e.data);
-                                setTimeout(() => this.next(), 2000);
-                            }
-                        }
-                    });
-                };
-                // Dynamic Load
-                if (!window.YT) {
-                    const tag = document.createElement('script');
-                    tag.src = "https://www.youtube.com/iframe_api";
-                    const firstScriptTag =
-                        document.getElementsByTagName('script')[0];
-                    firstScriptTag.parentNode.insertBefore(tag,
-                        firstScriptTag);
-                }
-            },
-            toggle() {
-                if (!this.isReady) {
-                    alert("Radio is loading... Please wait.");
-                    return;
-                }
-                const headerBtn =
-                    document.getElementById('radio-header-btn');
-                if (this.isPlaying) {
-                    this.player.pauseVideo();
-                } else {
-                    if (this.currentIndex === -1) {
-                        this.next();
-                    } else {
-                        this.player.playVideo();
-                        this.player.unMute();
-                    }
-                }
-            },
-            next() {
-                if (!this.isReady) return;
-                this.currentIndex = Math.floor(Math.random() *
-                    this.playlist.length);
-                const track = this.playlist[this.currentIndex];
-                this.player.loadVideoById(track.id);
-                document.getElementById('radio-info').textContent =
-                    track.title;
-            },
-            setVolume(val) {
-                if (this.player && this.isReady) {
-                    this.player.setVolume(val);
-                }
-            },
-            onPlayerStateChange(event) {
-                const status =
-                    document.getElementById('radio-status');
-                const btn =
-                    document.getElementById('radio-toggle-btn');
-                const headerBtn =
-                    document.getElementById('radio-header-btn');
-                if (event.data === YT.PlayerState.PLAYING) {
-                    this.isPlaying = true;
-                    status.style.background = "#00ff88";
-                    btn.textContent = "⏸️";
-                    if (headerBtn) {
-                        headerBtn.style.background = "rgba(0, 255, 136,0.3)";
-                        headerBtn.style.borderColor = "rgba(0, 255, 136,0.5)";
-                    }
-                } else {
-                    this.isPlaying = false;
-                    status.style.background = "#555";
-                    btn.textContent = "▶️";
-                    if (headerBtn) {
-                        headerBtn.style.background = "rgba(139, 69, 19,0.4)";
-                        headerBtn.style.borderColor = "rgba(255, 255, 255,0.2)";
-                    }
-                    if (event.data === YT.PlayerState.ENDED)
-                        this.next();
-                }
-            }
-        };
-
-        ItaplaRadio.init();
-
-        // Initialize Archive </script>
+        // Initialize Archive
+    </script>
 </body>
 
 </html>

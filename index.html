@@ -1545,6 +1545,35 @@
 
         // --- OAuth Functions ---
 
+        // --- Post publishing ---
+        function publishPost() {
+            const textarea = document.getElementById('post-input') || document.querySelector('textarea');
+            if (!textarea) return;
+            const text = textarea.value.trim();
+            if (!text) return;
+            
+            const newPost = {
+                id: Date.now(),
+                author: userName || 'anonymous',
+                text: text,
+                timestamp: Date.now(),
+                loc: currentLocation,
+                likes: 0
+            };
+            
+            posts.unshift(newPost);
+            
+            // Save to localStorage
+            try {
+                const saved = JSON.parse(localStorage.getItem('itapla_posts') || '[]');
+                saved.unshift(newPost);
+                localStorage.setItem('itapla_posts', JSON.stringify(saved.slice(0, 1000)));
+            } catch(e) {}
+            
+            textarea.value = '';
+            if (typeof renderTimeline === 'function') renderTimeline();
+        }
+
         // --- Entrance functions ---
         function submitName() {
             const input = document.getElementById('name-input');
@@ -2702,43 +2731,27 @@ ${newsSummary}
             return avatar;
         }
         function openMap() {
-            document.getElementById('murder-wall').style.display = 'block';
-            const board = document.getElementById('murder-wall-board');
-            board.innerHTML = '';
+            const modal = document.getElementById('mapModal');
+            if (!modal) return;
+            modal.style.display = 'block';
+            const board = document.getElementById('antiqueMapParticipants');
+            if (board) board.innerHTML = '';
             
             // Map markers for active world participants
             Object.entries(aiPersonalities).forEach(([key, p]) => {
                 const targetLoc = p.loc || p.location;
                 if (!targetLoc) return;
                 
-                const locIndex = Object.keys(worldLocations).indexOf(targetLoc);
-                if (locIndex === -1 && targetLoc !== 'all') return;
-                
-                // If 'all', use current place, otherwise target
-                const finalLoc = targetLoc === 'all' ? currentLocation : targetLoc;
-                const locIdx = Object.keys(worldLocations).indexOf(finalLoc);
-                if (locIdx === -1) return;
-                
-                const cols = 4;
-                const step = 200;
-                const x = (locIdx % cols) * step + 100;
-                const y = Math.floor(locIdx / cols) * step + 100;
-                
                 const avatar = getPopArtAvatar(key);
-                if (avatar) {
-                    avatar.style.left = x + (Math.random() * 40 - 20) + 'px';
-                    avatar.style.top = y + (Math.random() * 40 - 20) + 'px';
+                if (avatar && board) {
                     board.appendChild(avatar);
                 }
             });
         }
         function closeMap() {
-            document.getElementById('mapModal').style.display = 'none';
+            const modal = document.getElementById('mapModal');
+            if (modal) modal.style.display = 'none';
         }
-
-
-
-        // --- Phase 3: Narrative World & Mystery ---
         function setWorldState(newState) {
             worldState = newState;
             localStorage.setItem('world_state', worldState);

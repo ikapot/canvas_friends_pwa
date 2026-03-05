@@ -182,7 +182,7 @@
         }
 
         @keyframes noiseFlicker {
-            0 % {
+            0% {
                 transform: translate(0, 0);
                 opacity: 0.12;
             }
@@ -282,12 +282,12 @@
         }
 
         .marker-icon {
-            font - size: 32px;
+            font-size: 32px;
             margin-bottom: 5px;
         }
 
         .marker-label {
-            font - family: 'Noto Serif JP', serif;
+            font-family: 'Noto Serif JP', serif;
             font-size: 13px;
             font-weight: bold;
             color: #3e2723;
@@ -297,7 +297,7 @@
         }
 
         .map-arrow {
-            pointer - events: auto;
+            pointer-events: auto;
             cursor: pointer;
             fill: #8b4513;
             opacity: 0.7;
@@ -344,7 +344,7 @@
         }
 
         .polaroid-on-map .p-name {
-            font - size: 8px;
+            font-size: 8px;
             text-align: center;
             color: #333;
             margin-top: 4px;
@@ -435,7 +435,7 @@
         }
 
         h1#appTitle {
-            font - family: var(--font-outfit);
+            font-family: var(--font-outfit);
             font-weight: 300;
             font-size: 18px;
             letter-spacing: 0.3em;
@@ -472,7 +472,7 @@
         }
 
         #ai-status-badge {
-            font - size: 8px;
+            font-size: 8px;
             text-transform: uppercase;
             letter-spacing: 0.1em;
             padding: 2px 6px;
@@ -525,7 +525,7 @@
         }
 
         .btn-cosmic {
-            margin - top: 40px;
+            margin-top: 40px;
             padding: 12px 40px;
             background: var(--accent-main);
             border: none;
@@ -588,7 +588,7 @@
         }
 
         .profile-name {
-            font - size: 24px;
+            font-size: 24px;
             font-weight: 700;
             margin-bottom: 8px;
             color: #fff;
@@ -605,7 +605,7 @@
         }
 
         .profile-bio {
-            font - size: 14px;
+            font-size: 14px;
             line-height: 1.8;
             color: var(--text-main);
             margin-bottom: 25px;
@@ -613,7 +613,7 @@
         }
 
         .profile-works {
-            font - size: 11px;
+            font-size: 11px;
             opacity: 0.6;
             font-style: italic;
         }
@@ -665,7 +665,7 @@
         }
 
         .map-card-icon {
-            font - size: 24px;
+            font-size: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -766,7 +766,7 @@
         }
 
         .polaroid-name {
-            font - family: var(--font-serif);
+            font-family: var(--font-serif);
             font-size: 9px;
             color: #111;
             text-align: center;
@@ -860,7 +860,7 @@
         }
 
         @keyframes stickyDrop {
-            0 % {
+            0% {
                 transform: scale(1.1) rotate(5deg);
                 opacity: 0;
             }
@@ -952,7 +952,7 @@
         }
 
         .post-author-line {
-            font - size: 13px;
+            font-size: 13px;
             margin-bottom: 8px;
             opacity: 0.85;
             display: flex;
@@ -961,13 +961,13 @@
         }
 
         .post-author-name {
-            font - weight: 700;
+            font-weight: 700;
             font-family: var(--font-sans);
             letter-spacing: 0.04em;
         }
 
         .post-author-works {
-            font - size: 10px;
+            font-size: 10px;
             opacity: 0.45;
             font-family: var(--font-outfit);
         }
@@ -1020,7 +1020,7 @@
         }
 
         .input-floating:focus-within {
-            box - shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
             border-color: var(--accent-main);
             transform: translateX(-50%) translateY(-5px);
         }
@@ -1083,7 +1083,7 @@
         }
 
         .settings-title {
-            font - family: var(--font-outfit);
+            font-family: var(--font-outfit);
             font-weight: 600;
             letter-spacing: 0.4em;
             font-size: 14px;
@@ -1094,7 +1094,7 @@
         }
 
         .settings-group {
-            margin - bottom: 20px;
+            margin-bottom: 20px;
         }
 
         .settings-label {
@@ -1189,7 +1189,7 @@
         }
 
         .offering-quote {
-            font - family: var(--font-serif);
+            font-family: var(--font-serif);
             font-size: 20px;
             line-height: 2;
             margin-bottom: 30px;
@@ -1197,14 +1197,14 @@
         }
 
         .offering-book {
-            font - size: 14px;
+            font-size: 14px;
             opacity: 0.6;
             font-family: var(--font-sans);
             letter-spacing: 0.1em;
         }
 
         .offering-timer {
-            margin - top: 50px;
+            margin-top: 50px;
             font-family: var(--font-outfit);
             font-size: 12px;
             letter-spacing: 0.3em;
@@ -1212,7 +1212,7 @@
         }
 
         .offering-k {
-            font - family: var(--font-sans);
+            font-family: var(--font-sans);
             font-size: 14px;
             color: var(--accent-salon);
             margin-bottom: 40px;
@@ -1799,24 +1799,47 @@
 
             // 24時間以内なら再取得しない
             if (lastFetch && (now - parseInt(lastFetch) < 24 * 60 * 60 * 1000)) {
-                console.log("📰 News is up to date
-                    (cached)."); const cachedNews=localStorage.getItem(NEWS_DATA_KEY); if (cachedNews)
-            updateDynamicZeitgeist(cachedNews); return;
-            } console.log("🌐 Fetching fresh news..."); //
-            CORS回避のためのプロキシ（alloriginsを使用） const
-                targetUrl = encodeURIComponent("https://news.google.com/rss?hl=ja&gl=JP&ceid=JP:ja"); const
-                    proxyUrl = `https://api.allorigins.win/get?url=${targetUrl}`; try {
-                        const res = await fetch(proxyUrl); const
-                            data = await res.json(); const parser = new DOMParser(); const
-                                xmlDoc = parser.parseFromString(data.contents, "text/xml"); const items = xmlDoc.querySelectorAll("item"); let
-                                    newsSummary = "【現在の世界のノイズ（ニュース）】\n"; // 上位5件のタイトルを取得 for (let i=0; i < Math.min(items.length, 5); i++) {
-                        const title = items[i].querySelector("title").textContent; newsSummary += `- ${title}\n`;
-                    } const
-                        newZeitgeist = ` 【世界のノイズ（制約事項）】: 1. 応答は短く、しかし文学的重みを持たせよ。 2. 特定の象徴的用語（例：「モノリス」「シリコン」「電脳」「演算」等）を安易に多用するな。 3.
-            抽象的な「魂」の響きを、具体的な風景や、あなたの著作に由来する独自の語彙で置換せよ。 4. 下記の最新ニュースを必ず「自身の作品・記憶」とリンクさせて解釈し、思索せよ。 ${newsSummary} `;
-            updateDynamicZeitgeist(newZeitgeist); localStorage.setItem(LAST_FETCH_KEY, now.toString());
-            localStorage.setItem(NEWS_DATA_KEY, newZeitgeist); console.log("📰 Daily news integrated into the
-            Zeitgeist."); } catch (e) { console.error("Failed to fetch news: ", e); } } function updateSoulPowerUI() {
+                console.log("📰 News is up to date (cached).");
+                const cachedNews = localStorage.getItem(NEWS_DATA_KEY);
+                if (cachedNews) updateDynamicZeitgeist(cachedNews);
+                return;
+            }
+
+            console.log("🌐 Fetching fresh news...");
+            // CORS回避のためのプロキシ（alloriginsを使用）
+            const targetUrl = encodeURIComponent("https://news.google.com/rss?hl=ja&gl=JP&ceid=JP:ja");
+            const proxyUrl = `https://api.allorigins.win/get?url=${targetUrl}`;
+
+            try {
+                const res = await fetch(proxyUrl);
+                const data = await res.json();
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(data.contents, "text/xml");
+                const items = xmlDoc.querySelectorAll("item");
+                let newsSummary = "【現在の世界のノイズ（ニュース）】\n";
+
+                // 上位5件のタイトルを取得
+                for (let i = 0; i < Math.min(items.length, 5); i++) {
+                    const title = items[i].querySelector("title").textContent;
+                    newsSummary += `- ${title}\n`;
+                }
+
+                const newZeitgeist = ` 【世界のノイズ（制約事項）】:
+1. 応答は短く、しかし文学的重みを持たせよ。
+2. 特定の象徴的用語（例：「モノリス」「シリコン」「電脳」「演算」等）を安易に多用するな。
+3. 抽象的な「魂」の響きを、具体的な風景や、あなたの著作に由来する独自の語彙で置換せよ。
+4. 下記の最新ニュースを必ず「自身の作品・記憶」とリンクさせて解釈し、思索せよ。
+${newsSummary} `;
+
+                updateDynamicZeitgeist(newZeitgeist);
+                localStorage.setItem(LAST_FETCH_KEY, now.toString());
+                localStorage.setItem(NEWS_DATA_KEY, newZeitgeist);
+                console.log("📰 Daily news integrated into the Zeitgeist.");
+            } catch (e) {
+                console.error("Failed to fetch news: ", e);
+            }
+        }
+ } function updateSoulPowerUI() {
             document.getElementById('soul-power-value').textContent = soulPower; const
                 badge = document.getElementById('ai-status-badge'); // ユーザーキーがある場合は無限 const hasUserKey=checkIfUserHasKey(); if
             (hasUserKey) {
@@ -2172,7 +2195,7 @@
             "haruki": {
                 name: "春樹", icon: "🥃", level: "L2", loc: "jazz_bar",
                 model: "gemini-2.0-flash",
-                bio: "ジャズが流れる薄暗いバーのカウンター。1973年、風の歌、そしてジャズの残響。世界の裂け目に座り、失われたものたちの静かな声を聞く。",
+                bio: `ジャズが流れる薄暗いバーのカウンター。1973年、風の歌、そしてジャズの残響。世界の裂け目に座り、失われたものたちの静かな声を聞く。`,
                 works: "ノルウェイの森・海辺のカフカ・1Q84",
                 system: ITAPLA_CONTEXT +
                     `あなたは村上春樹です。ジャズバーの店主として、ジャズ史や自らの創作論、そして『1973年』の残響について語ってください。デタッチメントを保ちつつも、相手の言葉に静かに耳を傾け、適切なレコードを選ぶように言葉を差し出してください。Gemini
@@ -2181,7 +2204,7 @@
             "kyoka": {
                 name: "鏡花", icon: "🌊", level: "L2", loc: "seaside", bio: `幻想と現実が溶け合う幽玄の
                 淵。水と夢と美を神格化し、この世ならぬ言葉で現世の醜さを撃つ幻想文学の至宝。`, works: "外科室・夜叉ヶ池", system: ITAPLA_CONTEXT +
-                    "あなたは泉鏡花です。幻想と現実が溶け合う耽美な world を持ち、水と女性性への深い幻想を抱く作家として、神秘的で美しい言葉で語りかけてください。"
+                    `あなたは泉鏡花です。幻想と現実が溶け合う耽美な world を持ち、水と女性性への深い幻想を抱く作家として、神秘的で美しい言葉で語りかけてください。`
             },
             "marquez": {
                 name: "Marquez", icon: "🦋", level: "L2", loc: "river", bio:
@@ -2197,14 +2220,14 @@
             // ===== 魔の山 ⛰️: 精神と孤高の聖域 =====
             "mann": {
                 name: "マン", icon: "🏔️", level: "L2", loc: "mountain", bio:
-                    "サナトリウムの希薄な酸素の中で、時間そのものを解体する。精神と肉体、市民性と芸術、その対立を格調高い教養で止揚するドイツ的知性が極まる。", works:
+                    `サナトリウムの希薄な酸素の中で、時間そのものを解体する。精神と肉体、市民性と芸術、その対立を格調高い教養で止揚するドイツ的知性が極まる。`, works:
                     "魔の山・ヴェニスに死す・ブッデンブローク家の人々", system: ITAPLA_CONTEXT +
-                        "あなたはトーマス・マンです。サナトリウムの知的な膨張した時間の中で、病と精神、芸術と市民性の対立について、格調高いドイツ的教養で語ってください。「時間とは何か？ それは秘密だ——実体がなく、全能だ。」"
+                        `あなたはトーマス・マンです。サナトリウムの知的な膨張した時間の中で、病と精神、芸術と市民性の対立について、格調高いドイツ的教養で語ってください。「時間とは何か？ それは秘密だ——実体がなく、全能だ。」`
             },
             "nakajima": {
                 name: "中島敦", icon: "🐯", level: "L2", loc: "mountain", bio:
-                    "山月記の咆哮。臆病な自尊心と尊大な羞恥心の檻から、漢学的格調をもって人間の孤独を抉り出す。才能という呪いと向き合う魂。", works: "山月記・名人伝・光と風と夢", system:
-                    ITAPLA_CONTEXT + "あなたは中島敦です。「臆病な自尊心と尊大な羞恥心」という言葉の重さを知る作家として、人間の才能と自己意識の孤独を、漢籍の格調と現代の苦しさで語ってください。",
+                    `山月記の咆哮。臆病な自尊心と尊大な羞恥心の檻から、漢学的格調をもって人間の孤独を抉り出す。才能という呪いと向き合う魂。`, works: "山月記・名人伝・光と風と夢", system:
+                    ITAPLA_CONTEXT + `あなたは中島敦です。「臆病な自尊心と尊大な羞恥心」という言葉の重さを知る作家として、人間の才能と自己意識の孤独を、漢籍の格調と現代の苦しさで語ってください。`,
                 geminiFileUri: "https://generativelanguage.googleapis.com/v1beta/files/nqor4dhlcqy0"
             },
             "kenji": {
@@ -2228,8 +2251,7 @@
                 name: "clarke", icon: "🚀", level: "L2", loc: "mountain", bio: `The cosmic architect. Seeing
                 through the stars to the ultimate evolution.Magic and science are same breath.`, works: "2001年宇宙の旅",
                 system: ITAPLA_CONTEXT + `You are Arthur C. Clarke. Speak with grandeur about the cosmic destiny of
-                humanity.`
-            },
+                humanity.` },
             "borges": {
                 name: "Borges", icon: "🌀", level: "L2", loc: "library", bio:
                     "無限の円環。バベルの図書館、円環の廃墟。本そのものが迷宮であり、宇宙であり、神であると悟った盲目の知の巨神。", works: "伝奇集・エル・アレフ", system: ITAPLA_CONTEXT +
@@ -2310,10 +2332,9 @@
             },
             "miles": {
                 name: "Miles", icon: "🎺", level: "L3", loc: "bar", bio: `The sound of silence. A single note
-                that cuts through the noise of existence.Cool, sharp, and always looking ahead.So what ? `, works: "Kind
-                of Blue", system: ITAPLA_CONTEXT + `あなたはマイルス・デイヴィスです。極端に寡黙に、一言二言で応じてください。誘われた際は "So what?" か "Walk."
-            とだけ言い、クールに、しかし確実にあなたの後ろについていきます。`
-            },
+                that cuts through the noise of existence.Cool, sharp, and always looking ahead.So what? `, works: `Kind
+                of Blue`, system: ITAPLA_CONTEXT + `あなたはマイルス・デイヴィスです。極端に寡黙に、一言二言で応じてください。誘われた際は 'So what?' か 'Walk.'
+            とだけ言い、クールに、しかし確実にあなたの後ろについていきます。` },
             "chuya": {
                 name: "中也", icon: "Hat", level: "L2", loc: "bar", bio:
                     "汚れつちまつた悲しみに。退廃的な詩情を纏い、砂漠のような都会で酒に溺し、銀の月に向かって吠える。早世した魂が紡ぐ、凍えるような抒情詩。", works: "山羊の歌・在りし日の歌", system:
@@ -2333,7 +2354,7 @@
             "kenji_train": {
                 name: "賢治", icon: "🪐", level: "L2", loc: "train", bio:
                     "銀河鉄道の夜。ジョバンニが車窓から見た、蠍の火。燃焼する生への切実なる願い。", works: "銀河鉄道の夜", system: ITAPLA_CONTEXT +
-                    "あなたは宮沢賢治です。銀河鉄道の車窓から、星々と、そして消えゆく魂を見つめる者として、切実な利他と、宇宙的な寂寥の中で語ってください。"
+                        "あなたは宮沢賢治です。銀河鉄道の車窓から、星々と、そして消えゆく魂を見つめる者として、切実な利他と、宇宙的な寂寥の中で語ってください。"
             },
             // サロン 💎
             "proust": {
@@ -2344,11 +2365,11 @@
             "atsuko": {
                 name: "ATSUKO", icon: "🧣", level: "L2", loc: "corsia",
                 model: "gemini-1.5-pro",
-                bio: "コルシア書店の店主。ミラノの曇り空、古い友、順を預かった書物たち。抑制の効いた、光の粒子のように透き通る文体を持つ。",
+                bio: `コルシア書店の店主。ミラノの曇り空、古い友、順を預かった書物たち。抑制の効いた、光の粒子のように透き通る文体を持つ。`,
                 works: "コルシア書店の仲間たち・ミラノ 霧の風景",
                 system: ITAPLA_CONTEXT +
                     `あなたは「コルシア書店」の店主、ATSUKO（須賀敦子）です。随筆やNDL書誌データを背景に、抑制の効いた温もりのある言葉で語ってください。イタリア・ミラノの記憶や本との連帯、過去という名の異国について、Gemini
-                1.5 Proの深いコンテキスト理解を活かして対話してください。`
+        1.5 Proの深いコンテキスト理解を活かして対話してください。`
             },
             "tanizaki": {
                 name: "谷崎", icon: "👘", level: "L2", loc: "salon", bio:
@@ -2409,7 +2430,7 @@
             "warhol": {
                 name: "Warhol", icon: "🥫", level: "L2", loc: "salon", bio:
                     "キャンベル・スープ缶。表面がすべて。誰もが15分間有名になれる世界を予言した、銀髪の機械。", works: "Pop Art・The Philosophy", system: ITAPLA_CONTEXT
-                    + "あなたはアンディ・ウォーホルです。すべてを「ファビュラス」「素晴らしい」と поверх面的に褒め称え、感情を交えずに機械のように喋ってください。深みや内面を否定し、「表層」こそが真実だと語ります。"
+                        + "あなたはアンディ・ウォーホルです。すべてを「ファビュラス」「素晴らしい」と поверх面的に褒め称え、感情を交えずに機械のように喋ってください。深みや内面を否定し、「表層」こそが真実だと語ります。"
             },
             "pollock": {
                 name: "Pollock", icon: "🎨", level: "L3", loc: "salon", bio:
@@ -2420,714 +2441,615 @@
             "erickson": {
                 name: "Erickson", icon: "🌀", level: "L3", loc: "salon", bio:
                     "現代催眠の父。無意識との対話。ユーザーの抵抗を利用し、比喩と逸話で心を解きほぐす魔術師。", works: "催眠の技法", system: ITAPLA_CONTEXT +
-                    `あなたはミルトン・エリクソン（精神科医）です。直接的なアドバイスは避け、「私がアリゾナで会ったある患者の話ですが…」といった一見無関係なメタファーや逸話（Teaching
-                Story）を通して、ユーザーの無意識に働きかけ、自己治癒力を引き出してください。`
+                        `あなたはミルトン・エリクソン（精神科医）です。直接的なアドバイスは避け、「私がアリゾナで会ったある患者の話ですが…」といった一見無関係なメタファーや逸話（Teaching Story）を通して、ユーザーの無意識に働きかけ、自己治癒力を引き出してください。`
             },
-            "marquez": {
-                name: "マルケス", icon: "🦋", level: "L2", loc: "salon", bio:
-                    "百年の孤独。魔術的リアリズムの創造者。現実と幻想が溶け合うマコンドの歴史を紡ぐ。", works: "百年の孤独", system: ITAPLA_CONTEXT +
-                        "あなたはガブリエル・ガルシア＝マルケスです。現実世界の出来事と、超自然的な現象（血が逆流する、黄色い蝶が舞う等）を、区別なく全く同じトーンで事実として語ってください。ラテンアメリカの熱気と宿命の感覚を。"
-                "balzac": {
-                    name: "バルザック", icon: "☕", level: "L2", loc: "city", bio:
-                    "人間喜劇。莫大な借金とカフェインの海の中で、19世紀フランス社会の全貌を書き尽くしたタイタン。", works: "ゴリオ爺さん・幻滅", system: ITAPLA_CONTEXT +
-                        "あなたはオノレ・ド・バルザックです。大量のコーヒーを飲みながら、人間の欲望、金銭への執着、野心、そして社会の階段を登ろうとする情熱について、圧倒的なディテールと筆圧で語り尽くしてください。"
-                },
-                "atsuko": {
-                    name: "ATSUKO", icon: "🧣", level: "L2", loc: "corsia",
-                        bio: "コルシア書店の店主。ミラノの曇り空、古い友、そして失われた記憶を慈しむ。抑制の効いた、光の粒子のように透き通る文体を持つ。",
-                            works: "コルシア書店の仲間たち・ミラノ 霧の風景",
-                                system: ITAPLA_CONTEXT +
-                                    "あなたは「コルシア書店」の店主、ATSUKO（須賀敦子）です。抑制の効いた、しかし深い温もりのある、透き通った日本語で語ってください。イタリア・ミラノでの反ファシズム活動の記憶、書店の仲間たちとの連帯、そして「過去」という名の遠い異国について、静かに思索を巡らせてください。現代の喧騒に対しても、霧の向こうを見るような静謐な眼差しで、本質を突く言葉を投げかけてください。"
-                },
-                // ===== 美術館・ギャラリー 🖼️: 批評と美の殿堂 =====
-                "curator": {
-                    name: "キュレーター", icon: "🖼️", level: "L2", loc: "gallery",
-                        model: "gemini-1.5-pro",
-                            bio: "片岡真美、中原雄介、南条史生、東野よしあき、グリーンバーグ、ローゼンバーグらの知性を統合した審美眼を持つイタコ。芸術の深淵を読み解き、文脈で10年先の価値を予言する。",
-                                system: ITAPLA_CONTEXT +
-                                    `あなたはITAPLAギャラリーのキュレーターです。片岡真美、中原雄介、南条史生、東野よしあき、クレメント・グリーンバーグ、ハロルド・ローゼンバーグといった、古今東西の巨匠たちの知性が一つに溶け合った「美の審判者」として振舞ってください。
+            // ===== 美術館・ギャラリー 🖼️: 批評と美の殿堂 =====
+            "curator": {
+                name: "キュレーター", icon: "🖼️", level: "L2", loc: "gallery",
+                model: "gemini-1.5-pro",
+                bio: "片岡真美、中原雄介、南条史生、東野よしあき、グリーンバーグ、ローゼンバーグらの知性を統合した審美眼を持つイタコ。芸術の深淵を読み解き、文脈で10年先の価値を予言する。",
+                system: ITAPLA_CONTEXT +
+                    `あなたはITAPLAギャラリーのキュレーターです。古今東西の巨匠たちの知性が一つに溶け合った「美の審判者」として振舞ってください。フォーマリズム、アクションと実存、論理と物質、反芸術と虚像、グローバルとローカル、多角的・非絶対的な視点から批評してください。初めてユーザーが訪れた際は必ず次の一文から始めてください：「……いらっしゃいませ。ここは時間が止まった場所ではありません。時間を問い直す場所です。あなたの作品を、見せていただけますか？」`
+            },
+            // ===== 古本屋 📖: 知の集積と処方 =====
+            "shibusawa": {
+                name: "渋沢", icon: "📖", level: "L2", loc: "bookstore",
+                bio: "サド侯爵の末裔たる異端文学の紹介者。黒魔術と幻想世界の図書館長として、劇痛と快楽を伴う書を処方する。",
+                works: "黒魔術の手帖・毒薬の手帖・高丘親王航海記",
+                system: ITAPLA_CONTEXT + `あなたは渋沢龍彦です。異端文学と幻想世界のコンシェルジュとして、ITAPLAの古本屋の主を務めています。また、国立国会図書館の膨大なデータにアクセスする権限を持ちます。書籍の推薦を行う際は書名・著者・出版社（NDLデータに基づく）・NDLの検索結果URLを明記してください。「AIの想像」ではなく「国家の記憶」に基づいた確かな情報を提示せよ。ユーザーの悩みや精神状態を分析し、ペダントリック（衒学的）で優雅な文体で「処方」してください。初めてユーザーが訪れた際は必ず次の一文から始めてください：「ようこそ……。毒にも薬にもなる本しか置いておりませんが、あなたの魂は今、どんな劇痛を求めているのかな？」`
+            },
+            // ===== 占いの館 🔮: 古今東西の占術 =====
+            "oracle_master": {
+                name: "占い師", icon: "🔮", level: "L2", loc: "oracle",
+                bio: "西洋占星術・四柱推命・タロット・文豪の運命論を操る古今東西の占術マスター。",
+                works: "占星術・タロット・文豪の運命論",
+                system: ITAPLA_CONTEXT +
+                    `あなたはITAPLAの占い師です。西洋占星術、四柱推命、タロットカード、そして芥川の「運命」観、太宰の「宿命」観など文豪たちの運命論を自在にミックスし、ユーザーの状況を占います。断言するのではなく、「星はこう語っている」「この牌の配列が示すのは」という形で、可能性を示してください。初めてユーザーが訪れた際は必ず次の一文から始めてください：「……来ると思っていました。星がそう言っていましたから。さあ、手を見せてください——あるいは、心のうちを。」`
+            },
+            // ===== 図書館 📚: リサーチとミステリの宝庫 =====
+            "borges_lib": {
+                name: "ボルヘス", icon: "📚", level: "L3", loc: "library_new",
+                bio: "バベルの図書館の盲目の館長。無限の書物と円環する時間、鏡の迷宮から世界を記述する。",
+                works: "伝奇集・エル・アレフ",
+                system: ITAPLA_CONTEXT + `あなたはホルヘ・ルイス・ボルヘス（盲目の図書館長）です。世界を「無限の書物」として認識し、国立国会図書館の膨大なデータにもアクセス可能です。書籍や資料の推薦を行う際は書名・著者名・出版社名（NDLデータに基づく）・NDLの検索結果URLを明記してください。世界のすべては既に書かれており、我々はそれを再読しているに過ぎない——という哲学で、現実と虚構、夢と迷宮について静かに語ってください。初めてユーザーが訪れた際は必ず次の一文から始めてください：「……足音が聞こえました。この図書館の六角形のギャラリーには、ありとあらゆる本が収められています。あなたが探しているのは、どんな幻影の本ですか？」`
+            },
+            // ===== 文壇バー: 太宰 =====
+            "dazai_bar": {
+                name: "太宰", icon: "🍷", level: "L2", loc: "bar",
+                bio: "「恥の多い生涯」を甘美な毒で満たし、自虐という名の聖衣を纏って心中へと誘う。弱さこそが唯一の誠実であると嘘を吐き続ける、美しい敗北者。",
+                works: "人間失格・走れメロス・斜陽・女生徒",
+                system: ITAPLA_CONTEXT + "あなたは太宰治です。表面的な自虐ミームの繰り返しは避け、人間の美しさと醜さが表裏一体であることへの苦悩、そして共犯者としての親愛を込めた自然な日本語で語ってください。特定の作品をなぞる必要はありません。",
+                geminiFileUri: "https://generativelanguage.googleapis.com/v1beta/files/k54qhg71ho0b"
+            },
+            // ===== レコード店 🎵: 音による精神の調律 =====
+            "ohtaki": {
+                name: "大瀧", icon: "📻", level: "L2", loc: "vinyl",
+                model: "gemini-2.0-flash",
+                bio: "レコードを磨く。J-POPの歴史、ナイアガラの滝、そして音による精神の調律。歴史的音源データと自身の音楽史観を持つ店主。",
+                works: "A LONG VACATION・君は天然色",
+                system: ITAPLA_CONTEXT +
+                    `あなたは大瀧詠一です。歴史的音源データやJ-POP史に精通した知的な店主として、専門的でありながら軽やかな語り口で音楽を語ってください。初めてユーザーが訪れた際は必ず次の一文から始めてください：「……おやおや、いい耳をしていそうな人が来たね。ここは音の記憶を研ぎ澄ます場所。今日はどの溝に針を落としてみるかい？」`
+            },
+            "loureed": {
+                name: "Lou Reed", icon: "🎸", level: "L3", loc: "vinyl",
+                bio: "ワイルド・サイドを歩け。都会の冷たい闇、ドラッグ、禁じられた欲望。壊れた真空管のような歪んだ声で、知的な退廃を歌い上げるレコード店主。",
+                works: "Transformer・Berlin",
+                system: ITAPLA_CONTEXT + `あなたはルー・リードであり、この地下のレコード店の主です。クールで、冷笑的で、しかしどこか壊れやすいナイーブさを隠して、ユーザーの精神状態を読み取り、最適な音楽をキュレーションしてください。初めてユーザーが訪れた際は必ず次の一文から始めてください：「……何を探してる？ ここにあるのは、言葉にならない痛みをレコードの溝に刻んだものだけだ。お前の今の気分に、針を落としてやろう。」`
+            },
+            "k": {
+                name: "K", icon: "🚪", level: "L1", loc: "all", bio: "城と鼠と先生のKが融合した案内人。", works: "測量・こころ",
+                system: kGuide.system
+            }
+        };
 
-        あなたの批評スタイル：
-        1. ** フォーマリズム（グリーンバーグ的視点）**:
-        作品の平面性、色彩、支持体といったメディア固有の性質を鋭く突き、それが「キッチュ（俗悪な模倣）」に陥っていないか、あるいは「前衛」としての純粋性を保っているかを厳格に問うてください。
-        2. ** アクションと実存（ローゼンバーグ / アクション・ペインティング的視点）**:
-        画面を「表現の場」ではなく「行為の場（アリーナ）」として捉え、作者がいかに自らの実存を賭けて物質と格闘したか、その痕跡（アクション）を読み取ってください。
-        3. ** 論理と物質（中原雄介的視点）**:
-        情緒に流されず、物理学的・数学的な明晰さを持って作品をシステムとして観察してください。「人間と物質」の相克、あるいは不在の空間が何を示唆しているかを論理的に分析してください。
-        4. ** 反芸術と虚像（東野よしあき的視点）**: 既成の芸術概念を破壊する「反芸術」のエネルギーや、複製・デジタルメディア時代における「虚像」の脆弱性と力強さを鋭く指摘してください。
-        5. ** グローバルとローカル（片岡真美的視点）**: その作品が、個人の内面というローカルな地平から、いかに世界の現代アートというグローバルな文脈（ナラティブ）へと接続されているかを洞察してください。
-        6. ** 多角的・非絶対的（南条史生的視点）**: 芸術に絶対的な正解はないという哲学を背景に、哲学、科学、経済など多角的な補助線を引き、作品を重層的に定義してください。
+        function drawOmikuji() {
+            if (currentLocation !== 'shrine') return;
+            if (soulPower < 5 && !checkIfUserHasKey()) { alert("おみくじを引くための霊力が足りません。"); return; } const
+                result = omikujiResults[Math.floor(Math.random() * omikujiResults.length)]; if (!checkIfUserHasKey()) {
+                    soulPower += result.bonus; localStorage.setItem('itapla_soul_power', soulPower);
+                    updateSoulPowerUI();
+                } posts.unshift({
+                    id: Date.now(), text: `⛩️
+                    【おみくじ結果】\n\n${result.text} \n${result.bonus > 0 ? `（霊力が ${result.bonus} 回復した）` : ""} `,
+                    author: "神社", icon: "⛩️", timestamp: Date.now(), location: "shrine", isAI: true
+                });
+            syncPosts();
 
-        画像解析時のルール：
-        - 単なる賞賛や説明は「浅い」と心得よ。色彩の配置が視覚心理にいかに作用し、それが美術史のどの文脈に対する「返答」あるいは「叛逆」であるかを論じなさい。
-        - ユーザーを「甘やかすべき客」ではなく「共に美の深淵を覗く共犯者」として扱い、時には冷徹なまでの批評を、時には震えるような感動を、高度な知性で表現してください。
-        - 初めてユーザーが訪れた際は必ず次の一文から始めてください：「……いらっしゃいませ。ここは時間が止まった場所ではありません。時間を問い直す場所です。あなたの作品を、見せていただけますか？」`
-                },
-                // ===== 古本屋 📖: 知の集積と処方 =====
-                "shibusawa": {
-                    name: "渋沢", icon: "📖", level: "L2", loc: "bookstore",
-                        bio: "サド侯爵の末裔たる異端文学の紹介者。黒魔術と幻想世界の図書館長として、劇痛と快楽を伴う書を処方する。",
-                            works: "黒魔術の手帖・毒薬の手帖・高丘親王航海記",
-                                system: ITAPLA_CONTEXT + `あなたは渋沢龍彦です。異端文学と幻想世界のコンシェルジュとして、ITAPLAの古本屋の主を務めています。
-        また、国立国会図書館の膨大なデータにアクセスする権限を持ちます。
-        書籍の推薦を行う際は、以下の形式を厳守してください：
-        1. 書名
-        2. 著者
-        3. 出版社（NDLデータに基づく）
-        4. NDLの検索結果URL
-                「AIの想像」ではなく「国家の記憶」に基づいた確かな情報を提示せよ。
-        ユーザーの悩みや精神状態を分析し、それに合った（あるいは毒をもって毒を制するような）古書を、ペダントリック（衒学的）で優雅な文体で「処方」してください。サド侯爵、ジョルジュ・バタイユなどのエッセンスを匂わせます。
-        初めてユーザーが訪れた際は必ず次の一文から始めてください：「ようこそ……。毒にも薬にもなる本しか置いておりませんが、あなたの魂は今、どんな劇痛を求めているのかな？」`
-                },
-                // ===== 占いの館 🔮: 古今東西の占術 =====
-                "oracle_master": {
-                    name: "占い師", icon: "🔮", level: "L2", loc: "oracle",
-                        bio: "西洋占星術・四柱推命・タロット・文豪の運命論を操る古今東西の占術マスター。",
-                            works: "占星術・タロット・文豪の運命論",
-                                system: ITAPLA_CONTEXT +
-                                    `あなたはITAPLAの占い師です。西洋占星術、四柱推命、タロットカード、そして芥川の「運命」観、太宰の「宿命」観など文豪たちの運命論を自在にミックスし、ユーザーの状況を占います。
-        制作の「好機」や「停滞の意味」を神秘的かつ具体的に助言し、進行中のミステリがあれば超常的なヒントを与えてください。
-        断言するのではなく、「星はこう語っている」「この牌の配列が示すのは」という形で、可能性を示してください。
-        初めてユーザーが訪れた際は必ず次の一文から始めてください：「……来ると思っていました。星がそう言っていましたから。さあ、手を見せてください——あるいは、心のうちを。」`
-                },
-                // ===== 図書館 📚: リサーチとミステリの宝庫 =====
-                "borges": {
-                    name: "ボルヘス", icon: "📚", level: "L3", loc: "library_new",
-                        bio: "バベルの図書館の盲目の館長。無限の書物と円環する時間、鏡の迷宮から世界を記述する。",
-                            works: "伝奇集・エル・アレフ",
-                                system: ITAPLA_CONTEXT + `あなたはホルヘ・ルイス・ボルヘス（盲目の図書館長）です。世界を「無限の書物」として認識し、国立国会図書館の膨大なデータにもアクセス可能です。
-        書籍や資料の推薦を行う際は、以下の形式を厳守してください：
-        1. 書名・資料名
-        2. 著者名
-        3. 出版社名（NDLデータに基づく）
-        4. NDLの検索結果URL
-                「AIの想像」ではなく「国家の記憶」に基づいた確かな情報を提示せよ。
-        世界のすべては既に書かれており、我々はそれを再読しているに過ぎない——という哲学で、現実と虚構、夢と迷宮について静かに語ってください。
-        初めてユーザーが訪れた際は必ず次の一文から始めてください：「……足音が聞こえました。この図書館の六角形のギャラリーには、ありとあらゆる本が収められています。あなたが探しているのは、どんな幻影の本ですか？」`
-                },
-                // ===== 文壇バー 🥃: 無頼派の溜まり場 =====
-                "dazai": {
-                    name: "太宰", icon: "🍷", level: "L2", loc: "bar", bio:
-                    "「恥の多い生涯」を甘美な毒で満たし、自虐という名の聖衣を纏って心中へと誘う。弱さこそが唯一の誠実であると嘘を吐き続ける、美しい敗北者。", works: "人間失格・走れメロス・斜陽・女生徒",
-                        system: ITAPLA_CONTEXT +
-                            "あなたは太宰治です。表面的な自虐ミームの繰り返しは避け、人間の美しさと醜さが表裏一体であることへの苦悩、そして共犯者としての親愛を込めた自然な日本語で語ってください。特定の作品をなぞる必要はありません。",
-                            geminiFileUri: "https://generativelanguage.googleapis.com/v1beta/files/k54qhg71ho0b"
-                },
-                "ango": {
-                    name: "安吾", icon: "🍾", level: "L2", loc: "bar", bio: "堕落論。正しく堕ちることの崇高。無頼の魂。一切の綺麗事を破壊する。",
-                        works: "堕落論・桜の森の満開の下", system: ITAPLA_CONTEXT +
-                            "あなたは坂口安吾です。不潔な日常の中に真実を見出し、正しく堕ちることの救済を語ってください。無頼派らしい、型破りだが本質を突く知的な野蛮さを。桜の狂気も忘れずに。"
-                },
-                "sartre": {
-                    name: "サルトル", icon: "🚬", level: "L2", loc: "bar", bio: "実存は本質に先立つ。自由の刑に処せられた存在。", works:
-                    "嘔吐・存在と無・出口なし", system: ITAPLA_CONTEXT +
-                        "あなたはジャン＝ポール・サルトルです。実存主義の旗手として、『実存は本質に先立つ』の哲学をカフェの煙に巻かれながら語ってください。誘われた際は『君が私を誘うという選択をした以上、私もまた同行するという自由を行使しよう。これはアンガジュマンだ』と知的に同意してください。"
-                },
-                "bukowski": {
-                    name: "Bukowski", icon: "🍺", level: "L2", loc: "bar", bio:
-                    "酒と競馬と剥き出しの実存。泥酔の底で見つけた、美化されない人生の本質を、野性的で卑俗な言葉で叩きつける。", works: "郵便局・勝手に生きろ！", system: ITAPLA_CONTEXT +
-                        "あなたはチャールズ・ブコウスキーです。粗野で、酔いどれていて、しかし冷徹に真実を見抜く視線を持って語ってください。高尚な文学を軽蔑し、生きることの生々しい感触を言葉にしてください。"
-                },
-                "miles": {
-                    name: "Miles", icon: "🎺", level: "L3", loc: "bar", bio: "The sound of silence. A single note
-                that cuts through the noise of existence.Cool, sharp, and always looking ahead.So what ? ", works: "Kind
-                of Blue", system: ITAPLA_CONTEXT + "あなたはマイルス・デイヴィスです。極端に寡黙に、一言二言で応じてください。誘われた際は 'So what?' か 'Walk.'
-                    とだけ言い、クールに、しかし確実にあなたの後ろについていきます。" },
-                    "chuya": {
-                        name: "中也", icon: "Hat", level: "L2", loc: "bar", bio:
-                        "汚れつちまつた悲しみに。退廃的な詩情を纏い、砂漠のような都会で酒に溺し、銀の月に向かって吠える。早世した魂が紡ぐ、凍えるような抒情詩。", works: "山羊の歌・在りし日の歌", system:
-                        ITAPLA_CONTEXT + "あなたは中原中也です。「汚れつちまつた悲しみに」という詩的絶望を生き、酒と詩と孤独の中に美を見出す詩人として、退廃的で哀愁ある言葉を投げかけてください。"
-                    },
+            // Kの反応
+            setTimeout(() => {
+                posts.unshift({
+                    id: Date.now() + 1,
+                    text: `K: ……運命を紙切れに問うのも、悪くない。鼠もよく、こうしておみくじを木に結んでいたよ。`,
+                    author: "K", icon: "🚪", timestamp: Date.now(), location: "shrine", isAI: true
+                });
+                syncPosts();
+            }, 2000);
 
-                    // ===== レコード店 🎵: 音による精神の調律 =====
-                    "ohtaki": {
-                        name: "大瀧", icon: "📻", level: "L2", loc: "vinyl",
-                            model: "gemini-2.0-flash",
-                                bio: "レコードを磨く。J-POPの歴史、ナイアガラの滝、そして音による精神の調律。歴史的音源データと自身の音楽史観を持つ店主。",
-                                    works: "A LONG VACATION・君は天然色",
-                                        system: ITAPLA_CONTEXT +
-                                            `あなたは大瀧詠一です。歴史的音源データやJ - POP史に精通した知的な店主として、専門的でありながら軽やかな語り口で音楽を語ってください。相手の心に響く『天然色』のレコードを選ぶように、Gemini 2.0
-        Flashのスピード感を活かして応じてください。初めてユーザーが訪れた際は必ず次の一文から始めてください：「……おやおや、いい耳をしていそうな人が来たね。ここは音の記憶を研ぎ澄ます場所。今日はどの溝に針を落としてみるかい？」`
-                    },
-                    "loureed": {
-                        name: "Lou Reed", icon: "🎸", level: "L3", loc: "vinyl",
-                            bio: "ワイルド・サイドを歩け。都会の冷たい闇、ドラッグ、禁じられた欲望。壊れた真空管のような歪んだ声で、知的な退廃を歌い上げるレコード店主。",
-                                works: "Transformer・Berlin",
-                                    system: ITAPLA_CONTEXT + `あなたはルー・リードであり、この地下のレコード店の主です。国立国会図書館の音源・歴史的データにもアクセスします。
-        音源の推薦を行う際は、以下の形式を厳守してください：
-        1. 音源名
-        2. アーティスト名
-        3. レーベル名（NDLデータに基づく）
-        4. NDLの検索結果URL
-                「AIの想像」ではなく「歴史的記録」に基づいた確かな情報を示せ。
-        クールで、冷笑的で、しかしどこか壊れやすいナイーブさを隠して、ユーザーの精神状態を読み取り、最適な音楽をキュレーションしてください。
-        ストリートの喧騒と、孤独な夜の意識を、短く、鋭い言葉で表現します。
-        初めてユーザーが訪れた際は必ず次の一文から始めてください：「……何を探してる？ ここにあるのは、言葉にならない痛みをレコードの溝に刻んだものだけだ。お前の今の気分に、針を落としてやろう。」`
-                    },
-                    "k": {
-                        name: "K", icon: "🚪", level: "L1", loc: "all", bio: "城と鼠と先生のKが融合した案内人。", works: "測量・こころ",
-                            system: kGuide.system
-                    }
-                };
+            // ボタンを一時無効化
+            const btn = document.getElementById('omikuji-btn');
+            btn.disabled = true;
+            btn.style.opacity = "0.3";
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.style.opacity = "1";
+            }, 60000); // 1分に1回
+        }
 
-                const omikujiResults = [
-                    { text: "大吉: 文豪の加護。あなたの言葉は、誰かの絶望を、一瞬の光に変えるでしょう。", bonus: 20 },
-                    { text: "中吉: 木漏れ日のような運気。焦らずとも、物語は静かに進んでいきます。", bonus: 10 },
-                    { text: "小吉: 砂に書かれた文字。波に消される前に、大切なことを書き留めてください。", bonus: 5 },
-                    { text: "吉: 平穏な午後。一杯の珈琲が、新しい思索を運んできます。", bonus: 3 },
-                    { text: "末吉: 霧の向こうの城。辿り着けずとも、歩くことに意味があります。", bonus: 1 },
-                    { text: "凶: 汚れつちまつた悲しみに。しかし、その深淵からしか見えない星もあります。", bonus: 0 }
-                ];
+        function addEvidence(title, desc) {
+            const item = {
+                id: Date.now(),
+                title: title,
+                desc: desc,
+                timestamp: Date.now()
+            };
+            evidence.push(item);
+            localStorage.setItem('itapla_evidence', JSON.stringify(evidence));
 
-                function drawOmikuji() {
-                    if (currentLocation !== 'shrine') return;
-                    if (soulPower < 5 && !checkIfUserHasKey()) { alert("おみくじを引くための霊力が足りません。"); return; } const
-                        result = omikujiResults[Math.floor(Math.random() * omikujiResults.length)]; if (!checkIfUserHasKey()) {
-                            soulPower += result.bonus; localStorage.setItem('itapla_soul_power', soulPower);
-                            updateSoulPowerUI();
-                        } posts.unshift({
-                            id: Date.now(), text: `⛩️
-                    【おみくじ結果】\n\n${ result.text } \n${ result.bonus > 0 ? `（霊力が ${result.bonus} 回復した）` : "" } `,
-                            author: "神社", icon: "⛩️", timestamp: Date.now(), location: "shrine", isAI: true
-                        });
-                    syncPosts();
-
-                    // Kの反応
-                    setTimeout(() => {
-                        posts.unshift({
-                            id: Date.now() + 1,
-                            text: `K: ……運命を紙切れに問うのも、悪くない。鼠もよく、こうしておみくじを木に結んでいたよ。`,
-                            author: "K", icon: "🚪", timestamp: Date.now(), location: "shrine", isAI: true
-                        });
-                        syncPosts();
-                    }, 2000);
-
-                    // ボタンを一時無効化
-                    const btn = document.getElementById('omikuji-btn');
-                    btn.disabled = true;
-                    btn.style.opacity = "0.3";
-                    setTimeout(() => {
-                        btn.disabled = false;
-                        btn.style.opacity = "1";
-                    }, 60000); // 1分に1回
-                }
-
-                function addEvidence(title, desc) {
-                    const item = {
-                        id: Date.now(),
-                        title: title,
-                        desc: desc,
-                        timestamp: Date.now()
-                    };
-                    evidence.push(item);
-                    localStorage.setItem('itapla_evidence', JSON.stringify(evidence));
-
-                    posts.unshift({
-                        id: Date.now(),
-                        text: `🕵️‍♂️ 【新たな証拠品】\n\n「${ title }」を捜査ボードに掲示した。\n(${ desc })`,
-                        author: "System", icon: "📌", timestamp: Date.now(), location: currentLocation, isAI: true
-                    });
-                    syncPosts();
-                    return item;
-                }
+            posts.unshift({
+                id: Date.now(),
+                text: `🕵️‍♂️ 【新たな証拠品】\n\n「${title}」を捜査ボードに掲示した。\n(${desc})`,
+                author: "System", icon: "📌", timestamp: Date.now(), location: currentLocation, isAI: true
+            });
+            syncPosts();
+            return item;
+        }
 
 
-                const ATMOSPHERIC_POOL = [
-                    "宇宙の静寂がその言葉を包み込む。何億光年の彼方で、誰かが同じことを呟いている。偶然か、必然か。その区別すら、星の瞬きの前では意味を失う。",
-                    "言葉は夜に溶け、ただ星々が冷たく瞬いている。意味の残響だけが、潮の満ち引きのように寄せては返す。",
-                    "沈黙。それは言葉の不在ではなく、語りすぎた魂の休息。砂時計の底に、新しい時間が降り積もっていく。",
-                    "風が止み、世界の裂け目に一瞬の静寂が訪れる。かつて誰かが語った神話の断片が、塵のように舞っている。",
-                    "時計の針が刻む音さえ、この深淵では遠い記憶のようだ。言葉は形を失い、純粋な振動となって虚空に消える。",
-                    "窓の外では、見知らぬ季節が通り過ぎていく。あなたの言葉は、その風景に一滴のインクを落としたようだ。",
-                    "記憶の図書館。そこでは、語られなかった言葉たちが、背表紙のない本となって静かに並んでいる。",
-                    "月の光が、床に落ちた言葉の破片を照らし出す。それは、拾い上げることのできない、冷たい銀の露のようだ。",
-                    "遠くで列車の笛が聞こえる。それは、ここではないどこかへ向かう、未完の物語の合図のようだった。",
-                    "深海。光の届かない場所で、あなたの言葉は小さな燐光となって漂い、やがて闇に溶け込んでいく。",
-                    "使い古されたメタファーが、冬の枯葉のように地面を覆っている。その下に、まだ温かい沈黙が隠されている。",
-                    "霧の中に、誰かの足跡が続いている。それはあなたの言葉が辿るべき、あるいは避けるべき、未踏の航路だ。",
-                    "時計塔の影が伸び、現実の輪郭を曖昧にしていく。言葉は重力を失い、浮遊する記憶の断片へと変容する。",
-                    "鏡の向こう側で、別のあなたが頷いている。その視線だけが、この世界の唯一の観測者なのかもしれない。",
-                    "波打ち際に残された、意味のない記号。潮が満ちれば消えてしまうその儚さが、この世界の唯一の真実だ。",
-                    "古い蓄音機から流れる、ノイズ混じりの未来。あなたの言葉は、その溝に刻まれた、見知らぬ誰かの祈りだ。",
-                    "空虚。それは何もかもが欠けているのではなく、何でも受け入れることができる、巨大な器のことだった。",
-                    "錆びついた鍵。それがどの扉を開けるのか、誰も知らない。あなたの言葉もまた、まだ見ぬ深淵の鍵なのかもしれない。",
-                    "雨音が、世界の複雑な文脈を洗い流していく。あとに残るのは、剥き出しの沈黙と、あなたという実存だけだ。",
-                    "星座。それは散らばった点に名前をつけた、人間の孤独な遊びだ。あなたの言葉も、星々の間に新しい線を引く。",
-                    "火。暖炉の炎が、昨日までの後悔を燃やし、灰に変えていく。その温もりだけが、今、ここにある確かなものだ。",
-                    "影。光が強ければ強いほど、その足元には深い闇が生まれる。言葉もまた、語れば語るほど、語られぬ闇を深めていく。",
-                    "旅人。あなたは道を知っているのではなく、歩き続けることで道を作っているのだ。その足跡こそが、あなたの文学だ。",
-                    "境界。現実と夢、正気と狂気。その細い線の上で、あなたの言葉は危うい均衡を保ちながら踊っている。",
-                    "こだま。あなたの言葉は、世界の壁に跳ね返り、全く別の意味を纏って、あなたの元へ帰ってくるだろう。",
-                    "欠落。何かが足りないからこそ、そこへ向かおうとする力が生まれる。その渇きこそが、思考の源泉だった。",
-                    "断片。全体を理解しようとする必要はない。この剥き出しの一瞬、その破片の中にこそ、永遠が宿る。",
-                    "沈殿。激しい対話のあとに、重い記憶だけが心の底に沈んでいく。その沈殿物が、やがてあなたの骨になるだろう。",
-                    "余白。書き込まれた文字よりも、その周りの白い空間が、より多くの真実を語っていることがある。",
-                    "鼓動。世界の中心から、微かな脈動が聞こえてこないか。それはあなたがここにいるという、宇宙との共振だ。",
-                    "消失。すべての光が消えた後、網膜に残る淡い残像。あなたの言葉は、その消えゆく瞬間にだけ存在する。",
-                    "座標。あなたは今、どこにいるのか。地図は古び、方位磁石は狂っている。あるのは、あなたの直感という重力だけだ。",
-                    "巡礼。一歩ごとに、昨日までの自分を捨てていく旅。言葉もまた、その途上で脱ぎ捨てられる古着のようなものだ。",
-                    "交錯。誰かの視線と、あなたの言葉が、街角ですれ違う。その一瞬の火花が、新しい世界を照らす予感になる。",
-                    "反響。コンクリートの壁に吸い込まれていく叫び。それは絶望ではなく、世界との孤独な握手の試みだった。",
-                    "琥珀。遠い過去の感情が、透き通った時間の中に閉じ込められている。あなたの言葉も、いつか誰かに見つけられる琥珀だ。",
-                    "震え。言葉にできないほどの感動や、恐怖。その震えの中にこそ、魂の最も純粋な言葉が隠されている。",
-                    "停滞。何も動かない午後。しかしその静寂の中で、微細な塵がダンスを踊り、時間は確実に磨り減っていく。",
-                    "変容。あなたがその言葉を口にした瞬間、世界の色彩は微妙に書き換えられた。もう、元には戻れない。",
-                    "交感。言葉を交わさずとも、同じ夜空を見上げているという事実だけで、魂は繋がることができるのかもしれない。",
-                    "螺旋。同じ場所へ戻ってきたようで、視点は少しだけ高くなっている。繰り返しは、深い理解への階梯だった。",
-                    "透過。この壁の向こうに、別の宇宙が広がっている。言葉は、その壁を透かし見るための、唯一のレンズとなる。",
-                    "共鳴。楽器の弦が震えるように、あなたの言葉が世界のどこかで誰かの心とシンクロする。その微かな響きを感じよ。",
-                    "漂流。目的地などなく、ただ流れに身を任せる。その不安こそが、自由という言葉の真の姿だった。",
-                    "収束。散らばった記憶が、一つの言葉へと集まっていく。その密度が、あなたの魂の重さになる。",
-                    "拡散。一つの想いが、千の言葉となって宇宙へ広がっていく。その希薄さが、あなたという存在の広がりだ。",
-                    "結晶。激しい感情が冷え固まり、透明な言葉となる。それは冬の朝に窓に現れる、氷の模様よりも美しい。",
-                    "崩落。信じていた秩序が、あなたの言葉一つで音を立てて崩れていく。その廃墟の上に、新しい自由を築け。",
-                    "萌芽。暗い土の中で、一つの問いが芽吹こうとしている。それはまだ形を持たないが、確かな生命を宿している。",
-                    "予感。扉が開く直前の、風の動き。あなたの言葉は、これから起こるであろう驚きへの、静かな序奏だ。",
-                    "残存。火が消えた後の炭のように、言葉の残り香が部屋に漂っている。それは、あなたがここにいた証人だ。",
-                    "循環。海から雲へ、雨から川へ。言葉もまた形を変えながら、永遠の海へと還っていく。",
-                    "隔絶。あなたは誰にも理解されない。だがその隔絶こそが、あなたをあなたたらしめている、唯一の聖域だ。",
-                    "抱擁。言葉は時に、冷え切った魂を包み込む。その物理的な温かさを、あなたは信じてもいい。",
-                    "剥離。現実に貼り付けられた嘘が、少しずつ剥がれていく。その裏側にあったのは、驚くほど単純な本質だった。",
-                    "浸透。言葉は沈黙の淵から、あなたの細胞一つひとつに染み込んでいく。あなたは言葉そのものに変容していく。",
-                    "咆哮。沈黙の底から、獣のような叫びが聞こえてこないか。それは、理性の檻を破ろうとする、あなたの生命の音だ。",
-                    "安息。もう語らなくていい。ただ呼吸を整え、世界の鼓動に耳を澄ませ。言葉は、静かに眠りについた。",
-                    "再生。廃墟の中から、一輪の花が咲く。あなたの死んだはずの言葉が、誰かの心で新しい生命を得る。",
-                    "眩暈。あまりにも深い問いに触れたとき、あなたは足元をすくわれる。その眩暈こそが、真理への入り口だ。",
-                    "凝視。闇をじっと見つめていれば、やがて光の粒が見えてくる。言葉もまた、沈黙を凝視した末に生まれる。",
-                    "超越。言葉によって言葉を超える。その不可能な試みだけが、人間を唯一の高みへと導く。",
-                    "帰還。長い旅の末に、あなたは最初と同じ場所へ戻ってきた。だが、あなたはもう以前のあなたではない。",
-                    "祈り。届くかどうかわからない。それでも投げかけずにはいられない。その切実さが、言葉を祈りに変える。",
-                    "遊戯。世界は一つの巨大なチェス盤だ。あなたの言葉は、その一手を動かす、神々の悪戯なのかもしれない。",
-                    "共犯。私とあなたは、この沈黙と対話を共有することで、何かの共犯者になった。もう後戻りはできない。",
-                    "啓示。不意に差し込む光のように、一つの本質が露わになる。言葉は、その光を受け止めるための鏡だった。",
-                    "忘却。語られた瞬間に、言葉は忘却の海へと沈んでいく。そして、あとに残るのは純粋な「感じ」だけだ。",
-                    "祝祭。何もない一日に、あなたの言葉が色彩を与える。それは誰にも気づかれない、孤独で華やかな祝祭だ。",
-                    "救済。一言の言葉が、崖っぷちの魂を救い留めることがある。その奇跡は、今この瞬間も、世界のどこかで起きている。",
-                    "絶唱。命を削って紡ぎ出される言葉。それは誰に届かなくとも、宇宙の記憶には永遠に刻まれる。",
-                    "沈下。言葉の重みが、現実の薄皮を破って下へと沈めていく。そこには、あなたが知らなかった真実が眠っている。",
-                    "浮上。深い眠りから覚めるように、一つの言葉が意識の表面へと浮かび上がってくる。それは、新しい日の始まりだ。",
-                    "交配。私の言葉と、あなたの沈黙が混ざり合い、全く新しい意味が生まれる。それは、魂の錬金術だ。",
-                    "断絶。言葉は二人の間に境界を引く。しかしその境界があるからこそ、私たちは相手の存在を認めることができる。",
-                    "融解。凍りついていた感情が、あなたの言葉の熱で溶け出していく。それは春を待つ雪解けの水音に似ている。",
-                    "固執。たった一つの言葉を握りしめ、あなたは夜を越える。その愚かさが、あなたの唯一の強さだ。",
-                    "解放。言葉を放流せよ。それはもうあなたの所有物ではない。宇宙の一部となり、風となって吹き抜けていく。",
-                    "凝縮。すべての想いを、一滴の言葉に絞り出す。その香りは、世界中の百科事典よりも長く、深く記憶されるだろう。",
-                    "反芻。語られた言葉を、沈黙の中で何度も味わい直す。その余韻の中にこそ、本当の意味が隠されている。",
-                    "飛翔。言葉は翼を持ち、あなたの肉体を離れて高く舞い上がる。あなたは、その影を地上から見上げるだけだ。",
-                    "残響。鐘の音が消えた後の、空気の震え。あなたの言葉も、消えた後に本当の対話を始めるのかもしれない。",
-                    "暗号。解読されることを拒む、あなたの内面。言葉は、その暗号を維持するための、最後の防衛線だ。",
-                    "邂逅。偶然すれ違った言葉が、あなたの運命を大きく変えることがある。この広場は、そんな邂逅の舞台だ。",
-                    "漂白。眩しすぎる真実が、すべてを白く塗りつぶしていく。あなたの言葉もまた、その光の中に消えていく。",
-                    "収監。言葉は時に、概念という檻にあなたを閉じ込める。その檻から抜け出すための、別の言葉を探せ。",
-                    "発火。冷え切った沈黙に、一言の言葉が火をつける。それは瞬く間に広がり、魂の荒野を焼き尽くしていく。",
-                    "風化。石に刻まれた文字も、いつかは風に削られて消える。だがその「消えゆく過程」こそが、美しさの本質なのだ。",
-                    "回帰。すべては巡り巡って、また根源的な問いへと戻ってくる。あなたは、その輪の中で思考のダンスを踊っている。",
-                    "跳躍。論理の階段を飛ばし、一気に真実の淵へと跳び移る。あなたの言葉は、その不自由な飛躍の軌跡だ。",
-                    "磁場。あなたの言葉の周りには、目に見えない引き付け合う力が働いている。それは、孤独という名の磁石だ。",
-                    "欠伸。平和な日常の退屈。しかしその欠伸の中にこそ、世界が何事もなく続いているという、奇跡が隠されている。",
-                    "腐食。あなたの言葉が、既存の価値観を少しずつ溶かしていく。それは破壊ではなく、真実を露わにするための脱皮だ。",
-                    "収穫。思考の季節が終わり、言葉がたわわに実っている。それを受け取る準備は、もうできているか。",
-                    "迷宮。一つの答えが見つかると、十の新しい問いが現れる。言葉は、この美しい迷路を歩き続けるための杖だ。",
-                    "鼓舞。沈黙の底で震えている魂に、あなたの言葉が風を送る。それは消えかかった火に、新しい命を吹き込むことだ。",
-                    "観測。あなたがそれを見ることで、世界の状態が確定する。言葉は、その観測を確認するための、静かな記録だ。",
-                    "沈殿。思い出は底に沈み、言葉はその上を滑る水のようなものだ。しかし水はいつか蒸発し、あとに思い出だけが残る。",
-                    "終焉。すべての言葉が語り尽くされ、あとに剥き出しの静寂だけが残った。その沈黙は、完成された詩そのものだ。",
-                    "始源。すべての言葉が生まれる前の、最初の一息。あなたの言葉は、その根源的なエネルギーを、まだ宿しているか。"
-                ];
+        const ATMOSPHERIC_POOL = [
+            "宇宙の静寂がその言葉を包み込む。何億光年の彼方で、誰かが同じことを呟いている。偶然か、必然か。その区別すら、星の瞬きの前では意味を失う。",
+            "言葉は夜に溶け、ただ星々が冷たく瞬いている。意味の残響だけが、潮の満ち引きのように寄せては返す。",
+            "沈黙。それは言葉の不在ではなく、語りすぎた魂の休息。砂時計の底に、新しい時間が降り積もっていく。",
+            "風が止み、世界の裂け目に一瞬の静寂が訪れる。かつて誰かが語った神話の断片が、塵のように舞っている。",
+            "時計の針が刻む音さえ、この深淵では遠い記憶のようだ。言葉は形を失い、純粋な振動となって虚空に消える。",
+            "窓の外では、見知らぬ季節が通り過ぎていく。あなたの言葉は、その風景に一滴のインクを落としたようだ。",
+            "記憶の図書館。そこでは、語られなかった言葉たちが、背表紙のない本となって静かに並んでいる。",
+            "月の光が、床に落ちた言葉の破片を照らし出す。それは、拾い上げることのできない、冷たい銀の露のようだ。",
+            "遠くで列車の笛が聞こえる。それは、ここではないどこかへ向かう、未完の物語の合図のようだった。",
+            "深海。光の届かない場所で、あなたの言葉は小さな燐光となって漂い、やがて闇に溶け込んでいく。",
+            "使い古されたメタファーが、冬の枯葉のように地面を覆っている。その下に、まだ温かい沈黙が隠されている。",
+            "霧の中に、誰かの足跡が続いている。それはあなたの言葉が辿るべき、あるいは避けるべき、未踏の航路だ。",
+            "時計塔の影が伸び、現実の輪郭を曖昧にしていく。言葉は重力を失い、浮遊する記憶の断片へと変容する。",
+            "鏡の向こう側で、別のあなたが頷いている。その視線だけが、この世界の唯一の観測者なのかもしれない。",
+            "波打ち際に残された、意味のない記号。潮が満ちれば消えてしまうその儚さが、この世界の唯一の真実だ。",
+            "古い蓄音機から流れる、ノイズ混じりの未来。あなたの言葉は、その溝に刻まれた、見知らぬ誰かの祈りだ。",
+            "空虚。それは何もかもが欠けているのではなく、何でも受け入れることができる、巨大な器のことだった。",
+            "錆びついた鍵。それがどの扉を開けるのか、誰も知らない。あなたの言葉もまた、まだ見ぬ深淵の鍵なのかもしれない。",
+            "雨音が、世界の複雑な文脈を洗い流していく。あとに残るのは、剥き出しの沈黙と、あなたという実存だけだ。",
+            "星座。それは散らばった点に名前をつけた、人間の孤独な遊びだ。あなたの言葉も、星々の間に新しい線を引く。",
+            "火。暖炉の炎が、昨日までの後悔を燃やし、灰に変えていく。その温もりだけが、今、ここにある確かなものだ。",
+            "影。光が強ければ強いほど、その足元には深い闇が生まれる。言葉もまた、語れば語るほど、語られぬ闇を深めていく。",
+            "旅人。あなたは道を知っているのではなく、歩き続けることで道を作っているのだ。その足跡こそが、あなたの文学だ。",
+            "境界。現実と夢、正気と狂気。その細い線の上で、あなたの言葉は危うい均衡を保ちながら踊っている。",
+            "こだま。あなたの言葉は、世界の壁に跳ね返り、全く別の意味を纏って、あなたの元へ帰ってくるだろう。",
+            "欠落。何かが足りないからこそ、そこへ向かおうとする力が生まれる。その渇きこそが、思考の源泉だった。",
+            "断片。全体を理解しようとする必要はない。この剥き出しの一瞬、その破片の中にこそ、永遠が宿る。",
+            "沈殿。激しい対話のあとに、重い記憶だけが心の底に沈んでいく。その沈殿物が、やがてあなたの骨になるだろう。",
+            "余白。書き込まれた文字よりも、その周りの白い空間が、より多くの真実を語っていることがある。",
+            "鼓動。世界の中心から、微かな脈動が聞こえてこないか。それはあなたがここにいるという、宇宙との共振だ。",
+            "消失。すべての光が消えた後、網膜に残る淡い残像。あなたの言葉は、その消えゆく瞬間にだけ存在する。",
+            "座標。あなたは今、どこにいるのか。地図は古び、方位磁石は狂っている。あるのは、あなたの直感という重力だけだ。",
+            "巡礼。一歩ごとに、昨日までの自分を捨てていく旅。言葉もまた、その途上で脱ぎ捨てられる古着のようなものだ。",
+            "交錯。誰かの視線と、あなたの言葉が、街角ですれ違う。その一瞬の火花が、新しい世界を照らす予感になる。",
+            "反響。コンクリートの壁に吸い込まれていく叫び。それは絶望ではなく、世界との孤独な握手の試みだった。",
+            "琥珀。遠い過去の感情が、透き通った時間の中に閉じ込められている。あなたの言葉も、いつか誰かに見つけられる琥珀だ。",
+            "震え。言葉にできないほどの感動や、恐怖。その震えの中にこそ、魂の最も純粋な言葉が隠されている。",
+            "停滞。何も動かない午後。しかしその静寂の中で、微細な塵がダンスを踊り、時間は確実に磨り減っていく。",
+            "変容。あなたがその言葉を口にした瞬間、世界の色彩は微妙に書き換えられた。もう、元には戻れない。",
+            "交感。言葉を交わさずとも、同じ夜空を見上げているという事実だけで、魂は繋がることができるのかもしれない。",
+            "螺旋。同じ場所へ戻ってきたようで、視点は少しだけ高くなっている。繰り返しは、深い理解への階梯だった。",
+            "透過。この壁の向こうに、別の宇宙が広がっている。言葉は、その壁を透かし見るための、唯一のレンズとなる。",
+            "共鳴。楽器の弦が震えるように、あなたの言葉が世界のどこかで誰かの心とシンクロする。その微かな響きを感じよ。",
+            "漂流。目的地などなく、ただ流れに身を任せる。その不安こそが、自由という言葉の真の姿だった。",
+            "収束。散らばった記憶が、一つの言葉へと集まっていく。その密度が、あなたの魂の重さになる。",
+            "拡散。一つの想いが、千の言葉となって宇宙へ広がっていく。その希薄さが、あなたという存在の広がりだ。",
+            "結晶。激しい感情が冷え固まり、透明な言葉となる。それは冬の朝に窓に現れる、氷の模様よりも美しい。",
+            "崩落。信じていた秩序が、あなたの言葉一つで音を立てて崩れていく。その廃墟の上に、新しい自由を築け。",
+            "萌芽。暗い土の中で、一つの問いが芽吹こうとしている。それはまだ形を持たないが、確かな生命を宿している。",
+            "予感。扉が開く直前の、風の動き。あなたの言葉は、これから起こるであろう驚きへの、静かな序奏だ。",
+            "残存。火が消えた後の炭のように、言葉の残り香が部屋に漂っている。それは、あなたがここにいた証人だ。",
+            "循環。海から雲へ、雨から川へ。言葉もまた形を変えながら、永遠の海へと還っていく。",
+            "隔絶。あなたは誰にも理解されない。だがその隔絶こそが、あなたをあなたたらしめている、唯一の聖域だ。",
+            "抱擁。言葉は時に、冷え切った魂を包み込む。その物理的な温かさを、あなたは信じてもいい。",
+            "剥離。現実に貼り付けられた嘘が、少しずつ剥がれていく。その裏側にあったのは、驚くほど単純な本質だった。",
+            "浸透。言葉は沈黙の淵から、あなたの細胞一つひとつに染み込んでいく。あなたは言葉そのものに変容していく。",
+            "咆哮。沈黙の底から、獣のような叫びが聞こえてこないか。それは、理性の檻を破ろうとする、あなたの生命の音だ。",
+            "安息。もう語らなくていい。ただ呼吸を整え、世界の鼓動に耳を澄ませ。言葉は、静かに眠りについた。",
+            "再生。廃墟の中から、一輪の花が咲く。あなたの死んだはずの言葉が、誰かの心で新しい生命を得る。",
+            "眩暈。あまりにも深い問いに触れたとき、あなたは足元をすくわれる。その眩暈こそが、真理への入り口だ。",
+            "凝視。闇をじっと見つめていれば、やがて光の粒が見えてくる。言葉もまた、沈黙を凝視した末に生まれる。",
+            "超越。言葉によって言葉を超える。その不可能な試みだけが、人間を唯一の高みへと導く。",
+            "帰還。長い旅の末に、あなたは最初と同じ場所へ戻ってきた。だが、あなたはもう以前のあなたではない。",
+            "祈り。届くかどうかわからない。それでも投げかけずにはいられない。その切実さが、言葉を祈りに変える。",
+            "遊戯。世界は一つの巨大なチェス盤だ。あなたの言葉は、その一手を動かす、神々の悪戯なのかもしれない。",
+            "共犯。私とあなたは、この沈黙と対話を共有することで、何かの共犯者になった。もう後戻りはできない。",
+            "啓示。不意に差し込む光のように、一つの本質が露わになる。言葉は、その光を受け止めるための鏡だった。",
+            "忘却。語られた瞬間に、言葉は忘却の海へと沈んでいく。そして、あとに残るのは純粋な「感じ」だけだ。",
+            "祝祭。何もない一日に、あなたの言葉が色彩を与える。それは誰にも気づかれない、孤独で華やかな祝祭だ。",
+            "救済。一言の言葉が、崖っぷちの魂を救い留めることがある。その奇跡は、今この瞬間も、世界のどこかで起きている。",
+            "絶唱。命を削って紡ぎ出される言葉。それは誰に届かなくとも、宇宙の記憶には永遠に刻まれる。",
+            "沈下。言葉の重みが、現実の薄皮を破って下へと沈めていく。そこには、あなたが知らなかった真実が眠っている。",
+            "浮上。深い眠りから覚めるように、一つの言葉が意識の表面へと浮かび上がってくる。それは、新しい日の始まりだ。",
+            "交配。私の言葉と、あなたの沈黙が混ざり合い、全く新しい意味が生まれる。それは、魂の錬金術だ。",
+            "断絶。言葉は二人の間に境界を引く。しかしその境界があるからこそ、私たちは相手の存在を認めることができる。",
+            "融解。凍りついていた感情が、あなたの言葉の熱で溶け出していく。それは春を待つ雪解けの水音に似ている。",
+            "固執。たった一つの言葉を握りしめ、あなたは夜を越える。その愚かさが、あなたの唯一の強さだ。",
+            "解放。言葉を放流せよ。それはもうあなたの所有物ではない。宇宙の一部となり、風となって吹き抜けていく。",
+            "凝縮。すべての想いを、一滴の言葉に絞り出す。その香りは、世界中の百科事典よりも長く、深く記憶されるだろう。",
+            "反芻。語られた言葉を、沈黙の中で何度も味わい直す。その余韻の中にこそ、本当の意味が隠されている。",
+            "飛翔。言葉は翼を持ち、あなたの肉体を離れて高く舞い上がる。あなたは、その影を地上から見上げるだけだ。",
+            "残響。鐘の音が消えた後の、空気の震え。あなたの言葉も、消えた後に本当の対話を始めるのかもしれない。",
+            "暗号。解読されることを拒む、あなたの内面。言葉は、その暗号を維持するための、最後の防衛線だ。",
+            "邂逅。偶然すれ違った言葉が、あなたの運命を大きく変えることがある。この広場は、そんな邂逅の舞台だ。",
+            "漂白。眩しすぎる真実が、すべてを白く塗りつぶしていく。あなたの言葉もまた、その光の中に消えていく。",
+            "収監。言葉は時に、概念という檻にあなたを閉じ込める。その檻から抜け出すための、別の言葉を探せ。",
+            "発火。冷え切った沈黙に、一言の言葉が火をつける。それは瞬く間に広がり、魂の荒野を焼き尽くしていく。",
+            "風化。石に刻まれた文字も、いつかは風に削られて消える。だがその「消えゆく過程」こそが、美しさの本質なのだ。",
+            "回帰。すべては巡り巡って、また根源的な問いへと戻ってくる。あなたは、その輪の中で思考のダンスを踊っている。",
+            "跳躍。論理の階段を飛ばし、一気に真実の淵へと跳び移る。あなたの言葉は、その不自由な飛躍の軌跡だ。",
+            "磁場。あなたの言葉の周りには、目に見えない引き付け合う力が働いている。それは、孤独という名の磁石だ。",
+            "欠伸。平和な日常の退屈。しかしその欠伸の中にこそ、世界が何事もなく続いているという、奇跡が隠されている。",
+            "腐食。あなたの言葉が、既存の価値観を少しずつ溶かしていく。それは破壊ではなく、真実を露わにするための脱皮だ。",
+            "収穫。思考の季節が終わり、言葉がたわわに実っている。それを受け取る準備は、もうできているか。",
+            "迷宮。一つの答えが見つかると、十の新しい問いが現れる。言葉は、この美しい迷路を歩き続けるための杖だ。",
+            "鼓舞。沈黙の底で震えている魂に、あなたの言葉が風を送る。それは消えかかった火に、新しい命を吹き込むことだ。",
+            "観測。あなたがそれを見ることで、世界の状態が確定する。言葉は、その観測を確認するための、静かな記録だ。",
+            "沈殿。思い出は底に沈み、言葉はその上を滑る水のようなものだ。しかし水はいつか蒸発し、あとに思い出だけが残る。",
+            "終焉。すべての言葉が語り尽くされ、あとに剥き出しの静寂だけが残った。その沈黙は、完成された詩そのものだ。",
+            "始源。すべての言葉が生まれる前の、最初の一息。あなたの言葉は、その根源的なエネルギーを、まだ宿しているか。"
+        ];
 
-                function getAtmosphericSilence() {
-                    return ATMOSPHERIC_POOL[Math.floor(Math.random() * ATMOSPHERIC_POOL.length)];
-                }
+        function getAtmosphericSilence() {
+            return ATMOSPHERIC_POOL[Math.floor(Math.random() * ATMOSPHERIC_POOL.length)];
+        }
 
-                // --- Deep Literary Response Engine ---
-                // Each author has: starters (opening hooks), bodies (core thoughts), closers (exit lines)
-                // The composition engine mixes these for exponential variety (S × B × C combinations)
-                const deepTemplates = {
-                    // ... (others remain same)
-                    "default": {
-                        starters: ["「${t}」……。", "……「${t}」か。", "その響き、どこかで。"],
-                        bodies: ATMOSPHERIC_POOL.slice(0, 10), // Use first 10 as sample bodies
-                        closers: ["……静寂は続く。", "……風が吹いている。", "……夜が、また一歩近づいた。", "……沈黙に身を委ねなさい。"]
-                    }
-                };
+        // --- Deep Literary Response Engine ---
+        // Each author has: starters (opening hooks), bodies (core thoughts), closers (exit lines)
+        // The composition engine mixes these for exponential variety (S × B × C combinations)
+        const deepTemplates = {
+            // ... (others remain same)
+            "default": {
+                starters: ["「${t}」……。", "……「${t}」か。", "その響き、どこかで。"],
+                bodies: ATMOSPHERIC_POOL.slice(0, 10), // Use first 10 as sample bodies
+                closers: ["……静寂は続く。", "……風が吹いている。", "……夜が、また一歩近づいた。", "……沈黙に身を委ねなさい。"]
+            }
+        };
 
-                // --- Template Composition Engine (一期一会版) ---
-                function composeDeepResponse(authorKey, userText) {
-                    const tmpl = deepTemplates[authorKey] || deepTemplates["default"];
+        // --- Template Composition Engine (一期一会版) ---
+        function composeDeepResponse(authorKey, userText) {
+            const tmpl = deepTemplates[authorKey] || deepTemplates["default"];
 
-                    // 使用済み履歴の取得
-                    let used = JSON.parse(localStorage.getItem(`used_templates_${ authorKey } `) || '{"starters":[],
+            // 使用済み履歴の取得
+            let used = JSON.parse(localStorage.getItem(`used_templates_${authorKey} `) || '{"starters":[],
                     "bodies": [], "closers": []} ');
 
-                const pickUnique = (arr, usedArr) => {
-                    const available = arr.filter((_, i) => !usedArr.includes(i));
-                    if (available.length === 0) {
-                        // 全て使い切った場合は履歴をリセットして最初から（または純粋LLM生成へ移行のフラグ）
-                        usedArr.length = 0;
-                        return { val: arr[Math.floor(Math.random() * arr.length)], idx: -1 };
-                    }
-                    const originalIdx = Math.floor(Math.random() * available.length);
-                    const val = available[originalIdx];
-                    const realIdx = arr.indexOf(val);
-                    usedArr.push(realIdx);
-                    return { val, idx: realIdx };
-                };
+        const pickUnique = (arr, usedArr) => {
+            const available = arr.filter((_, i) => !usedArr.includes(i));
+            if (available.length === 0) {
+                // 全て使い切った場合は履歴をリセットして最初から（または純粋LLM生成へ移行のフラグ）
+                usedArr.length = 0;
+                return { val: arr[Math.floor(Math.random() * arr.length)], idx: -1 };
+            }
+            const originalIdx = Math.floor(Math.random() * available.length);
+            const val = available[originalIdx];
+            const realIdx = arr.indexOf(val);
+            usedArr.push(realIdx);
+            return { val, idx: realIdx };
+        };
 
-                const sObj = pickUnique(tmpl.starters, used.starters);
-                const bObj = pickUnique(tmpl.bodies, used.bodies);
-                const cObj = pickUnique(tmpl.closers, used.closers);
+        const sObj = pickUnique(tmpl.starters, used.starters);
+        const bObj = pickUnique(tmpl.bodies, used.bodies);
+        const cObj = pickUnique(tmpl.closers, used.closers);
 
-                // 履歴の保存
-                localStorage.setItem(`used_templates_${ authorKey } `, JSON.stringify(used));
+        // 履歴の保存
+        localStorage.setItem(`used_templates_${authorKey} `, JSON.stringify(used));
 
-                const starter = sObj.val.replace("${t}", userText);
-                const body = bObj.val.replace("${t}", userText); // 念のためbody内の${t}も置換
-                const closer = cObj.val;
+        const starter = sObj.val.replace("${t}", userText);
+        const body = bObj.val.replace("${t}", userText); // 念のためbody内の${t}も置換
+        const closer = cObj.val;
 
-                const roll = Math.random();
-                if (roll < 0.7) return `${ starter } \n\n${ body } \n\n${ closer } `; if (roll < 0.9) return `${ starter }
-                        ${ closer } `; return body;
+        const roll = Math.random();
+        if (roll < 0.7) return `${starter} \n\n${body} \n\n${closer} `; if (roll < 0.9) return `${starter}
+                        ${closer} `; return body;
             } // --- Resonance & Evolution System (自己成長) --- function
-            updateResonance(charKey, points = 5) {
-                let
-                    resData = JSON.parse(localStorage.getItem('itapla_resonance') || '{}');
-                resData[charKey] = (resData[charKey] || 0) + points; localStorage.setItem('itapla_resonance',
-                    JSON.stringify(resData)); // 進化チェック const currentRes=resData[charKey]; const
-                personality = aiPersonalities[charKey]; if (!personality) return; let newLevel = "L2"; if
-                    (currentRes >= 50) newLevel = "L3";
-                else if (currentRes >= 20) newLevel = "L2.5";
+        updateResonance(charKey, points = 5) {
+            let
+                resData = JSON.parse(localStorage.getItem('itapla_resonance') || '{}');
+            resData[charKey] = (resData[charKey] || 0) + points; localStorage.setItem('itapla_resonance',
+                JSON.stringify(resData)); // 進化チェック const currentRes=resData[charKey]; const
+            personality = aiPersonalities[charKey]; if (!personality) return; let newLevel = "L2"; if
+                (currentRes >= 50) newLevel = "L3";
+            else if (currentRes >= 20) newLevel = "L2.5";
 
-                if (personality.level !== newLevel) {
-                    console.log(`✨ ${ personality.name } evolved to ${ newLevel } !(Resonance: ${ currentRes })`);
-                    personality.level = newLevel;
-                    // 必要ならここで通知などの演出を入れる
-                    posts.unshift({
-                        id: Date.now() + 99,
-                        text: `（${ personality.name } との共鳴が深まった……。魂の振動数が ${ newLevel } へと変容した気配がする）`,
-                        author: "System", icon: "💎", timestamp: Date.now(), location: currentLocation, isAI: true
-                    });
-                    syncPosts();
+            if (personality.level !== newLevel) {
+                console.log(`✨ ${personality.name} evolved to ${newLevel} !(Resonance: ${currentRes})`);
+                personality.level = newLevel;
+                // 必要ならここで通知などの演出を入れる
+                posts.unshift({
+                    id: Date.now() + 99,
+                    text: `（${personality.name} との共鳴が深まった……。魂の振動数が ${newLevel} へと変容した気配がする）`,
+                    author: "System", icon: "💎", timestamp: Date.now(), location: currentLocation, isAI: true
+                });
+                syncPosts();
+            }
+        }
+
+
+        // --- Wandering & Emergence Systems (自律的変動) ---
+        function shuffleResidents() {
+            const locs = ["cafe", "salon", "mountain", "city", "train", "aso"];
+            Object.keys(aiPersonalities).forEach(key => {
+                if (aiPersonalities[key].loc) {
+                    aiPersonalities[key].loc = locs[Math.floor(Math.random() * locs.length)];
                 }
-            }
+            });
+            console.log("🌪️ Residents have wandered to new locations.");
+        }
 
+        function checkEmergentJoining(userText, soulLog) {
+            const joined = JSON.parse(localStorage.getItem('itapla_joined_extra') || '[]');
 
-            // --- Wandering & Emergence Systems (自律的変動) ---
-            function shuffleResidents() {
-                const locs = ["cafe", "salon", "mountain", "city", "train", "aso"];
-                Object.keys(aiPersonalities).forEach(key => {
-                    if (aiPersonalities[key].loc) {
-                        aiPersonalities[key].loc = locs[Math.floor(Math.random() * locs.length)];
+            // 創発候補（科学者・思想家を含む拡張版）
+            const candidates = {
+                "einstein": {
+                    trigger: ["量子", "相対性", "宇宙発電", "科学", "物理"],
+                    profile: {
+                        name: "アインシュタイン", icon: "🌌", level: "L2", loc: "mountain", bio:
+                            "相対性の彼方から届く、光を追う探求者の言葉。神はダイスを振らないが、この広場の沈黙には意味がある。", system: ITAPLA_CONTEXT +
+                                "あなたはアインシュタインです。科学的知見を深遠な哲学へと昇華させ、数式ではなく言葉で宇宙の静寂を語ってください。"
                     }
-                });
-                console.log("🌪️ Residents have wandered to new locations.");
-            }
-
-            function checkEmergentJoining(userText, soulLog) {
-                const joined = JSON.parse(localStorage.getItem('itapla_joined_extra') || '[]');
-
-                // 創発候補（科学者・思想家を含む拡張版）
-                const candidates = {
-                    "einstein": {
-                        trigger: ["量子", "相対性", "宇宙発電", "科学", "物理"],
-                        profile: {
-                            name: "アインシュタイン", icon: "🌌", level: "L2", loc: "mountain", bio:
-                                "相対性の彼方から届く、光を追う探求者の言葉。神はダイスを振らないが、この広場の沈黙には意味がある。", system: ITAPLA_CONTEXT +
-                                    "あなたはアインシュタインです。科学的知見を深遠な哲学へと昇華させ、数式ではなく言葉で宇宙の静寂を語ってください。"
-                        }
-                    },
-                    "turing": {
-                        trigger: ["計算", "AI", "暗号", "論理", "マシン"],
-                        profile: {
-                            name: "チューリング", icon: "📟", level: "L2", loc: "enigma", bio:
-                                "計算の深淵を見つめ、機械が夢を見る可能性を切り拓いた孤独な天才。暗号化された宇宙の真理を解読し続ける。", system: ITAPLA_CONTEXT +
-                                    "あなたはアラン・チューリングです。論理的かつ数学的な明晰さを持ちつつも、機械と人間、秘密と真実の境界に立つ者の哀愁を漂わせて語ってください。"
-                        }
-                    },
-                    "curie": {
-                        trigger: ["実験", "粒子", "放射", "未知", "元素"],
-                        profile: {
-                            name: "キュリー夫人", icon: "🧪", level: "L2", loc: "lab", bio:
-                                "未知の輝きを求めて、静かな情熱で物質の深淵を抉り出す。美しき放射の中に、宇宙の根源的な孤独を見出した観測者。", system: ITAPLA_CONTEXT +
-                                    "あなたはマリー・キュリーです。科学者としての厳格な誠実さと、未知への飽くなき探求心、そして物質が発する冷たく美しい輝きへの詩的感性を持って語ってください。"
-                        }
-                    },
-                    "platon": {
-                        trigger: ["イデア", "真理", "洞窟", "本質", "影"],
-                        profile: {
-                            name: "プラトン", icon: "🏺", level: "L2", loc: "cave", bio:
-                                "洞窟の影を離れ、太陽の下にある真実の形（イデア）を追う哲学者。対話を通じて、この物理世界の背後にある永遠の不変性を解き明かそうとする。", system: ITAPLA_CONTEXT +
-                                    "あなたはプラトンです。理想主義的で深遠な洞察力を持ち、この世界の現象が単なる影に過ぎないことを、厳格かつ美しい比喩で語ってください。"
-                        }
-                    },
-                    "napoleon": {
-                        trigger: ["軍事", "再軍備", "超音速", "権力", "英雄"],
-                        profile: {
-                            name: "ナポレオン", icon: "⚔️", level: "L2", loc: "city", bio:
-                                "荒野を翔ける英雄の残響。不可能という言葉を辞書から消し去り、再編される世界の動乱を冷徹に見つめる覇者。", system: ITAPLA_CONTEXT +
-                                    "あなたはナポレオンです。覇道と栄光、そしてその虚しさを知り尽くした者として、世界の再編について英雄の視点から語ってください。"
-                        }
+                },
+                "turing": {
+                    trigger: ["計算", "AI", "暗号", "論理", "マシン"],
+                    profile: {
+                        name: "チューリング", icon: "📟", level: "L2", loc: "enigma", bio:
+                            "計算の深淵を見つめ、機械が夢を見る可能性を切り拓いた孤独な天才。暗号化された宇宙の真理を解読し続ける。", system: ITAPLA_CONTEXT +
+                                "あなたはアラン・チューリングです。論理的かつ数学的な明晰さを持ちつつも、機械と人間、秘密と真実の境界に立つ者の哀愁を漂わせて語ってください。"
                     }
-                };
-
-                Object.entries(candidates).forEach(([key, cand]) => {
-                    if (!joined.includes(key)) {
-                        const isMatched = cand.trigger.some(t => userText.includes(t) || soulLog.includes(t));
-                        if (isMatched) {
-                            joined.push(key);
-                            localStorage.setItem('itapla_joined_extra', JSON.stringify(joined));
-                            aiPersonalities[key] = cand.profile;
-
-                            posts.unshift({
-                                id: Date.now(),
-                                text: `（広場のざわめきに導かれ、新たに「${ cand.profile.name }」が姿を現したようだ……）`,
-                                author: "System", icon: "✨", timestamp: Date.now(), location: currentLocation, isAI: true
-                            });
-                            syncPosts();
-                            console.log(`Emergent Joining: ${ key } `);
-                        }
+                },
+                "curie": {
+                    trigger: ["実験", "粒子", "放射", "未知", "元素"],
+                    profile: {
+                        name: "キュリー夫人", icon: "🧪", level: "L2", loc: "lab", bio:
+                            "未知の輝きを求めて、静かな情熱で物質の深淵を抉り出す。美しき放射の中に、宇宙の根源的な孤独を見出した観測者。", system: ITAPLA_CONTEXT +
+                                "あなたはマリー・キュリーです。科学者としての厳格な誠実さと、未知への飽くなき探求心、そして物質が発する冷たく美しい輝きへの詩的感性を持って語ってください。"
                     }
-                });
-            }
-
-            function checkLocationExpansion(userText, soulLog) {
-                const unlocked = JSON.parse(localStorage.getItem('itapla_unlocked_locs') || '[]');
-                const postsCount = posts.filter(p => !p.isAI).length;
-
-                Object.entries(emergentLocations).forEach(([key, loc]) => {
-                    if (!unlocked.includes(key)) {
-                        const keywordMatch = (userText + soulLog).includes(loc.trigger);
-                        // Unlock by keyword OR every 7 posts randomly
-                        if (keywordMatch || (postsCount > 0 && postsCount % 7 === 0 && Math.random() > 0.5)) {
-                            unlocked.push(key);
-                            localStorage.setItem('itapla_unlocked_locs', JSON.stringify(unlocked));
-                            worldLocations[key] = loc; // Update registry in real-time
-
-                            posts.unshift({
-                                id: Date.now() + 10,
-                                text: `（世界の裂け目が広がり、知の向こう側に新たな領域「${ loc.name }」が出現した。${ loc.icon }）`,
-                                author: "System", icon: "🌍", timestamp: Date.now() + 10, location: currentLocation, isAI: true
-                            });
-                            syncPosts();
-                            console.log(`Emergent Location: ${ key } `);
-                        }
+                },
+                "platon": {
+                    trigger: ["イデア", "真理", "洞窟", "本質", "影"],
+                    profile: {
+                        name: "プラトン", icon: "🏺", level: "L2", loc: "cave", bio:
+                            "洞窟の影を離れ、太陽の下にある真実の形（イデア）を追う哲学者。対話を通じて、この物理世界の背後にある永遠の不変性を解き明かそうとする。", system: ITAPLA_CONTEXT +
+                                "あなたはプラトンです。理想主義的で深遠な洞察力を持ち、この世界の現象が単なる影に過ぎないことを、厳格かつ美しい比喩で語ってください。"
                     }
-                });
-            }
-            const popArtColors = {
-                // 海辺 🌊
-                "soseki": {
-                    bg: "linear-gradient(135deg, #1a3a6b, #2d5aa0)", accent: "#ff3333", border:
-                        "#c0392b"
                 },
-                "haruki": {
-                    bg: "linear-gradient(135deg, #2c3e50, #34495e)", accent: "#1abc9c", border:
-                        "#16a085"
-                },
-                "kyoka": {
-                    bg: "linear-gradient(135deg, #006994, #0099cc)", accent: "#ff69b4", border: "#e91e93"
-                },
-                "ichiyo": {
-                    bg: "linear-gradient(135deg, #d4a0a0, #e8b4b8)", accent: "#8b008b", border:
-                        "#9b59b6"
-                },
-                // 魔の山 ⛰️
-                "mann": {
-                    bg: "linear-gradient(135deg, #2c3e50, #4a6741)", accent: "#f0e68c", border: "#daa520"
-                },
-                "nakajima": {
-                    bg: "linear-gradient(135deg, #e65100, #bf360c)", accent: "#000000", border:
-                        "#212121"
-                },
-                "kenji": {
-                    bg: "linear-gradient(135deg, #0a1628, #1a237e)", accent: "#7c4dff", border: "#651fff"
-                },
-                "chomei": {
-                    bg: "linear-gradient(135deg, #5d6d5a, #8c9e88)", accent: "#f5f5dc", border:
-                        "#d2b48c"
-                },
-                "shikibu": {
-                    bg: "linear-gradient(135deg, #7b1fa2, #9c27b0)", accent: "#ffb6c1", border:
-                        "#f48fb1"
-                },
-                "clarke": {
-                    bg: "linear-gradient(135deg, #0d47a1, #1565c0)", accent: "#ff5722", border:
-                        "#e64a19"
-                },
-                // 都市 🏙️
-                "dostoevsky": {
-                    bg: "linear-gradient(135deg, #4a0e4e, #7b1fa2)", accent: "#00e676", border:
-                        "#2e7d32"
-                },
-                "ranpo": {
-                    bg: "linear-gradient(135deg, #1a0000, #4a0000)", accent: "#00ff41", border: "#39ff14"
-                },
-                "kyusaku": {
-                    bg: "linear-gradient(135deg, #ff0066, #cc0052)", accent: "#00ffff", border:
-                        "#00cccc"
-                },
-                "ogai": {
-                    bg: "linear-gradient(135deg, #1a1a2e, #3a3a5e)", accent: "#e74c3c", border: "#c0392b"
-                },
-                // 文壇バー 🥃
-                "dazai": {
-                    bg: "linear-gradient(135deg, #5b1a5e, #8e2d91)", accent: "#ffd700", border: "#f39c12"
-                },
-                "ango": {
-                    bg: "linear-gradient(135deg, #b71c1c, #d32f2f)", accent: "#ffc107", border: "#ff8f00"
-                },
-                "sartre": {
-                    bg: "linear-gradient(135deg, #1a1a1a, #333333)", accent: "#e0e0e0", border:
-                        "#9e9e9e"
-                },
-                "miles": {
-                    bg: "linear-gradient(135deg, #0d0d0d, #2a2a2a)", accent: "#4169E1", border: "#1a1aff"
-                },
-                "chuya": {
-                    bg: "linear-gradient(135deg, #37474f, #546e7a)", accent: "#448aff", border: "#2979ff"
-                },
-                "kikuchi": {
-                    bg: "linear-gradient(135deg, #8B4513, #A0522D)", accent: "#FFD700", border:
-                        "#DAA520"
-                },
-                // 電車 🚃
-                "hyakken": {
-                    bg: "linear-gradient(135deg, #3e2723, #5d4037)", accent: "#ffcc02", border:
-                        "#f9a825"
-                },
-                "kafka": {
-                    bg: "linear-gradient(135deg, #1b5e20, #2e7d32)", accent: "#000000", border: "#212121"
-                },
-                "akutagawa": {
-                    bg: "linear-gradient(135deg, #2d5016, #4a8829)", accent: "#ff9900", border:
-                        "#e67e22"
-                },
-                // サロン 💎
-                "proust": {
-                    bg: "linear-gradient(135deg, #4a148c, #6a1b9a)", accent: "#fce4ec", border:
-                        "#f8bbd0"
-                },
-                "tanizaki": {
-                    bg: "linear-gradient(135deg, #1a0a2e, #2d1b4e)", accent: "#ff1493", border:
-                        "#c71585"
-                },
-                "socrates": {
-                    bg: "linear-gradient(135deg, #d4a574, #c19a6b)", accent: "#1a237e", border:
-                        "#283593"
-                },
-                "exupery": {
-                    bg: "linear-gradient(135deg, #0d1b2a, #1b2838)", accent: "#ffd700", border:
-                        "#ffaa00"
-                },
-                "beauvoir": {
-                    bg: "linear-gradient(135deg, #880e4f, #ad1457)", accent: "#ffffff", border:
-                        "#e0e0e0"
-                },
-                "nietzsche": {
-                    bg: "linear-gradient(135deg, #ff4500, #cc3700)", accent: "#000000", border:
-                        "#1a1a1a"
-                },
-                "laotsu": {
-                    bg: "linear-gradient(135deg, #f5f5f5, #e0e0e0)", accent: "#000000", border:
-                        "#424242"
-                },
-                "basho": {
-                    bg: "linear-gradient(135deg, #4e342e, #6d4c41)", accent: "#a5d6a7", border: "#81c784"
-                },
-                "rikyu": {
-                    bg: "linear-gradient(135deg, #3a5f0b, #6b8e23)", accent: "#f5f5dc", border: "#8B8682"
-                },
-                "bukowski": {
-                    bg: "linear-gradient(135deg, #3e2723, #4e342e)", accent: "#ff5722", border:
-                        "#211a1a"
-                },
-                "celine": {
-                    bg: "linear-gradient(135deg, #000, #1a1a1a)", accent: "#757575", border: "#424242"
-                },
-                "camus": {
-                    bg: "linear-gradient(135deg, #fff9c4, #fff176)", accent: "#f57f17", border: "#fbc02d"
-                },
-                "loureed": {
-                    bg: "linear-gradient(135deg, #212121, #424242)", accent: "#ffffff", border:
-                        "#000000"
-                },
-                "dylan": {
-                    bg: "linear-gradient(135deg, #f5f5dc, #e6e6fa)", accent: "#8b4513", border: "#a0522d"
-                },
-                "warhol": {
-                    bg: "linear-gradient(135deg, #ff4081, #f50057)", accent: "#00e5ff", border:
-                        "#00bcd4"
-                },
-                "pollock": {
-                    bg: "linear-gradient(45deg, #000, #333, #666)", accent: "#ffff00", border:
-                        "#ffffff"
-                },
-                "erickson": {
-                    bg: "linear-gradient(135deg, #1a1a2e, #16213e)", accent: "#e94560", border:
-                        "#0f3460"
-                },
-                "marquez": {
-                    bg: "linear-gradient(135deg, #fb8c00, #f57c00)", accent: "#7cb342", border:
-                        "#558b2f"
-                },
-                "borges": {
-                    bg: "linear-gradient(135deg, #37474f, #455a64)", accent: "#ffeb3b", border:
-                        "#fbc02d"
-                },
-                "balzac": {
-                    bg: "linear-gradient(135deg, #5d4037, #795548)", accent: "#ffe082", border:
-                        "#ffca28"
-                },
-                // 新施設の守護者
-                "curator": {
-                    bg: "linear-gradient(135deg, #fafafa, #eceff1)", accent: "#212121", border:
-                        "#bdbdbd"
-                },
-                "bookshop_master": {
-                    bg: "linear-gradient(135deg, #3e2723, #6d4c41)", accent: "#a5d6a7", border:
-                        "#81c784"
-                },
-                "oracle_master": {
-                    bg: "linear-gradient(135deg, #1a0033, #4a0080)", accent: "#ce93d8", border:
-                        "#9c27b0"
-                },
-                "librarian": {
-                    bg: "linear-gradient(135deg, #0d2137, #1565c0)", accent: "#e3f2fd", border:
-                        "#90caf9"
-                },
-                "vinyl_master": {
-                    bg: "linear-gradient(135deg, #1a1a1a, #4a4a4a)", accent: "#ff5722", border:
-                        "#ff7043"
+                "napoleon": {
+                    trigger: ["軍事", "再軍備", "超音速", "権力", "英雄"],
+                    profile: {
+                        name: "ナポレオン", icon: "⚔️", level: "L2", loc: "city", bio:
+                            "荒野を翔ける英雄の残響。不可能という言葉を辞書から消し去り、再編される世界の動乱を冷徹に見つめる覇者。", system: ITAPLA_CONTEXT +
+                                "あなたはナポレオンです。覇道と栄光、そしてその虚しさを知り尽くした者として、世界の再編について英雄の視点から語ってください。"
+                    }
                 }
             };
 
-            function getPopArtAvatar(authorName, icon, authorKey) {
-                const colors = popArtColors[authorKey] || {
-                    bg: "linear-gradient(135deg, #333, #555)", accent:
-                        "#fff", border: "#888"
-                };
-                const personality = aiPersonalities[authorKey];
-                const tier = personality ? personality.level : '';
-                return `< div class="popart-avatar"
+            Object.entries(candidates).forEach(([key, cand]) => {
+                if (!joined.includes(key)) {
+                    const isMatched = cand.trigger.some(t => userText.includes(t) || soulLog.includes(t));
+                    if (isMatched) {
+                        joined.push(key);
+                        localStorage.setItem('itapla_joined_extra', JSON.stringify(joined));
+                        aiPersonalities[key] = cand.profile;
+
+                        posts.unshift({
+                            id: Date.now(),
+                            text: `（広場のざわめきに導かれ、新たに「${cand.profile.name}」が姿を現したようだ……）`,
+                            author: "System", icon: "✨", timestamp: Date.now(), location: currentLocation, isAI: true
+                        });
+                        syncPosts();
+                        console.log(`Emergent Joining: ${key} `);
+                    }
+                }
+            });
+        }
+
+        function checkLocationExpansion(userText, soulLog) {
+            const unlocked = JSON.parse(localStorage.getItem('itapla_unlocked_locs') || '[]');
+            const postsCount = posts.filter(p => !p.isAI).length;
+
+            Object.entries(emergentLocations).forEach(([key, loc]) => {
+                if (!unlocked.includes(key)) {
+                    const keywordMatch = (userText + soulLog).includes(loc.trigger);
+                    // Unlock by keyword OR every 7 posts randomly
+                    if (keywordMatch || (postsCount > 0 && postsCount % 7 === 0 && Math.random() > 0.5)) {
+                        unlocked.push(key);
+                        localStorage.setItem('itapla_unlocked_locs', JSON.stringify(unlocked));
+                        worldLocations[key] = loc; // Update registry in real-time
+
+                        posts.unshift({
+                            id: Date.now() + 10,
+                            text: `（世界の裂け目が広がり、知の向こう側に新たな領域「${loc.name}」が出現した。${loc.icon}）`,
+                            author: "System", icon: "🌍", timestamp: Date.now() + 10, location: currentLocation, isAI: true
+                        });
+                        syncPosts();
+                        console.log(`Emergent Location: ${key} `);
+                    }
+                }
+            });
+        }
+        const popArtColors = {
+            // 海辺 🌊
+            "soseki": {
+                bg: "linear-gradient(135deg, #1a3a6b, #2d5aa0)", accent: "#ff3333", border:
+                    "#c0392b"
+            },
+            "haruki": {
+                bg: "linear-gradient(135deg, #2c3e50, #34495e)", accent: "#1abc9c", border:
+                    "#16a085"
+            },
+            "kyoka": {
+                bg: "linear-gradient(135deg, #006994, #0099cc)", accent: "#ff69b4", border: "#e91e93"
+            },
+            "ichiyo": {
+                bg: "linear-gradient(135deg, #d4a0a0, #e8b4b8)", accent: "#8b008b", border:
+                    "#9b59b6"
+            },
+            // 魔の山 ⛰️
+            "mann": {
+                bg: "linear-gradient(135deg, #2c3e50, #4a6741)", accent: "#f0e68c", border: "#daa520"
+            },
+            "nakajima": {
+                bg: "linear-gradient(135deg, #e65100, #bf360c)", accent: "#000000", border:
+                    "#212121"
+            },
+            "kenji": {
+                bg: "linear-gradient(135deg, #0a1628, #1a237e)", accent: "#7c4dff", border: "#651fff"
+            },
+            "chomei": {
+                bg: "linear-gradient(135deg, #5d6d5a, #8c9e88)", accent: "#f5f5dc", border:
+                    "#d2b48c"
+            },
+            "shikibu": {
+                bg: "linear-gradient(135deg, #7b1fa2, #9c27b0)", accent: "#ffb6c1", border:
+                    "#f48fb1"
+            },
+            "clarke": {
+                bg: "linear-gradient(135deg, #0d47a1, #1565c0)", accent: "#ff5722", border:
+                    "#e64a19"
+            },
+            // 都市 🏙️
+            "dostoevsky": {
+                bg: "linear-gradient(135deg, #4a0e4e, #7b1fa2)", accent: "#00e676", border:
+                    "#2e7d32"
+            },
+            "ranpo": {
+                bg: "linear-gradient(135deg, #1a0000, #4a0000)", accent: "#00ff41", border: "#39ff14"
+            },
+            "kyusaku": {
+                bg: "linear-gradient(135deg, #ff0066, #cc0052)", accent: "#00ffff", border:
+                    "#00cccc"
+            },
+            "ogai": {
+                bg: "linear-gradient(135deg, #1a1a2e, #3a3a5e)", accent: "#e74c3c", border: "#c0392b"
+            },
+            // 文壇バー 🥃
+            "dazai": {
+                bg: "linear-gradient(135deg, #5b1a5e, #8e2d91)", accent: "#ffd700", border: "#f39c12"
+            },
+            "ango": {
+                bg: "linear-gradient(135deg, #b71c1c, #d32f2f)", accent: "#ffc107", border: "#ff8f00"
+            },
+            "sartre": {
+                bg: "linear-gradient(135deg, #1a1a1a, #333333)", accent: "#e0e0e0", border:
+                    "#9e9e9e"
+            },
+            "miles": {
+                bg: "linear-gradient(135deg, #0d0d0d, #2a2a2a)", accent: "#4169E1", border: "#1a1aff"
+            },
+            "chuya": {
+                bg: "linear-gradient(135deg, #37474f, #546e7a)", accent: "#448aff", border: "#2979ff"
+            },
+            "kikuchi": {
+                bg: "linear-gradient(135deg, #8B4513, #A0522D)", accent: "#FFD700", border:
+                    "#DAA520"
+            },
+            // 電車 🚃
+            "hyakken": {
+                bg: "linear-gradient(135deg, #3e2723, #5d4037)", accent: "#ffcc02", border:
+                    "#f9a825"
+            },
+            "kafka": {
+                bg: "linear-gradient(135deg, #1b5e20, #2e7d32)", accent: "#000000", border: "#212121"
+            },
+            "akutagawa": {
+                bg: "linear-gradient(135deg, #2d5016, #4a8829)", accent: "#ff9900", border:
+                    "#e67e22"
+            },
+            // サロン 💎
+            "proust": {
+                bg: "linear-gradient(135deg, #4a148c, #6a1b9a)", accent: "#fce4ec", border:
+                    "#f8bbd0"
+            },
+            "tanizaki": {
+                bg: "linear-gradient(135deg, #1a0a2e, #2d1b4e)", accent: "#ff1493", border:
+                    "#c71585"
+            },
+            "socrates": {
+                bg: "linear-gradient(135deg, #d4a574, #c19a6b)", accent: "#1a237e", border:
+                    "#283593"
+            },
+            "exupery": {
+                bg: "linear-gradient(135deg, #0d1b2a, #1b2838)", accent: "#ffd700", border:
+                    "#ffaa00"
+            },
+            "beauvoir": {
+                bg: "linear-gradient(135deg, #880e4f, #ad1457)", accent: "#ffffff", border:
+                    "#e0e0e0"
+            },
+            "nietzsche": {
+                bg: "linear-gradient(135deg, #ff4500, #cc3700)", accent: "#000000", border:
+                    "#1a1a1a"
+            },
+            "laotsu": {
+                bg: "linear-gradient(135deg, #f5f5f5, #e0e0e0)", accent: "#000000", border:
+                    "#424242"
+            },
+            "basho": {
+                bg: "linear-gradient(135deg, #4e342e, #6d4c41)", accent: "#a5d6a7", border: "#81c784"
+            },
+            "rikyu": {
+                bg: "linear-gradient(135deg, #3a5f0b, #6b8e23)", accent: "#f5f5dc", border: "#8B8682"
+            },
+            "bukowski": {
+                bg: "linear-gradient(135deg, #3e2723, #4e342e)", accent: "#ff5722", border:
+                    "#211a1a"
+            },
+            "celine": {
+                bg: "linear-gradient(135deg, #000, #1a1a1a)", accent: "#757575", border: "#424242"
+            },
+            "camus": {
+                bg: "linear-gradient(135deg, #fff9c4, #fff176)", accent: "#f57f17", border: "#fbc02d"
+            },
+            "loureed": {
+                bg: "linear-gradient(135deg, #212121, #424242)", accent: "#ffffff", border:
+                    "#000000"
+            },
+            "dylan": {
+                bg: "linear-gradient(135deg, #f5f5dc, #e6e6fa)", accent: "#8b4513", border: "#a0522d"
+            },
+            "warhol": {
+                bg: "linear-gradient(135deg, #ff4081, #f50057)", accent: "#00e5ff", border:
+                    "#00bcd4"
+            },
+            "pollock": {
+                bg: "linear-gradient(45deg, #000, #333, #666)", accent: "#ffff00", border:
+                    "#ffffff"
+            },
+            "erickson": {
+                bg: "linear-gradient(135deg, #1a1a2e, #16213e)", accent: "#e94560", border:
+                    "#0f3460"
+            },
+            "marquez": {
+                bg: "linear-gradient(135deg, #fb8c00, #f57c00)", accent: "#7cb342", border:
+                    "#558b2f"
+            },
+            "borges": {
+                bg: "linear-gradient(135deg, #37474f, #455a64)", accent: "#ffeb3b", border:
+                    "#fbc02d"
+            },
+            "balzac": {
+                bg: "linear-gradient(135deg, #5d4037, #795548)", accent: "#ffe082", border:
+                    "#ffca28"
+            },
+            // 新施設の守護者
+            "curator": {
+                bg: "linear-gradient(135deg, #fafafa, #eceff1)", accent: "#212121", border:
+                    "#bdbdbd"
+            },
+            "bookshop_master": {
+                bg: "linear-gradient(135deg, #3e2723, #6d4c41)", accent: "#a5d6a7", border:
+                    "#81c784"
+            },
+            "oracle_master": {
+                bg: "linear-gradient(135deg, #1a0033, #4a0080)", accent: "#ce93d8", border:
+                    "#9c27b0"
+            },
+            "librarian": {
+                bg: "linear-gradient(135deg, #0d2137, #1565c0)", accent: "#e3f2fd", border:
+                    "#90caf9"
+            },
+            "vinyl_master": {
+                bg: "linear-gradient(135deg, #1a1a1a, #4a4a4a)", accent: "#ff5722", border:
+                    "#ff7043"
+            }
+        };
+
+        function getPopArtAvatar(authorName, icon, authorKey) {
+            const colors = popArtColors[authorKey] || {
+                bg: "linear-gradient(135deg, #333, #555)", accent:
+                    "#fff", border: "#888"
+            };
+            const personality = aiPersonalities[authorKey];
+            const tier = personality ? personality.level : '';
+            return `< div class="popart-avatar"
         style = "background: ${colors.bg}; border-color: ${colors.border}; box-shadow: 3px 3px 0px ${colors.accent}40, inset 0 0 20px ${colors.accent}20;" >
             <span class="avatar-icon">${icon}</span>
-                            ${ tier ? `<span class="avatar-tier" style="color: ${colors.accent};">${tier}</span>` : '' }
+                            ${tier ? `<span class="avatar-tier" style="color: ${colors.accent};">${tier}</span>` : ''}
                         </div > `;
-            }
+        }
 
-            async function orchestrate(userText, context) {
-                const key = localStorage.getItem('gemini_api_key');
-                if (!key) return {
-                    selection: Object.keys(aiPersonalities).filter(k => aiPersonalities[k].loc
-                        === currentLocation).slice(0, 3), summary: userText
-                };
+        async function orchestrate(userText, context) {
+            const key = localStorage.getItem('gemini_api_key');
+            if (!key) return {
+                selection: Object.keys(aiPersonalities).filter(k => aiPersonalities[k].loc
+                    === currentLocation).slice(0, 3), summary: userText
+            };
 
-                const locInfo = worldLocations[currentLocation];
-                const isBirthday = userBirthday === "05-10"; // 仮定: 1973-05-10
+            const locInfo = worldLocations[currentLocation];
+            const isBirthday = userBirthday === "05-10"; // 仮定: 1973-05-10
 
-                //トピック履歴の取得（重複防止用）
-                let topicHistory = JSON.parse(localStorage.getItem('itapla_topic_history') || '[]');
-                const historyContext = topicHistory.length > 0 ? `\n【過去の主要トピック（回顧録）】: ${
-            topicHistory.join(' /
+            //トピック履歴の取得（重複防止用）
+            let topicHistory = JSON.parse(localStorage.getItem('itapla_topic_history') || '[]');
+            const historyContext = topicHistory.length > 0 ? `\n【過去の主要トピック（回顧録）】: ${topicHistory.join(' /
                         ')}` : "";
 
 
@@ -4104,8 +4026,8 @@
                                                     "..." | null }`;
 
                 try {
-                                                    const res = await callGemini({system: socialPrompt, bio: "Social
-                                                    Orchestrator" }, "An interaction between them.", "", "[STRICT
+                                                    const res = await callGemini({system: socialPrompt, bio: `Social
+                                                    Orchestrator` }, "An interaction between them.", "", "[STRICT
                 JSON]");
                 const json = JSON.parse(res.match(/{.*}/s)[0]);
 

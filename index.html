@@ -1544,6 +1544,46 @@
         let tokenClient = null; // GIS TokenClient
 
         // --- OAuth Functions ---
+
+        // --- Entrance functions ---
+        function submitName() {
+            const input = document.getElementById('name-input');
+            const name = input ? input.value.trim() : '';
+            if (!name) {
+                if (input) {
+                    input.style.border = '2px solid red';
+                    setTimeout(() => { input.style.border = ''; }, 1000);
+                }
+                return;
+            }
+            userName = name;
+            localStorage.setItem('user_name', userName);
+            // Show location select, hide name form
+            const locSelect = document.getElementById('location-select');
+            if (locSelect) locSelect.style.display = 'flex';
+            const nameForm = document.getElementById('name-form');
+            if (nameForm) nameForm.style.display = 'none';
+        }
+
+        function enterWorld(loc) {
+            if (!loc) return;
+            currentLocation = loc;
+            localStorage.setItem('itapla_location', currentLocation);
+            // Hide entrance layer
+            const entrance = document.getElementById('entrance-layer');
+            if (entrance) {
+                entrance.style.opacity = '0';
+                entrance.style.pointerEvents = 'none';
+                setTimeout(() => { entrance.style.display = 'none'; }, 1500);
+            }
+            // Show main app
+            const mainApp = document.getElementById('main-app') || document.getElementById('app-container');
+            if (mainApp) mainApp.style.display = 'block';
+            if (typeof loadPosts === 'function') loadPosts();
+            if (typeof updateHeader === 'function') updateHeader();
+        }
+
+
         function initGoogleOAuth() {
             if (typeof google === 'undefined' || !google.accounts) {
                 console.warn('Google Identity Services not loaded.');
@@ -3311,50 +3351,6 @@ Output in JSON: { "text": "...", "harmonyDelta": number, "newType": "..." | null
             }
         };
 
-
-        // --- Global state variables ---
-        let userName = localStorage.getItem('user_name') || '';
-        let currentLocation = localStorage.getItem('itapla_location') || 'cafe';
-        let posts = [];
-
-        // --- Entrance functions ---
-        function submitName() {
-            const input = document.getElementById('name-input');
-            const name = input ? input.value.trim() : '';
-            if (!name) {
-                if (input) {
-                    input.style.border = '2px solid red';
-                    setTimeout(() => { input.style.border = ''; }, 1000);
-                }
-                return;
-            }
-            userName = name;
-            localStorage.setItem('user_name', userName);
-            // Hide entrance and show location select
-            const locSelect = document.getElementById('location-select');
-            if (locSelect) locSelect.style.display = 'flex';
-            const nameForm = document.getElementById('name-form');
-            if (nameForm) nameForm.style.display = 'none';
-        }
-
-        function enterWorld(loc) {
-            if (!loc) return;
-            currentLocation = loc;
-            localStorage.setItem('itapla_location', currentLocation);
-            // Hide entrance layer
-            const entrance = document.getElementById('entrance-layer');
-            if (entrance) {
-                entrance.style.opacity = '0';
-                entrance.style.pointerEvents = 'none';
-                setTimeout(() => { entrance.style.display = 'none'; }, 1500);
-            }
-            // Show main app
-            const mainApp = document.getElementById('main-app') || document.getElementById('app-container');
-            if (mainApp) mainApp.style.display = 'block';
-            // Init timeline
-            if (typeof loadPosts === 'function') loadPosts();
-            if (typeof updateHeader === 'function') updateHeader();
-        }
 
         ItaplaRadio.init();
 

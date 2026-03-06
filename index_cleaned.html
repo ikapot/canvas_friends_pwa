@@ -21,23 +21,18 @@
 
     <style>
         :root {
-            --bg-color: #000000;
-            --surface-color: #0c0c0c;
-            --surface-deep: #121212;
-            --text-primary: #FFFFFF;
-            --text-secondary: #888888;
-            --accent-orange: #FF5722;
-            --accent-blue: #00D1FF;
-            --border-soft: rgba(255, 255, 255, 0.08);
-            --radius-xl: 24px;
-            --radius-lg: 12px;
-            --segment-bg: #1a1a1a;
-            --segment-active: #333333;
-            --font-sans: "BIZ UDPGothic", "UD Digikyo", "Noto Sans JP", sans-serif;
-            --font-serif: "BIZ UDPMincho", "Noto Serif JP", serif;
+            --bg-dark: #2D1E2F;
+            --text-main: #F5F5DC;
+            --accent-main: #F3A619;
+            --surface-deep: #4A2531;
+            --surface-light: #F5F5DC;
+            --border-soft: rgba(245, 245, 220, 0.15);
+            --accent-archive: #8B4513;
+            --accent-google: #4285F4;
+            --font-serif: "Noto Serif JP", serif;
+            --font-sans: "Noto Sans JP", "Inter", sans-serif;
             --font-outfit: "Outfit", sans-serif;
-            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --spacing-base: 1rem;
+            --transition-smooth: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
         body {
@@ -1252,19 +1247,7 @@
         .btn-amazon:hover {
             background: #e68a00;
         }
-
-        .map-header { position:absolute; top:20px; left:50%; transform:translateX(-50%); z-index:9000; display:flex; flex-direction:column; align-items:center; }
-        .segment-control { background:#1a1a1a; padding:4px; border-radius:999px; display:flex; gap:2px; box-shadow:inset 0 1px 3px rgba(0,0,0,0.5); }
-        .segment-btn { background:transparent; border:none; color:#888; padding:8px 24px; border-radius:999px; font-size:13px; font-weight:600; cursor:pointer; font-family:var(--font-sans); }
-        .segment-btn.active { background:#333; color:#fff; }
-        .tab-content { display:none; width:100%; height:100%; }
-        .tab-content.active { display:block; }
-        .abstract-line { stroke:rgba(255,255,255,0.1); stroke-width:1; stroke-dasharray:4 4; }
-        .abstract-node { position:absolute; width:10px; height:10px; background:#00D1FF; border-radius:50%; transform:translate(-50%,-50%); cursor:pointer; }
-        .abstract-label { position:absolute; top:15px; left:50%; transform:translateX(-50%); color:#888; font-size:10px; white-space:nowrap; font-family:var(--font-outfit); }
-        .map-close-btn { background:#000; color:#fff; border:1px solid #333; padding:8px 16px; border-radius:8px; cursor:pointer; margin-top:10px; font-size:12px; }
-        #antiqueMapParticipants { display:grid; grid-template-columns:repeat(auto-fill, minmax(130px, 1fr)); gap:20px; padding:100px 30px 30px 30px; }
-        </style>
+    </style>
 </head>
 
 <body data-location="cafe">
@@ -1293,26 +1276,17 @@
     <canvas id="bg-canvas"></canvas>
 
     <!-- Antique Map UI (Replaces Investigation Board) -->
-    <div id="mapModal" class="antique-map-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:8000;">
-        <div class="map-header">
-            <div class="segment-control">
-                <button class="segment-btn active" onclick="switchMapTab('locations')">場所</button>
-                <button class="segment-btn" onclick="switchMapTab('participants')">人物</button>
-            </div>
-            <button class="map-close-btn" onclick="closeMap()">CLOSE</button>
-        </div>
-        <div class="antique-map-container" style="width:100%; height:100%; position:relative;">
-            <div id="tab-locations" class="tab-content active">
-                <div class="antique-map-board" style="width:100%; height:100%; position:relative;">
-                    <svg id="mapSvgLayer" viewBox="0 0 2000 1600" style="position:absolute; width:100%; height:100%; pointer-events:none;"></svg>
-                    <div id="antiqueMapLocations" style="position:absolute; width:100%; height:100%; pointer-events:none;"></div>
-                </div>
-            </div>
-            <div id="tab-participants" class="tab-content" style="overflow-y:auto; height:100%;">
+    <div id="mapModal" class="antique-map-modal">
+        <button class="map-close-btn" onclick="closeMap()">Close Map</button>
+        <div class="antique-map-container">
+            <div class="antique-map-board" id="antiqueMapBoard">
+                <svg class="map-svg-layer" id="mapSvgLayer" viewBox="0 0 2000 1600"></svg>
+                <div id="antiqueMapLocations"></div>
                 <div id="antiqueMapParticipants"></div>
             </div>
         </div>
     </div>
+
     <!-- Radio Controller -->
     <div id="radio-container"
         style="position: fixed; bottom: 85px; right: 20px; z-index: 4500; display: flex; align-items: center; gap: 10px; background: var(--surface-deep); padding: 10px 20px; border-radius: 999px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); font-family: var(--font-outfit); font-size: 11px; color: var(--text-main); transition: all 0.3s; border: 1px solid var(--border-soft);">
@@ -1786,13 +1760,34 @@
         }
 
         window.onload = () => {
-            document.getElementById("entrance-layer").style.display = "none";
+            if (!userName) {
+                // K's initial greeting
+                const kTypewriter = document.getElementById('k-typewriter');
+                const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+                const greeting = pick(kGuide.greetings);
+                document.getElementById('entrance-form').style.display = 'none';
+                document.getElementById('location-select').style.display = 'none';
+
+                typewriterEffect(kTypewriter, greeting, 50);
+                setTimeout(() => {
+ document.getElementById('entrance-form').style.display = 'flex';
+                }, greeting.length * 50 + 1000);
+            } else {
+                document.getElementById('entrance-layer').style.display = 'none';
+            }
+
             setWorldState(worldState);
             applyLocation(currentLocation);
             updateSoulPowerUI();
             renderTimeline();
             initParticles();
+            // Initialize OAuth
             initGoogleOAuth();
+            if (isOAuthValid()) {
+                currentAIMode = 'OAUTH';
+                updateSoulPowerUI();
+            }
+            // ニュースの取得（1日1回）
             fetchDailyNews();
         };
 
@@ -3850,49 +3845,7 @@
  window.addEventListener('touchend', endDrag);
  }
 
- 
-        function switchMapTab(tabId) {
-            document.querySelectorAll(".segment-btn").forEach(b => b.classList.remove("active"));
-            document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-            const targetBtn = Array.from(document.querySelectorAll(".segment-btn")).find(b => b.innerText.includes(tabId==='locations'?'場所':'人物'));
-            if(targetBtn) targetBtn.classList.add("active");
-            const target = document.getElementById("tab-" + tabId);
-            if(target) target.classList.add("active");
-            if(tabId === "locations") createAbstractMap();
-            if(tabId === "participants") renderMapParticipants();
-        }
-        function createAbstractMap() {
-            const container = document.getElementById("antiqueMapLocations");
-            const svg = document.getElementById("mapSvgLayer");
-            if(!container || !svg) return;
-            container.innerHTML = ""; svg.innerHTML = "";
-            const locs = [
-                {id: "cafe", name: "CAFE", x: 400, y: 300}, {id: "salon", name: "SALON", x: 700, y: 200},
-                {id: "mountain", name: "MTN", x: 1000, y: 400}, {id: "seaside", name: "SEA", x: 500, y: 700},
-                {id: "bar", name: "BAR", x: 800, y: 800}, {id: "shrine", name: "SHRINE", x: 1200, y: 300},
-                {id: "temple", name: "TEMPLE", x: 1400, y: 600}
-            ];
-            locs.forEach((l, i) => {
-                if(i < locs.length - 1) {
-                    const n = locs[i+1];
-                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                    line.setAttribute("x1", l.x); line.setAttribute("y1", l.y);
-                    line.setAttribute("x2", n.x); line.setAttribute("y2", n.y);
-                    line.setAttribute("class", "abstract-line"); svg.appendChild(line);
-                }
-            });
-            locs.forEach(l => {
-                const node = document.createElement("div");
-                node.className = "abstract-node";
-                node.style.left = (l.x/2000*100) + "%"; node.style.top = (l.y/1600*100) + "%";
-                node.style.pointerEvents = "auto";
-                node.innerHTML = `<div class="abstract-label">${l.name}</div>`;
-                node.onclick = () => { currentLocation = l.id; applyLocation(l.id); closeMap(); };
-                container.appendChild(node);
-            });
-        }
-
-        function openMap() {
+ function openMap() {
  console.log("🗺️ openMap: Start");
  const modal = document.getElementById('mapModal');
  const board = document.getElementById('antiqueMapBoard');

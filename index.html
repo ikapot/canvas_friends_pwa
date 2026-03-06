@@ -56,9 +56,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('file:///C:/Users/ikapo/.gemini/antigravity/brain/0060ccb3-452f-4b96-b2d9-c93d6ee5edf9/ichizen_pattern_bg_1772545382607.png');
-            background-size: cover;
-            opacity: 0.15;
+            /* Abstract dark background instead of specific local image */
             z-index: -1;
             pointer-events: none;
         }
@@ -1219,6 +1217,45 @@
                 
                 <div id="antiqueMapParticipants"></div>
             </div>
+
+<header id="main-header">
+        <div style="display:flex; align-items:center; gap:15px;">
+            <button onclick="openMap()"
+                style="background:none; border:none; font-size:24px; cursor:pointer; filter:none;">🗺️</button>
+            <span id="currentLocIcon" style="font-size:20px;">☕</span>
+        </div>
+        <h1 id="appTitle">ITAPLA</h1>
+        <div class="header-actions">
+            <button onclick="openAccount()"
+                style="background:none; border:none; color:var(--text-main); font-size:18px; cursor:pointer; opacity:0.7; transition:0.3s;"
+                title="Account Settings">👤</button>
+            <button id="omikuji-btn" onclick="drawOmikuji()"
+                style="display:none; background: rgba(255, 215, 0, 0.4); color: white; border: 1px solid rgba(255,215,0,0.3); padding: 4px 10px; border-radius: 15px; font-size: 10px; cursor: pointer; font-family: var(--font-outfit); font-weight: bold; transition: all 0.3s;">
+                ⛩️ おみくじを引く
+            </button>
+            
+            
+            <div id="ai-status-badge">Auto</div>
+            <div id="settings-trigger" style="cursor: pointer; font-size: 20px;" onclick="openSettings()">⚙️</div>
+        </div>
+    </header>
+
+    <!-- World Trend Ticker -->
+    <div id="trend-ticker-area" style="
+        width: 100%; max-width: 600px; margin: -10px auto 20px;
+        text-align: center; font-family: var(--font-outfit);
+        font-size: 11px; letter-spacing: 0.15em; color: var(--accent-main);
+        text-transform: uppercase; opacity: 0; transition: opacity 1s ease;
+        padding: 5px; border-top: 1px solid rgba(255,255,255,0.05);
+    ">
+        <span id="trend-label" style="opacity:0.5; margin-right:10px;">WORLD PULSE:</span>
+        <span id="trend-content">PEACEFUL RESONANCE</span>
+    </div>
+
+    <div class="world-banner" id="worldBanner">PEACEFUL</div>
+
+    <div class="timeline" id="timeline"></div>
+
         </div>
     </div>
 
@@ -1689,28 +1726,39 @@ ${newsSummary}
         }
 
         function updateSoulPowerUI() {
-            document.getElementById('soul-power-value').textContent = soulPower;
+            const valEl = document.getElementById('soul-power-value');
+            const containerEl = document.getElementById('soul-power');
             const badge = document.getElementById('ai-status-badge');
+
+            if (valEl) valEl.textContent = soulPower;
 
             // ユーザーキーがある場合は無限
             const hasUserKey = checkIfUserHasKey();
 
             if (hasUserKey) {
-                document.getElementById('soul-power').style.opacity = "0.5";
-                document.getElementById('soul-power').title = "自前のAPIキーを使用中（無限）";
-                badge.textContent = "Premium";
-                badge.style.color = "#ffd700";
+                if (containerEl) {
+                    containerEl.style.opacity = "0.5";
+                    containerEl.title = "自前のAPIキーを使用中（無限）";
+                }
+                if (badge) {
+                    badge.textContent = "Premium";
+                    badge.style.color = "#ffd700";
+                }
             } else if (soulPower > 0) {
-                document.getElementById('soul-power').style.opacity = "1";
-                badge.textContent = "Cloud";
-                badge.style.color = "#00d4ff";
+                if (containerEl) containerEl.style.opacity = "1";
+                if (badge) {
+                    badge.textContent = "Cloud";
+                    badge.style.color = "#00d4ff";
+                }
             } else {
-                document.getElementById('soul-power').style.opacity = "0.3";
-                badge.textContent = currentAIMode === "LOCAL" ? "Local" : "Lite";
-                badge.style.color = "#fff";
+                if (containerEl) containerEl.style.opacity = "0.3";
+                if (badge) {
+                    badge.textContent = currentAIMode === "LOCAL" ? "Local" : "Lite";
+                    badge.style.color = "#fff";
+                }
             }
             // OAuth mode indicator
-            if (currentAIMode === 'OAUTH') {
+            if (currentAIMode === 'OAUTH' && badge) {
                 badge.textContent = '🔗 Google';
                 badge.style.color = '#34A853';
             }

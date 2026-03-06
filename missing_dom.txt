@@ -1,0 +1,43 @@
+<header id="main-header">
+        <div style="display:flex; align-items:center; gap:15px;">
+            <button onclick="openMap()"
+                style="background:none; border:none; font-size:24px; cursor:pointer; filter:none;">🗺️</button>
+            <span id="currentLocIcon" style="font-size:20px;">☕</span>
+        </div>
+        <h1 id="appTitle">ITAPLA</h1>
+        <div class="header-actions">
+            <button onclick="openAccount()"
+                style="background:none; border:none; color:var(--text-main); font-size:18px; cursor:pointer; opacity:0.7; transition:0.3s;"
+                title="Account Settings">👤</button>
+            <button id="omikuji-btn" onclick="drawOmikuji()"
+                style="display:none; background: rgba(255, 215, 0, 0.4); color: white; border: 1px solid rgba(255,215,0,0.3); padding: 4px 10px; border-radius: 15px; font-size: 10px; cursor: pointer; font-family: var(--font-outfit); font-weight: bold; transition: all 0.3s;">
+                ⛩️ おみくじを引く
+            </button>
+            <button id="radio-header-btn" onclick="ItaplaRadio.toggle()"
+                style="background: rgba(139, 69, 19, 0.4); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 15px; font-size: 10px; cursor: pointer; font-family: var(--font-outfit); font-weight: bold; display: flex; align-items: center; gap: 5px; transition: all 0.3s; white-space: nowrap;">
+                📻 イタプララジオ
+            </button>
+            <div id="soul-power" class="soul-power-container" title="魂の残量（霊力）">
+                <span>💎</span>
+                <span id="soul-power-value">100</span>
+            </div>
+            <div id="ai-status-badge">Auto</div>
+            <div id="settings-trigger" style="cursor: pointer; font-size: 20px;" onclick="openSettings()">⚙️</div>
+        </div>
+    </header>
+
+    <!-- World Trend Ticker -->
+    <div id="trend-ticker-area" style="
+        width: 100%; max-width: 600px; margin: -10px auto 20px;
+        text-align: center; font-family: var(--font-outfit);
+        font-size: 11px; letter-spacing: 0.15em; color: var(--accent-main);
+        text-transform: uppercase; opacity: 0; transition: opacity 1s ease;
+        padding: 5px; border-top: 1px solid rgba(255,255,255,0.05);
+    ">
+        <span id="trend-label" style="opacity:0.5; margin-right:10px;">WORLD PULSE:</span>
+        <span id="trend-content">PEACEFUL RESONANCE</span>
+    </div>
+
+    <div class="world-banner" id="worldBanner">PEACEFUL</div>
+
+    <div class="timeline" id="timeline"></div>

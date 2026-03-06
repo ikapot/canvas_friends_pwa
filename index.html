@@ -21,20 +21,22 @@
 
     <style>
         :root {
-            --bg-color: #050505;
-            --surface-color: #121212;
-            --surface-deep: #1a1a1a;
-            --text-primary: #F5F5F5;
-            --text-secondary: #A0A0A0;
+            --bg-color: #000000;
+            --surface-color: #0c0c0c;
+            --surface-deep: #121212;
+            --text-primary: #FFFFFF;
+            --text-secondary: #888888;
             --accent-orange: #FF5722;
-            --accent-blue: #E0F7FA;
-            --border-soft: rgba(255, 255, 255, 0.1);
-            --radius-xl: 20px;
+            --accent-blue: #00D1FF;
+            --border-soft: rgba(255, 255, 255, 0.08);
+            --radius-xl: 24px;
             --radius-lg: 12px;
+            --segment-bg: #1a1a1a;
+            --segment-active: #333333;
             --font-sans: "BIZ UDPGothic", "UD Digikyo", "Noto Sans JP", sans-serif;
             --font-serif: "BIZ UDPMincho", "Noto Serif JP", serif;
             --font-outfit: "Outfit", sans-serif;
-            --transition-smooth: all 0.4s ease;
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             --spacing-base: 1rem;
         }
 
@@ -222,92 +224,107 @@
             box-sizing: border-box;
         }
 
-        .map-close-btn {
+        /* --- Segmented Tab UI --- */
+        .map-header {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            background: transparent;
-            color: var(--text-primary);
-            border: 1px solid var(--border-soft);
-            padding: 8px 16px;
-            border-radius: var(--radius-lg);
-            font-size: 14px;
-            cursor: pointer;
-            z-index: 9010;
-            font-family: var(--font-sans);
-        }
-
-        .antique-map-board {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            background-image:
-                linear-gradient(var(--border-soft) 1px, transparent 1px),
-                linear-gradient(90deg, var(--border-soft) 1px, transparent 1px);
-            background-size: 50px 50px;
-            background-position: center;
-            overflow: hidden;
-            border: 1px solid var(--border-soft);
-            border-radius: var(--radius-lg);
-        }
-
-        #antiqueMapParticipants {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 20px;
-            padding: 30px;
-            height: 100%;
-            overflow-y: auto;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 5;
-        }
-
-        .grid-node {
-            background: var(--surface-color);
-            border: 1px solid var(--border-soft);
-            border-radius: var(--radius-lg);
-            padding: 15px;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            transition: var(--transition-smooth);
-            position: relative;
-        }
-
-        .grid-node:hover {
-            border-color: var(--accent-orange);
-            transform: translateY(-2px);
-        }
-
-        .grid-node-color {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-bottom: 8px;
-            border: 1px solid var(--accent-blue);
-        }
-
-        .grid-node-name {
-            font-size: 12px;
-            font-weight: bold;
-            color: var(--text-primary);
-            text-transform: uppercase;
-        }
-
-        .grid-node-loc {
-            font-size: 10px;
-            color: var(--text-secondary);
-            margin-top: 4px;
-            border-top: 1px solid var(--border-soft);
-            padding-top: 4px;
+            gap: 15px;
+            z-index: 9100;
             width: 100%;
+        }
+
+        .segment-control {
+            background: var(--segment-bg);
+            padding: 4px;
+            border-radius: 999px;
+            display: flex;
+            gap: 2px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .segment-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 8px 24px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            font-family: var(--font-sans);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .segment-btn.active {
+            background: var(--segment-active);
+            color: var(--text-primary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        /* --- Abstract Map Pins (Dots and Lines) --- */
+        #antiqueMapLocations {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .abstract-line {
+            stroke: var(--border-soft);
+            stroke-width: 1;
+            stroke-dasharray: 4 4;
+        }
+
+        .abstract-node {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px var(--accent-blue);
+            transition: var(--transition-smooth);
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        .abstract-node:hover {
+            transform: translate(-50%, -50%) scale(1.5);
+            background: var(--accent-orange);
+            box-shadow: 0 0 15px var(--accent-orange);
+        }
+
+        .abstract-label {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--text-secondary);
+            font-size: 9px;
+            white-space: nowrap;
+            font-family: var(--font-outfit);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.5;
+        }
+
+        .tab-content {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         /* Protocol Warning */
@@ -1226,12 +1243,27 @@
     <canvas id="bg-canvas"></canvas>
 
     <!-- Antique Map UI (Replaces Investigation Board) -->
+    <!-- Segmented Map UI -->
     <div id="mapModal" class="antique-map-modal">
-        <button class="map-close-btn" onclick="closeMap()">Close Map</button>
+        <div class="map-header">
+            <div class="segment-control">
+                <button class="segment-btn active" onclick="switchMapTab('locations')">場所</button>
+                <button class="segment-btn" onclick="switchMapTab('participants')">人物</button>
+            </div>
+            <button class="map-close-btn" onclick="closeMap()">CLOSE</button>
+        </div>
+
         <div class="antique-map-container">
-            <div class="antique-map-board" id="antiqueMapBoard">
-                <svg class="map-svg-layer" id="mapSvgLayer" viewBox="0 0 2000 1600"></svg>
-                <div id="antiqueMapLocations"></div>
+            <!-- TAB: LOCATIONS (Abstract Lines) -->
+            <div id="tab-locations" class="tab-content active">
+                <div class="antique-map-board">
+                    <svg class="map-svg-layer" id="mapSvgLayer" viewBox="0 0 2000 1600"></svg>
+                    <div id="antiqueMapLocations"></div>
+                </div>
+            </div>
+
+            <!-- TAB: PARTICIPANTS (Grid List) -->
+            <div id="tab-participants" class="tab-content">
                 <div id="antiqueMapParticipants"></div>
             </div>
         </div>
